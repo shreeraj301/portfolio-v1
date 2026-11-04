@@ -12,8 +12,13 @@ import { ease, prefersReducedMotion } from './env';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
-const durations = { lines: 1.2, words: 1.1, chars: 0.9 } as const;
-const staggers = { lines: 0.08, words: 0.035, chars: 0.018 } as const;
+const durations = { lines: 0.75, words: 0.7, chars: 0.6 } as const;
+const staggers = { lines: 0.06, words: 0.025, chars: 0.014 } as const;
+
+// Reveals start the moment an element touches the viewport, so you never scroll into blank space.
+export const REVEAL_START = 'top bottom';
+// Anything already on screen when the page starts is simply there: no waiting on a scroll.
+export const onScreenAtStart = (el: Element) => el.getBoundingClientRect().top < innerHeight;
 
 // autoSplit re-splits after font load / resize. A text that already revealed must stay revealed,
 // so the state lives outside onSplit.
@@ -29,6 +34,7 @@ function splitTween(el: HTMLElement, isIntro: boolean) {
     onSplit(self) {
       gsap.set(el, { visibility: 'visible' });
       if (s.done) return;
+      if (!isIntro && onScreenAtStart(el)) { s.done = true; return; }
       const targets = type === 'lines' ? self.lines : type === 'words' ? self.words : self.chars;
       s.tween = gsap.from(targets, {
         yPercent: 110,
@@ -39,7 +45,7 @@ function splitTween(el: HTMLElement, isIntro: boolean) {
         delay,
         paused: isIntro && !s.requested,
         onComplete: () => { s.done = true; },
-        scrollTrigger: isIntro ? undefined : { trigger: el, start: 'top 88%', once: true },
+        scrollTrigger: isIntro ? undefined : { trigger: el, start: REVEAL_START, once: true },
       });
       return s.tween;
     },
@@ -50,35 +56,23 @@ function splitTween(el: HTMLElement, isIntro: boolean) {
 function blockTween(el: HTMLElement, paused: boolean) {
   const kind = el.dataset.reveal || 'up';
   const delay = parseFloat(el.dataset.delay || '0');
-  const st = paused ? undefined : { trigger: el, start: 'top 90%', once: true };
   gsap.set(el, { visibility: 'visible' });
-  // Project change: 'clip' and 'scale' are built from transforms only (a mask that moves one way while
-  // its content moves the other), so they run on the compositor instead of repainting a clip-path each frame.
-  const inner = el.firstElementChild as HTMLElement | null;
-  if ((kind === 'clip' || kind === 'scale') && inner) {
-    gsap.set(el, { overflow: 'hidden' });
-    const tl = gsap.timeline({ paused, delay, scrollTrigger: st, defaults: { duration: 1.35, ease: ease.out, force3D: true },
-      onComplete: () => gsap.set([el, inner], { clearProps: 'overflow,transform' }) });
-    if (kind === 'clip') {
-      tl.fromTo(el, { yPercent: 100, autoAlpha: 1 }, { yPercent: 0 }, 0)
-        .fromTo(inner, { yPercent: -100 }, { yPercent: 0 }, 0);
-    } else {
-      // 'scale' is lowered into place: the frame rises and fades in while the picture settles inside it.
-      // Translation only, so large images are never re-rasterised at a new scale mid-animation.
-      tl.fromTo(el, { y: 70, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.2 }, 0)
-        .fromTo(inner, { yPercent: -12 }, { yPercent: 0, duration: 1.6 }, 0);
-    }
-    return tl;
-  }
-  return gsap.fromTo(el, kind === 'fade' ? { autoAlpha: 0 } : { y: 48, autoAlpha: 0 }, {
+  if (!paused && onScreenAtStart(el)) return gsap.timeline(); // already in view: no entrance, nothing hidden
+  const st = paused ? undefined : { trigger: el, start: REVEAL_START, once: true };
+  // Big blocks (images, frames) are never hidden: they start partly visible and settle the last 40px,
+  // so a picture is always there as you scroll to it. Transforms and opacity only.
+  const big = kind === 'clip' || kind === 'scale';
+  const from = kind === 'fade' ? { autoAlpha: 0 } : { y: big ? 40 : 32, autoAlpha: big ? 0.35 : 0 };
+  return gsap.fromTo(el, from, {
     y: 0,
     autoAlpha: 1,
-    duration: kind === 'fade' ? 1 : 1.3,
+    duration: kind === 'fade' ? 0.6 : big ? 0.7 : 0.6,
     ease: ease.out,
     delay,
     paused,
     force3D: true,
     scrollTrigger: st,
+    clearProps: 'transform',
   });
 }
 

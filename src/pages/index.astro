@@ -12,7 +12,6 @@ const words = statement.split(' ');
     <div class="hero__meta" data-reveal="fade" data-intro data-delay="0.5">
       <p><span class="code">Sheet 00</span> Portfolio, 2026</p>
       <p><span class="code">Now</span> {site.now}</p>
-      <p><span class="code">Sun on the plaza</span> <span data-sun-clock>15:20</span>, simulated</p>
     </div>
     <h1 class="hero__name" id="hero-title">
       <span class="hero__line" data-split="chars" data-intro>Shreeraj</span>
@@ -78,7 +77,7 @@ const words = statement.split(' ');
   </section>
 
   <section class="sec play" id="play" data-section="play" aria-labelledby="play-title">
-    <SectionHead verb="play" id="play-title" code="PL-01 to PL-11" line="Things I built to learn: a gravity sandbox, two games, a synth, a decision tool. All live, all built with AI tools from my specs." />
+    <SectionHead verb="play" id="play-title" code="PL-01 to PL-11" line="Things I built to learn and have some fun" />
     <ul class="play__grid">
       {experiments.filter((x) => x.kind !== 'Practice').map((x, i) => (
         <li class:list={['card', i < 2 && 'card--big']} data-reveal="up" data-delay={((i % 3) * 0.06).toFixed(2)}>

@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onPage, onScroll, scrollToTarget, prefersReducedMotion, isTouch, isMobile, ease } from '../engine';
 import { sun } from './sun';
 import { webglOK } from '../kit3d/gl-check';
+import { REVEAL_START, onScreenAtStart } from '../engine/reveal';
 
 const reduced = () => prefersReducedMotion();
 
@@ -75,9 +76,10 @@ export function initInteractions() {
     if (!reduced()) {
       document.querySelectorAll<HTMLElement>('[data-set]').forEach((el) => {
         gsap.set(el, { visibility: 'visible' });
+        if (onScreenAtStart(el)) return; // in view at load: already set down
         gsap.from(el, {
-          yPercent: -45, autoAlpha: 0, duration: 1.1, ease: 'set', delay: parseFloat(el.dataset.delay || '0'),
-          scrollTrigger: { trigger: el, start: 'top 92%', once: true },
+          yPercent: -30, autoAlpha: 0, duration: 0.7, ease: 'set', delay: parseFloat(el.dataset.delay || '0'),
+          scrollTrigger: { trigger: el, start: REVEAL_START, once: true },
         });
       });
     }
