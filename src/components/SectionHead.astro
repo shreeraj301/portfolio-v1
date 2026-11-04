@@ -1,16 +1,21 @@
 ---
 import Module from './Module.astro';
 import { verbs, type Verb } from '../data/site';
-interface Props { verb: Verb; id: string; code: string; line: string; as?: 'h1' | 'h2' }
-const { verb, id, code, line, as = 'h2' } = Astro.props;
+interface Props { verb: Verb; id: string; code: string; line: string; note?: string; as?: 'h1' | 'h2' }
+const { verb, id, code, line, note, as = 'h2' } = Astro.props;
 const v = verbs.find((x) => x.id === verb)!;
 const Tag = as;
 ---
 <header class="shead" style={`--c:var(--v-${verb})`}>
   <p class="shead__code code">{code}</p>
   <div class="shead__row">
-    <Tag class="shead__verb" id={id}><span data-set>{v.label}</span><span class="sr-only">: {v.line}</span></Tag>
-    <div class="shead__glyph" data-set data-delay="0.12"><Module verb={verb} size={200} turn /></div>
-    <p class="shead__line" data-split="lines">{line}</p>
+    <div class="shead__main">
+      <Tag class="shead__verb" id={id}><span data-set>{v.label}</span><span class="sr-only">: {v.line}</span></Tag>
+      <div class="shead__glyph" data-set data-delay="0.12"><Module verb={verb} size={200} turn /></div>
+    </div>
+    <div class="shead__side">
+      <p class="shead__line" data-split="lines">{line}</p>
+      {note && <p class="shead__note">{note}</p>}
+    </div>
   </div>
 </header>

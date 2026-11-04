@@ -94,3 +94,9 @@ The sun. One driver variable (sun angle) from time plus pointer x moves every ca
 - Play covers are the experiments running live (screen recordings, seamless loops). Build covers are re-cut from the portfolio PDF at print resolution. Pause has four book covers in the colours of the Otla Pages spines; no generated imagery.
 - About: one-column timeline on a single rail, newest first. Resume is a page (/resume/) with a print stylesheet and the original PDF.
 - Removed: the sun clock (hero and footer), the evidence column, the portrait ground line, Why Otla.
+
+## Round 4
+- Sit line: "Pull up a seat on the otla." with a mono note explaining the otla. The three behaviours in the intro are marked in their module colours as the paragraph enters.
+- Section heads sit on the 12-column grid: verb and module in columns 1 to 7, the line from column 8 (column 6 on About, where its text column starts). Sit, case heroes and the Build image follow the same columns.
+- Build: a live 3D cluster (kit3d/cluster.ts) of eight pieces locked together like the Manual 01 cover, three of them new (bridge with a round window, planted terraces, a path with a curved bench). Scroll lowers the pieces in; hover lifts one and names it; the sun follows the pointer. It shares renderer and light setup with the hero (kit3d/stage.ts) and loads only near the section.
+- Books link to their pages on Otla Pages. Resume has no print button.

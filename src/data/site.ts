@@ -692,10 +692,10 @@ export const practice = [
 
 // PAUSE: writing
 export const books = [
-  { title: 'The Universe Between Us', note: 'One love in 34 short poems: a glance across a studio, a borrowed stapler, then anger, grief and something lighter.', href: 'https://heyzine.com/flip-book/bdb764c222.html', tone: 'read' as Verb },
-  { title: 'Window Seat, Facing Backward', note: 'Poems', href: 'https://heyzine.com/flip-book/d23d5aaa34.html', tone: 'build' as Verb },
-  { title: 'Learning You, by Heart', note: 'Poems', href: 'https://heyzine.com/flip-book/a69c7179f7.html', tone: 'play' as Verb },
-  { title: 'Two Time Zones From Home', note: 'Poems', href: 'https://heyzine.com/flip-book/a7f9b41165.html', tone: 'pause' as Verb },
+  { title: 'The Universe Between Us', note: 'One love in 34 short poems: a glance across a studio, a borrowed stapler, then anger, grief and something lighter.', href: 'https://otla-pages-lofi.vercel.app/poetry/the-universe-between-us', tone: 'read' as Verb },
+  { title: 'Window Seat, Facing Backward', note: 'Poems', href: 'https://otla-pages-lofi.vercel.app/poetry/window-seat-facing-backward', tone: 'build' as Verb },
+  { title: 'Learning You, by Heart', note: 'Poems', href: 'https://otla-pages-lofi.vercel.app/poetry/learning-you-by-heart', tone: 'play' as Verb },
+  { title: 'Two Time Zones From Home', note: 'Poems', href: 'https://otla-pages-lofi.vercel.app/poetry/two-time-zones-from-home', tone: 'pause' as Verb },
 ];
 
 export const essays = [

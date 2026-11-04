@@ -9,6 +9,7 @@
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { buildModule, buildPlate, contactTexture, type Verb, type Built } from './modules';
+import { makeRenderer, addLights } from './stage';
 
 type Opts = { reduced: boolean; touch: boolean; mobile: boolean; sunAngle: () => number; pointerX: () => number };
 type Mode = 'hidden' | 'fall' | 'rest' | 'carry';
@@ -42,7 +43,7 @@ export class Kit3D {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 200);
-  private sun = new THREE.DirectionalLight('#fff3e3', 2.2);
+  private sun: THREE.DirectionalLight;
   private mods: Mod[] = [];
   private byMesh = new Map<THREE.Object3D, Mod>();
   private ray = new THREE.Raycaster();
@@ -81,19 +82,8 @@ export class Kit3D {
   constructor(el: HTMLElement, o: Opts) {
     this.el = el;
     this.o = o;
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, o.mobile ? 1.5 : 2));
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.NeutralToneMapping;
-    this.renderer.toneMappingExposure = 1.06;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.autoUpdate = false; // updated only when something moved or the sun travelled
-    this.renderer.shadowMap.type = THREE.VSMShadowMap; // soft, blurred penumbra like the Kit renders
-    this.renderer.setClearColor(0x000000, 0);
-    el.appendChild(this.renderer.domElement);
-    this.renderer.domElement.setAttribute('aria-hidden', 'true');
-
-    this.lights();
+    this.renderer = makeRenderer(el, o.mobile);
+    this.sun = addLights(this.scene, CENTER, 13, o.mobile);
     this.scene.add(buildPlate(PLATE.w, PLATE.d).translateX(PLATE.cx).translateZ(PLATE.cz));
     this.buildMods();
     this.marker = this.bayMarker();
@@ -113,25 +103,6 @@ export class Kit3D {
   }
 
   // ---------- setup ----------
-  private lights() {
-    this.scene.add(new THREE.HemisphereLight('#fbfaf7', '#d4cec4', 2.0));
-    const s = this.sun;
-    s.castShadow = true;
-    const size = this.o.mobile ? 768 : 1024;
-    s.shadow.mapSize.set(size, size);
-    const cam = s.shadow.camera;
-    cam.left = -13; cam.right = 13; cam.top = 13; cam.bottom = -13; cam.near = 1; cam.far = 70;
-    s.shadow.bias = -0.0002;
-    s.shadow.normalBias = 0.025;
-    s.shadow.radius = 5;
-    s.shadow.blurSamples = 8;
-    s.target.position.copy(CENTER);
-    this.scene.add(s, s.target);
-    const fill = new THREE.DirectionalLight('#e8eefc', 0.35);
-    fill.position.set(-10, 8, 14);
-    this.scene.add(fill);
-  }
-
   private buildMods() {
     const css = getComputedStyle(document.documentElement);
     ORDER.forEach((id, i) => {

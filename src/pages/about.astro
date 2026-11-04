@@ -3,16 +3,19 @@ import Base from '../layouts/Base.astro';
 import Pic from '../components/Pic.astro';
 import SectionHead from '../components/SectionHead.astro';
 import { site, about } from '../data/site';
+import { otlaNote, marked } from '../data/sit';
 ---
 <Base page="about" title="About" description="About Shreeraj Narwade: architect-trained product designer and design engineer from India. Experience, education, tools and how I work.">
   <section class="sec apage" style="--c:var(--v-sit)">
-    <SectionHead verb="sit" id="about-title" as="h1" code="ST / About" line="Architect-trained product designer, UX researcher and design engineer. Based in India." />
+    <SectionHead verb="sit" id="about-title" as="h1" code="ST / About" line="Pull up a seat on the otla." note={otlaNote} />
     <div class="apage__grid">
       <figure class="apage__portrait">
         <Pic src="avatar.png" alt="Illustrated portrait of Shreeraj: smiling, in glasses, a blue shirt and a grey jacket" widths={[360, 560, 800]} sizes="(max-width: 767px) 66vw, 30vw" loading="eager" fetchpriority="high" />
       </figure>
       <div class="apage__text">
-        {about.intro.map((p, i) => <p class={i === 0 ? 'apage__lead' : undefined} data-split={i === 0 ? 'lines' : undefined}>{p}</p>)}
+        {about.intro.map((p, i) => i === 0
+          ? <p class="apage__lead" data-marks>{marked(p).map((x) => x.k ? <mark class="hl" data-k={x.k}>{x.t}</mark> : x.t)}</p>
+          : <p>{p}</p>)}
         <div class="apage__ctas">
           <a class="btn" href="/resume/" data-fill data-label="Resume" data-code="CV"><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">Read my resume</span></a>
           <a class="link" href={`mailto:${site.email}`}>{site.email}</a>

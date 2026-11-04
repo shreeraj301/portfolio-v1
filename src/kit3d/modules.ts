@@ -253,3 +253,76 @@ export function contactTexture() {
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
+
+// ---------- Pieces from the Manual cover, for the Build cluster ----------
+export type Piece = 'bridge' | 'terraces' | 'path';
+
+/** Extra precast pieces modelled on the cover of The Kit, Manual 01. Same 4 x 4 footprint and materials. */
+export function buildPiece(kind: Piece, color: string): Built {
+  seed = 23;
+  const group = new THREE.Group();
+  const parts: THREE.Object3D[] = [];
+  const main = concrete(color);
+  const mats = [main];
+  const add = (p: THREE.Object3D) => { parts.push(p); group.add(p); };
+
+  if (kind === 'bridge') {
+    // A long precast beam on legs: an arch open to the ground, and a round window through the solid half.
+    const s = new THREE.Shape();
+    s.moveTo(-2, 0); s.lineTo(-1.55, 0); s.lineTo(-1.55, 0.7);
+    s.absarc(-0.75, 0.7, 0.8, Math.PI, 0, true);
+    s.lineTo(0.05, 0); s.lineTo(2, 0); s.lineTo(2, 2.1); s.lineTo(-2, 2.1); s.lineTo(-2, 0);
+    const hole = new THREE.Path();
+    hole.absarc(1.05, 1.05, 0.62, 0, Math.PI * 2, false);
+    s.holes.push(hole);
+    const geo = new THREE.ExtrudeGeometry(s, { depth: 1.7, ...BEVEL });
+    geo.translate(0, 0, -0.85);
+    const m = shade(new THREE.Mesh(geo, main));
+    m.position.set(0, 0.03, -0.6);
+    add(part(m));
+    const [ledge] = block(4, 0.42, 1.25, 0, 0, 1.35, main);
+    add(part(ledge));
+  }
+
+  if (kind === 'terraces') {
+    // Stepped terraces with sunken planters, the yellow field of the cover.
+    const grass = concrete('#5f8f4f');
+    mats.push(grass);
+    const rows: [number, number][] = [[1.35, 0], [0, 0.55], [-1.35, 1.1]];
+    rows.forEach(([z, y], r) => {
+      const tier = new THREE.Group();
+      for (let i = 0; i < 3; i++) {
+        const x = -1.35 + i * 1.35;
+        const planter = (i + r) % 2 === 0;
+        const [b] = block(1.3, 0.55 + y, 1.3, x, 0, z, main, 0.06);
+        tier.add(b);
+        if (planter) {
+          const [rim] = block(1.0, 0.36, 1.0, x, 0.55 + y, z, main, 0.05);
+          const [soil] = block(0.8, 0.06, 0.8, x, 0.88 + y, z, grass, 0.02);
+          tier.add(rim, soil);
+        }
+      }
+      add(tier);
+    });
+  }
+
+  if (kind === 'path') {
+    // A low paved run with a step and a curved bench: the red path that ties the cover together.
+    const [slab] = block(4, 0.3, 4, 0, 0, 0, main);
+    add(part(slab));
+    const [step] = block(4, 0.32, 1.1, 0, 0.3, -1.45, main);
+    add(part(step));
+    const s = new THREE.Shape();
+    s.absarc(0, 0, 1.6, Math.PI / 2, Math.PI, false);
+    s.lineTo(-1.05, 0);
+    s.absarc(0, 0, 1.05, Math.PI, Math.PI / 2, true);
+    s.lineTo(0, 1.6);
+    const g = new THREE.ExtrudeGeometry(s, { depth: 0.5, ...BEVEL });
+    g.rotateX(-Math.PI / 2);
+    const bench = shade(new THREE.Mesh(g, main));
+    bench.position.set(1.9, 0.3, 1.9);
+    add(part(bench));
+  }
+
+  return { group, parts, shapes: [], mats };
+}

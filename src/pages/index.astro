@@ -5,6 +5,7 @@ import Pic from '../components/Pic.astro';
 import Cover from '../components/Cover.astro';
 import SectionHead from '../components/SectionHead.astro';
 import { site, verbs, statement, cases, experiments, thesis, books, essays, otla, about } from '../data/site';
+import { otlaNote, marked } from '../data/sit';
 const words = statement.split(' ');
 ---
 <Base page="home">
@@ -103,8 +104,12 @@ const words = statement.split(' ');
   <section class="sec build" id="build" data-section="build" aria-labelledby="build-title">
     <SectionHead verb="build" id="build-title" code="BD-01 to BD-06" line="Five years of architecture. The thesis that taught me to design for behaviour, not for form." />
     <div class="build__stage">
-      <figure class="build__hero" data-reveal="scale">
-        <div class="build__img" ><div data-parallax="0.08"><Pic src="build/kit-cover.jpg" alt="Cover of The Kit, Manual 01: an isometric render of coloured precast modules with steps, planters and an arch" widths={[800, 1200, 1600]} sizes="(max-width: 767px) 92vw, 50vw" /></div></div>
+      <figure class="build__hero">
+        <div class="build__img kitc" data-kit-cluster>
+          <img class="kitc__still" src="/kit/cluster.webp" width="1400" height="1400" alt="The Kit in 3D: eight precast modules from my thesis locked together into one piece, with steps, planters, a shelf, an amphitheatre and a bridge" loading="lazy" decoding="async" draggable="false" />
+          <p class="kitc__title" aria-hidden="true"><span class="code">Manual 01</span><span class="kitc__name">The Kit</span></p>
+          <p class="kitc__piece code" aria-hidden="true" data-kit-piece></p>
+        </div>
       </figure>
       <div class="build__text">
         <p class="code">BD-01 / Thesis</p>
@@ -117,7 +122,7 @@ const words = statement.split(' ');
     <ul class="build__strip" aria-label="Modules from The Kit">
       {[['tile-read', 'To Read'], ['tile-play', 'To Play'], ['tile-gather', 'To Perform'], ['tile-sit', 'To Sit']].map(([f, l], i) => (
         <li data-reveal="up" data-delay={(i * 0.07).toFixed(2)}>
-          <div class="strip__img"><Pic src={`build/${f}.png`} alt={`A ${l} module from The Kit, modelled in 3D`} widths={[480, 800]} sizes="(max-width: 767px) 46vw, 23vw" /></div>
+          <div class="strip__img" data-tile-turn={`/kit/${f}-turn.webp`}><Pic src={`build/${f}.png`} alt={`A ${l} module from The Kit, modelled in 3D`} widths={[480, 800]} sizes="(max-width: 767px) 46vw, 23vw" /></div>
           <p class="code">{l}</p>
         </li>
       ))}
@@ -155,10 +160,10 @@ const words = statement.split(' ');
   </section>
 
   <section class="sec sit" id="sit" data-section="sit" aria-labelledby="sit-title">
-    <SectionHead verb="sit" id="sit-title" code="ST" line="Who is behind the work." />
+    <SectionHead verb="sit" id="sit-title" code="ST" line="Pull up a seat on the otla." note={otlaNote} />
     <div class="sit__grid">
       <figure class="sit__portrait" data-reveal="scale"><Pic src="avatar.png" alt="Illustrated portrait of Shreeraj, smiling, in glasses" widths={[400, 800]} sizes="(max-width: 767px) 60vw, 22vw" /></figure>
-      <p class="sit__lead" data-split="lines">{about.intro[0]}</p>
+      <p class="sit__lead" data-marks>{marked(about.intro[0]).map((x) => x.k ? <mark class="hl" data-k={x.k}>{x.t}</mark> : x.t)}</p>
       <div class="sit__side">
         <p>{about.intro[1]}</p>
         <a class="btn" href="/about/" data-fill data-label="Sit" data-code="ST"><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">More about me</span></a>

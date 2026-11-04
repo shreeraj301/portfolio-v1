@@ -1,6 +1,6 @@
 ---
 // The resume as a page of this site: a spec sheet, codes hanging in the margin like the Kit catalogue.
-// Prints to a clean A4 (see the print styles in site.css); the original PDF is one click away.
+// The original PDF is one click away. (Print styles stay in site.css, so Ctrl+P still gives a clean A4.)
 import Base from '../layouts/Base.astro';
 import { site } from '../data/site';
 import { resume, type Entry } from '../data/resume';
@@ -27,7 +27,6 @@ const n = (k: number) => String(k + 1).padStart(2, '0');
       </ul>
       <div class="cv__ctas" data-reveal="up" data-intro data-delay="0.35">
         <a class="btn" href={resume.pdf} download data-fill><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">Download the PDF</span></a>
-        <button class="link cv__print" type="button" data-print>Print this page</button>
       </div>
     </header>
 
@@ -74,7 +73,4 @@ const n = (k: number) => String(k + 1).padStart(2, '0');
       </dl>
     </section>
   </article>
-  <script>
-    document.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('[data-print]')) window.print(); });
-  </script>
 </Base>

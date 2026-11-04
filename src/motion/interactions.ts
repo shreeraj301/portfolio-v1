@@ -94,10 +94,13 @@ export function initInteractions() {
     }
 
     cluster(intro, off);
+    kitCluster(off);
+    tileTurns(off);
     turners(off);
     heroLoop(off);
     cardLoops(off);
     timeline();
+    marks();
     statement();
     caseIndex(off);
     kitScroll();
@@ -211,6 +214,16 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
   // Without WebGL the full render of the plaza stands in (see Cluster.astro); the verb list still drives focus.
 }
 
+// Sit: the paragraph reads normally, then its three behaviours are marked in, one after another.
+function marks() {
+  document.querySelectorAll<HTMLElement>('[data-marks]').forEach((p) => {
+    const hl = p.querySelectorAll<HTMLElement>('.hl');
+    if (reduced()) { gsap.set(hl, { backgroundSize: '100% 0.5em' }); return; }
+    gsap.to(hl, { backgroundSize: '100% 0.5em', duration: 0.75, ease: 'power2.inOut', stagger: 0.45, delay: 0.35,
+      scrollTrigger: { trigger: p, start: 'top 72%', once: true } });
+  });
+}
+
 // About: the timeline rail draws itself as you read down it.
 function timeline() {
   const fill = document.querySelector<HTMLElement>('.tl__fill');
@@ -246,6 +259,58 @@ function turners(off: (() => void)[]) {
   }, { rootMargin: '600px 0px' });
   els.forEach((el) => io.observe(el));
   off.push(() => io.disconnect());
+}
+
+// Build strip: pointing at a tile turns its module through the swing and back to rest (frame 7).
+function tileTurns(off: (() => void)[]) {
+  if (reduced() || isTouch()) return;
+  document.querySelectorAll<HTMLElement>('[data-tile-turn]').forEach((tile) => {
+    let layer: HTMLElement | null = null;
+    const st = { f: 7 };
+    const draw = () => { if (layer) { const k = Math.round(st.f); layer.style.backgroundPosition = `${(k % 5) * 25}% ${Math.floor(k / 5) * 50}%`; } };
+    const ready = () => {
+      if (layer) return Promise.resolve();
+      const img = new Image(); img.src = tile.dataset.tileTurn!;
+      return img.decode().then(() => { layer = document.createElement('span'); layer.className = 'strip__turn'; layer.style.backgroundImage = `url(${img.src})`; tile.appendChild(layer); draw(); layer.classList.add('is-on'); });
+    };
+    const on = () => { ready().then(() => { gsap.killTweensOf(st); gsap.timeline().to(st, { f: 14, duration: 0.55, ease: 'power2.out', onUpdate: draw }).to(st, { f: 0, duration: 1.1, ease: 'power2.inOut', onUpdate: draw }).to(st, { f: 7, duration: 0.6, ease: 'power2.out', onUpdate: draw }); }).catch(() => {}); };
+    const leave = () => { gsap.to(st, { f: 7, duration: 0.5, ease: 'power2.out', overwrite: true, onUpdate: draw }); };
+    tile.addEventListener('pointerenter', on); tile.addEventListener('pointerleave', leave);
+    off.push(() => { tile.removeEventListener('pointerenter', on); tile.removeEventListener('pointerleave', leave); gsap.killTweensOf(st); layer?.remove(); });
+  });
+}
+
+// Build: the live Kit cluster. Loaded only as the section comes near, run only while it is on screen,
+// and assembled by scroll: the pieces are lowered in as you scroll into the section.
+function kitCluster(off: (() => void)[]) {
+  const box = document.querySelector<HTMLElement>('[data-kit-cluster]');
+  if (!box || !webglOK()) return;
+  const label = box.querySelector<HTMLElement>('[data-kit-piece]');
+  let kit: import('../kit3d/cluster').KitCluster | null = null;
+  let dead = false;
+  const triggers: ScrollTrigger[] = [];
+  const gl = document.createElement('div');
+  gl.className = 'kitc__gl';
+  box.appendChild(gl);
+  const io = new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting) return;
+    io.disconnect();
+    import('../kit3d/cluster').then(({ KitCluster }) => {
+      if (dead) return;
+      kit = new KitCluster(gl, { reduced: reduced(), touch: isTouch(), mobile: isMobile() });
+      kit.onHover = (l) => { if (!label) return; if (l) label.textContent = l; label.classList.toggle('is-on', !!l); };
+      requestAnimationFrame(() => box.classList.add('is-3d-ready'));
+      triggers.push(ScrollTrigger.create({ trigger: box, start: 'top bottom', end: 'bottom top', onToggle: (s) => kit?.setVisible(s.isActive) }));
+      if (!reduced()) {
+        const st = ScrollTrigger.create({ trigger: box, start: 'top 85%', end: 'center 45%', scrub: 0.6, onUpdate: (s) => kit?.setProgress(s.progress) });
+        triggers.push(st);
+        ScrollTrigger.refresh(); // positions above may have shifted since load (lazy images)
+        kit.setProgress(st.progress); // arriving mid-page: show the state that scroll position implies
+      }
+    }).catch(() => {});
+  }, { rootMargin: '800px 0px' });
+  io.observe(box);
+  off.push(() => { dead = true; io.disconnect(); triggers.forEach((t) => t.kill()); kit?.dispose(); kit = null; gl.remove(); box.classList.remove('is-3d-ready'); });
 }
 
 // The statement lights up word by word as it crosses the middle of the screen.
