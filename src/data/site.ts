@@ -24,12 +24,13 @@ export const site = {
   showreel: 'https://youtu.be/GGkTevFw6dA',
 };
 
-// The six behaviours. Order = the hero cluster and the home page sections.
+// The six behaviours. Order = the nav, menu, hero verb list and home page sections.
+// The 3D plaza keeps its own fixed layout (ORDER in kit3d/kit3d.ts), matching the rendered plaza images.
 export const verbs: { id: Verb; label: string; code: string; href: string; line: string }[] = [
   { id: 'read', label: 'Read', code: 'RD', href: '/#read', line: 'Products, built and live' },
-  { id: 'play', label: 'Play', code: 'PL', href: '/#play', line: 'Prototypes and experiments' },
   { id: 'build', label: 'Build', code: 'BD', href: '/build/', line: 'Architecture' },
   { id: 'pause', label: 'Pause', code: 'PS', href: '/#pause', line: 'Poems and essays' },
+  { id: 'play', label: 'Play', code: 'PL', href: '/#play', line: 'Prototypes and experiments' },
   { id: 'sit', label: 'Sit', code: 'ST', href: '/about/', line: 'About' },
   { id: 'gather', label: 'Gather', code: 'GT', href: '#gather', line: 'Contact' },
 ];
