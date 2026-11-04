@@ -65,7 +65,7 @@ const kit = [
     <ol class="bwork">
       {buildWork.map((w, i) => (
         <li class:list={['bw', i % 2 && 'bw--flip']} data-reveal="up">
-          <div class="bw__img"><Pic src={`covers/build-${w.img.replace(/^build\/|\.jpg$/g, '')}.png`} alt={`${w.name}: drawings and images from the portfolio`} widths={[600, 1000, 1400]} sizes="(max-width: 767px) 92vw, 62vw" /></div>
+          <div class="bw__img"><Pic src={w.img} alt={`Portfolio spread for ${w.name}`} widths={[800, 1200, 1600, 2000]} sizes="(max-width: 767px) 92vw, 62vw" /></div>
           <div class="bw__text">
             <p class="code">{w.code}</p>
             <h3 class="bw__name">{w.name}</h3>
