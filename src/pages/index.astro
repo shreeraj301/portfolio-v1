@@ -43,7 +43,7 @@ const words = statement.split(' ');
 
   <section class="statement" aria-label="How I work">
     <p class="statement__text" data-words>
-      {words.map((w) => <span class="w">{w} </span>)}
+      {words.map((w, i) => <span class="w">{i < words.length - 1 ? `${w} ` : w}</span>)}
     </p>
     <p class="statement__by"><span class="code">From my showreel</span> <a class="link" href={site.showreel} target="_blank" aria-describedby="newtab" rel="noopener">Watch it, 90 seconds</a></p>
   </section>
@@ -78,7 +78,7 @@ const words = statement.split(' ');
   </section>
 
   <section class="sec play" id="play" data-section="play" aria-labelledby="play-title">
-    <SectionHead verb="play" id="play-title" code="PL-01 to PL-11" line="Things I built to learn and have some fun" />
+    <SectionHead verb="play" id="play-title" code="PL-01 to PL-11" line="Things I built to learn and have some fun." />
     <ul class="play__grid">
       {experiments.filter((x) => x.kind !== 'Practice').map((x, i) => (
         <li class:list={['card', i < 2 && 'card--big']} data-reveal="up" data-delay={((i % 3) * 0.06).toFixed(2)}>

@@ -102,6 +102,8 @@ strong { font-weight: 600; }
 .hero__line { display: block; }
 .hero__lead { grid-column: 1 / 6; grid-row: 3; align-self: start; margin-top: calc(var(--u) * 2.5); font-size: var(--t-m); line-height: 1.3; max-width: 30ch; letter-spacing: -0.01em; }
 .hero__stage { grid-column: 7 / 13; grid-row: 2 / 4; align-self: center; position: relative; }
+/* The 3D canvas reaches a few pixels past the screen on tablets; clip it so the page never scrolls sideways. */
+.hero { overflow-x: clip; }
 .hero__stage .cluster { width: 100%; max-width: calc(72svh * 1.4); margin-left: auto; }
 .hero__caption { font-family: var(--f-mono); font-size: var(--t-xs); color: var(--c-muted); text-align: right; text-transform: uppercase; margin-top: 0.4rem; }
 html:not(.motion) .hero__exploded { display: none; }
@@ -158,6 +160,8 @@ html:not(.motion) .hero__exploded { display: none; }
 
 /* ---------- Sections ---------- */
 .sec { padding: calc(var(--u) * 7) var(--gutter) calc(var(--u) * 9); border-top: 1px solid var(--c-line-strong); }
+/* About and Build open their pages, so they clear the fixed header like case pages and the resume. */
+.sec.apage, .sec.bpage { padding-top: calc(var(--u) * 11); }
 .shead { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); margin-bottom: calc(var(--u) * 6); }
 .shead__code { grid-column: 1 / -1; }
 /* The head sits on the grid: verb and module in columns 1 to 7, the line from column 8, the same column the

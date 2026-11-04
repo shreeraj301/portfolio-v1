@@ -105,7 +105,7 @@ export const cases: Case[] = [
       '71% said they would not link a bank account to a third-party app.',
       'All 6 audited tools required bank linking; 4 made money by upselling financial products.',
     ],
-    turn: 'Trust was the blocker. Any design that started with "give us your bank login" would lose the people who needed it most, so trust became the constraint every other decision had to fit inside.',
+    turn: 'Trust was the blocker. Any design that started with “give us your bank login” would lose the people who needed it most, so trust became the constraint every other decision had to fit inside.',
     decisions: [
       {
         title: 'Local CSV import',
@@ -116,7 +116,7 @@ export const cases: Case[] = [
       {
         title: 'One focal number',
         options: 'A dashboard led by charts, or one led by a single number: monthly spend.',
-        chose: 'The single number. Testers given charts spent their time reading axes; testers given one number went straight to "which of these do I actually use?"',
+        chose: 'The single number. Testers given charts spent their time reading axes; testers given one number went straight to “which of these do I actually use?”',
         cost: 'Depth: no trend analysis on the main screen.',
       },
       {
@@ -128,7 +128,7 @@ export const cases: Case[] = [
     ],
     shots: [
       { src: 'found-it/06_vault_import.jpg', alt: 'Found It vault creation and CSV import screens', caption: 'The vault comes before any data. Required columns are listed before upload.', wide: true },
-      { src: 'found-it/07_dashboard.jpg', alt: 'Found It dashboard with monthly spend and the Worth a look list', caption: 'Monthly spend leads. "Worth a look" holds only items that need a decision, each explained in one sentence.' },
+      { src: 'found-it/07_dashboard.jpg', alt: 'Found It dashboard with monthly spend and the Worth a look list', caption: 'Monthly spend leads. “Worth a look” holds only items that need a decision, each explained in one sentence.' },
       { src: 'found-it/08_cancel.jpg', alt: 'Four-step guided cancellation flow', caption: 'Found It never cancels for you. It walks you through the provider\u2019s own steps, then updates the total.' },
       { src: 'found-it/05_before_after.jpg', alt: 'Before and after: chart-first dashboard against one-number dashboard', caption: 'Charts first became one number first after testers put off deciding.', wide: true },
       { src: 'found-it/09_edge_cases.jpg', alt: 'Error states for missing columns and wrong passphrase', caption: 'Each error says what went wrong and what to do next.' },
@@ -136,7 +136,7 @@ export const cases: Case[] = [
     ],
     shipped: [
       'Recurring charge detection by merchant, cadence and amount tolerance',
-      'Price-increase and likely-unused flags in "Worth a look"',
+      'Price-increase and likely-unused flags in “Worth a look”',
       'AES-GCM encrypted vault keyed from a passphrase',
       'Guided 4-step cancellation with savings shown up front',
     ],
@@ -176,7 +176,7 @@ export const cases: Case[] = [
       'A 6-month architectural internship, two research rounds with 6 architects and 4 homeowners in Pune, Bengaluru and Mumbai, and an audit of six approaches. In round 2, all 6 architects found what was open and all 4 clients approved from a link and read the fee before saying yes.',
     problem: [
       'Before I designed software, I drew buildings. At Anagram Architects I owned plans, sections, renders and client presentations for a school, from concept to the execution set. The hard part was keeping track of what the client had agreed to.',
-      'Approvals arrived wherever was nearest: chat apps, an email reply, a remark in a meeting. Every revision added another "final" to the folder, and a change not written down with its cost came back as rework or an invoice dispute.',
+      'Approvals arrived wherever was nearest: chat apps, an email reply, a remark in a meeting. Every revision added another “final” to the folder, and a change not written down with its cost came back as rework or an invoice dispute.',
     ],
     hmw: 'How might we give an architect and a client one shared record of what was agreed, sheet by sheet and fee by fee, without asking the client to learn new software?',
     audience: [
@@ -191,7 +191,7 @@ export const cases: Case[] = [
       'Folders store sheets but never record which revision the client agreed to.',
       'Fees surfaced after the work, so scope was argued at invoice time.',
     ],
-    turn: 'The real problem was agreement, not storage. "Approve from a link" was solved for builders; the gap was earlier, in the design stages, where a yes is given on a sheet or in a chat and its cost should be visible before anyone says it.',
+    turn: 'The real problem was agreement, not storage. “Approve from a link” was solved for builders; the gap was earlier, in the design stages, where a yes is given on a sheet or in a chat and its cost should be visible before anyone says it.',
     decisions: [
       {
         title: 'Organised by the stages of practice',
@@ -208,12 +208,12 @@ export const cases: Case[] = [
       {
         title: 'The fee sits on the approval',
         options: 'A separate billing module, or the money on the decision itself.',
-        chose: 'The decision. An out-of-scope change shows the fee and extra time above "Agree to this change", and its invoice stays a draft until the client agrees.',
+        chose: 'The decision. An out-of-scope change shows the fee and extra time above “Agree to this change”, and its invoice stays a draft until the client agrees.',
         cost: 'Scope: Ledger shows money but does not collect it.',
       },
     ],
     shots: [
-      { src: 'ledger/06_timeline.jpg', alt: 'Ledger studio timeline organised by stages of practice', caption: 'The timeline answers "whose turn is it?" in one sentence and files every sheet under its stage.', wide: true },
+      { src: 'ledger/06_timeline.jpg', alt: 'Ledger studio timeline organised by stages of practice', caption: 'The timeline answers “whose turn is it?” in one sentence and files every sheet under its stage.', wide: true },
       { src: 'ledger/07_client_approval.jpg', alt: 'Client approving a drawing sheet from a link on a phone', caption: 'Per-sheet sign-off on a phone: open the link, confirm a name, done.' },
       { src: 'ledger/08_change_billing.jpg', alt: 'Out-of-scope change with fee and draft invoice', caption: 'A change is written for the client, with a required fee, and creates a draft invoice.' },
       { src: 'ledger/03_break.jpg', alt: 'Diagram of one change passing through six handoffs', caption: 'One change, six handoffs: the pattern I lived at the studio.', wide: true },
@@ -338,7 +338,7 @@ export const cases: Case[] = [
       'All three owners learn their credit from their accountant over chat and could not say why last month was lower.',
       'Both CAs estimated two to three hours of spreadsheet matching per client each month.',
       'The same causes repeated: GSTIN typos, unfiled suppliers, wrong periods, duplicates.',
-      '"I spend more time explaining the mismatch than finding it." (a CA, paraphrased)',
+      '“I spend more time explaining the mismatch than finding it.” (a CA, paraphrased)',
     ],
     turn: 'The hard part was the conversation after matching: explaining why a credit is blocked and who has to act. Settle became a tool for explaining and resolving flags, with matching as the step before it.',
     decisions: [
@@ -350,14 +350,14 @@ export const cases: Case[] = [
       },
       {
         title: 'Severity and confidence as two labels',
-        options: 'One combined "match score", or two separate labels.',
+        options: 'One combined “match score”, or two separate labels.',
         chose: 'Separate pills, because in round one 4 of 6 people read a percentage as the chance of getting the credit.',
         cost: 'One more pill on every card.',
       },
       {
         title: 'Approval stays locked',
         options: 'Allow approval with a warning, or block it until blockers are resolved.',
-        chose: 'Block, with a button that says why: "Approve September (6 high flags open)". In round one a CA approved a month with open flags without noticing.',
+        chose: 'Block, with a button that says why: “Approve September (6 high flags open)”. In round one a CA approved a month with open flags without noticing.',
         cost: 'Less freedom for an accountant who has already accepted a risk.',
       },
     ],
@@ -437,13 +437,13 @@ export const cases: Case[] = [
       },
       {
         title: 'Three reading levels',
-        options: 'One "plain English" summary, or Simple, Everyday and Informed.',
+        options: 'One “plain English” summary, or Simple, Everyday and Informed.',
         chose: 'Three levels, because readers split on numbers. The structure and caveat stay identical at every level, so switching never hides the limitation.',
         cost: 'Three outputs to check, and one more choice up front.',
       },
       {
         title: 'A fixed structure, no chat',
-        options: 'An open "chat with the paper", or a fixed structure plus reviewer-style questions.',
+        options: 'An open “chat with the paper”, or a fixed structure plus reviewer-style questions.',
         chose: 'The fixed structure. Chat drifted beyond the abstract in 23% of test sessions: too risky for someone reading about a diagnosis.',
         cost: 'Flexibility: no follow-ups. The questions partly fill the gap.',
       },
@@ -451,7 +451,7 @@ export const cases: Case[] = [
     shots: [
       { src: 'plain-paper/07_summary.jpg', alt: 'Plain Paper summary with Read with care beside the bottom line', caption: 'Concept build: the caveat sits beside the verdict, and the AI says it can be wrong.', wide: true },
       { src: 'plain-paper/06_input.jpg', alt: 'Plain Paper input with reading level chips', caption: 'Live prototype: one labelled field, a reading level chosen up front, a 6,000-character counter.' },
-      { src: 'plain-paper/08_jargon_questions.jpg', alt: 'A term explained inside its sentence, and questions worth asking', caption: '"Rate ratio, 0.83" explained inside its own sentence, and questions with one-tap copy.' },
+      { src: 'plain-paper/08_jargon_questions.jpg', alt: 'A term explained inside its sentence, and questions worth asking', caption: '“Rate ratio, 0.83” explained inside its own sentence, and questions with one-tap copy.' },
       { src: 'plain-paper/03_directions.jpg', alt: 'Six sketched directions compared', caption: 'Six directions tested with 24 peers. No single one answered every insight.', wide: true },
       { src: 'plain-paper/10_edge_cases.jpg', alt: 'Empty, too short and too long input states', caption: 'Real states, including an honest notice when no model is connected.' },
       { src: 'plain-paper/11_mobile.jpg', alt: 'Plain Paper at 390px', caption: 'At 390px the chips drop their hints and everything stacks.' },
@@ -497,7 +497,7 @@ export const cases: Case[] = [
     glance:
       '12 think-aloud sessions with college peers, drop-off data from form sessions, coded support tickets and a readability audit of one 8-question form. Average reading ease went from 29 to 61 on the prototype’s own scoring.',
     problem: [
-      'Official forms are written to be legally exact, and understanding comes second. "Furnish the date of nativity of the Applicant" is a date-of-birth question in disguise.',
+      'Official forms are written to be legally exact, and understanding comes second. “Furnish the date of nativity of the Applicant” is a date-of-birth question in disguise.',
       'The people who most need a bank account, a benefit or a loan are often the ones the wording stops. They guess, give up or phone for help, and mistakes only surface after they submit.',
     ],
     hmw: 'How might we make an official form understandable to someone who struggles with its wording, without removing the legal text, and without making them feel tested while they answer?',
@@ -509,7 +509,7 @@ export const cases: Case[] = [
     discovery: 'My starting assumption: hard words were the problem. Swap them for simple ones and people would get through.',
     findings: [
       'People often knew the answer; they could not tell what was being asked.',
-      'Whole constructions hid simple questions. "The Applicant" alone fired 6 of 25 rule hits.',
+      'Whole constructions hid simple questions. “The Applicant” alone fired 6 of 25 rule hits.',
       'Help hidden behind a tooltip was rarely opened.',
       'Mistakes surfaced late, after the form had been sent.',
     ],
@@ -525,13 +525,13 @@ export const cases: Case[] = [
         title: 'A reviewed rule list',
         options: 'A model-generated rewrite per question, or reviewed rules tagged wordy, jargon or legal.',
         chose: 'Rules, because every change can be traced: the original phrase struck through, its replacement tinted, a chip naming the rule.',
-        cost: 'Nuance: word rules can collide ("you has domiciled").',
+        cost: 'Nuance: word rules can collide (“you has domiciled”).',
       },
       {
         title: 'Checks when a field is left',
         options: 'Check on every keystroke, at submit, or when a field is left.',
         chose: 'On leaving the field. Keystroke checks call a half-typed answer wrong, which lands hardest on slow typists and second-language speakers.',
-        cost: 'A slip in the last answer waits until "Check answers".',
+        cost: 'A slip in the last answer waits until “Check answers”.',
       },
     ],
     shots: [
@@ -626,7 +626,7 @@ export const cases: Case[] = [
       'Rule-based flags across 10 categories, each quoting the words that fired it',
       'A plain explanation and a question to ask on every flag',
       'An overall risk score with counts by severity',
-      'A built-in lease to try, and a "no flags" message that still urges a careful read',
+      'A built-in lease to try, and a “no flags” message that still urges a careful read',
     ],
     scrapped: [
       'PDF upload: plain text keeps processing local',
@@ -665,7 +665,7 @@ export const experiments = [
 
 // BUILD: architecture
 export const thesis = {
-  title: 'Syntax of Behavior',
+  title: 'Syntax of Behaviour',
   sub: 'B.Arch thesis, School of Environment and Architecture, Mumbai. Aug 2025 to Apr 2026.',
   question:
   'How can everyday human behaviours be translated into minimal architectural forms that, when clustered, turn sterile residential layouts into active public spaces?',
@@ -722,7 +722,7 @@ export const about = {
     { when: 'Oct 2026, now', kind: 'design', what: 'Product designer intern, AcuAI Labs', line: 'Remote. Redesigning the core app of a B2B SaaS platform for AI product feeds and ad creatives.' },
     { when: 'Oct 2026', kind: 'design', what: 'Seven products, designed, built and shipped', line: 'Found It, Ledger, Otla Pages, Settle, Plain Paper, Plainform and Lease Lens, all live.' },
     { when: 'Dec 2025 to May 2026', kind: 'study', what: 'Google UX Design Certificate', line: 'Coursera, alongside the thesis.' },
-    { when: 'Aug 2025 to Apr 2026', kind: 'arch', what: 'B.Arch thesis, Syntax of Behavior', line: 'Street behaviour mapped over 50+ hours a site, turned into a kit of precast modules.' },
+    { when: 'Aug 2025 to Apr 2026', kind: 'arch', what: 'B.Arch thesis, Syntax of Behaviour', line: 'Street behaviour mapped over 50+ hours a site, turned into a kit of precast modules.' },
     { when: 'Nov 2024 to Apr 2025', kind: 'arch', what: 'Architectural intern, Anagram Architects', line: 'New Delhi. A school and a store, from concept to the execution set.' },
     { when: 'Apr to May 2024', kind: 'arch', what: 'Architectural intern, LocalxSociety', line: 'Led field research in four European cities for ABRIR / OPEN, Lisbon.' },
     { when: '2022', kind: 'study', what: '1st place, Esri StoryMaps contest', line: 'CEPT University.' },
