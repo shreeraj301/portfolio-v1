@@ -120,6 +120,9 @@ html:not(.motion) .hero__exploded { display: none; }
 .hv { position: relative; display: grid; gap: 0.15rem; padding: 0.9rem 0.9rem 0.9rem 0; min-height: 44px; border-right: 1px solid var(--c-line); }
 .hero__verbs li:last-child .hv { border-right: 0; }
 .hero__verbs li + li .hv { padding-left: 0.9rem; }
+/* Each link fills its grid cell, so dividers line up when one label wraps to two lines (phones). */
+.hero__verbs > li { display: flex; }
+.hv { flex: 1 1 auto; align-content: start; }
 .hv::before { content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 4px; background: var(--c-hv, var(--c-fg)); transform: scaleY(0); transform-origin: top; transition: transform 0.5s var(--e-set); }
 .hv[data-verb='read'] { --c-hv: var(--v-read); } .hv[data-verb='play'] { --c-hv: var(--v-play); } .hv[data-verb='build'] { --c-hv: var(--v-build); }
 .hv[data-verb='pause'] { --c-hv: var(--v-pause); } .hv[data-verb='sit'] { --c-hv: var(--v-sit); } .hv[data-verb='gather'] { --c-hv: var(--v-gather); }
