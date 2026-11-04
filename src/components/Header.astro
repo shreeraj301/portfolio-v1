@@ -1,0 +1,44 @@
+---
+import { verbs } from '../data/site';
+import Glyph from './Glyph.astro';
+interface Props { page: string }
+const { page } = Astro.props;
+const current = (id: string) => (id === 'build' && page === 'build') || (id === 'sit' && page === 'about') || (id === 'read' && page === 'work');
+---
+<header class="hdr" data-hdr>
+  <a class="hdr__home" href="/" data-label="Shreeraj Narwade" data-code="00">
+    <span class="hdr__name">Shreeraj Narwade</span>
+    <span class="hdr__role">Product designer</span>
+  </a>
+  <nav class="hdr__nav" aria-label="Main">
+    <ul>
+      {verbs.map((v) => (
+        <li>
+          <a class="verb" href={v.href} data-verb={v.id} data-label={v.label} data-code={v.code} aria-current={current(v.id) ? 'page' : undefined}>
+            <Glyph verb={v.id} size={22} class="verb__glyph" />
+            <span class="verb__text" data-text={v.label}>{v.label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  <button class="hdr__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-btn>
+    <span class="hdr__menu-label">Menu</span>
+  </button>
+</header>
+<div class="menu" id="menu" hidden data-menu>
+  <nav aria-label="Mobile">
+    <ul>
+      {verbs.map((v, i) => (
+        <li style={`--i:${i}`}>
+          <a href={v.href} data-verb={v.id} data-label={v.label} data-code={v.code} data-menu-link aria-current={current(v.id) ? 'page' : undefined}>
+            <Glyph verb={v.id} size={44} />
+            <span class="menu__code">{v.code}</span>
+            <span class="menu__label">{v.label}</span>
+            <span class="menu__line">{v.line}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</div>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://shreerajnarwade.vercel.app/sitemap-index.xml

@@ -1,0 +1,139 @@
+---
+import Base from '../../layouts/Base.astro';
+import Pic from '../../components/Pic.astro';
+import Glyph from '../../components/Glyph.astro';
+import { cases, type Case } from '../../data/site';
+
+export function getStaticPaths() {
+  return cases.map((c, i) => ({ params: { slug: c.slug }, props: { c, next: cases[(i + 1) % cases.length], index: i } }));
+}
+interface Props { c: Case; next: Case; index: number }
+const { c, next, index } = Astro.props;
+const n = (k: number) => String(k).padStart(2, '0');
+---
+<Base page="work" title={c.name} description={`${c.name} case study by Shreeraj Narwade: ${c.oneLiner}`.slice(0, 158)}>
+  <article class="case" style="--c:var(--v-read)">
+    <header class="case__head">
+      <p class="case__crumb code" data-reveal="fade" data-intro><a class="link" href="/#read" data-label="Read" data-code="RD">Read</a> / {c.code} / {n(index + 1)} of {n(cases.length)}</p>
+      <h1 class="case__title" data-split="lines" data-intro>{c.name}</h1>
+      <p class="case__one" data-split="lines" data-intro data-delay="0.15">{c.oneLiner}</p>
+      <div class="spec">
+        <div class="spec__col">
+          <p class="spec__h">Core specifications</p>
+          <dl>
+            <div><dt>Role</dt><dd>{c.role}</dd></div>
+            <div><dt>Timeline</dt><dd>{c.timeline}</dd></div>
+            <div><dt>Platform</dt><dd>{c.platform}</dd></div>
+          </dl>
+        </div>
+        <div class="spec__col">
+          <p class="spec__h">Functional specifications</p>
+          <dl>
+            <div><dt>Status</dt><dd>{c.status}</dd></div>
+            <div><dt>Tools</dt><dd>{c.tools}</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div class="case__ctas" data-reveal="up" data-intro data-delay="0.4">
+        <a class="btn" href={c.live} target="_blank" aria-describedby="newtab" rel="noopener" data-fill><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">Open the live prototype</span></a>
+        {c.full && <a class="link" href={c.full} target="_blank" aria-describedby="newtab" rel="noopener">Full case study{c.full.includes('behance') ? ' on Behance' : ' on Notion'}</a>}
+      </div>
+    </header>
+
+    <figure class="case__hero">
+      <Pic src={`work/${c.cover}`} alt={`${c.name}: key screens from the live prototype`} widths={[800, 1200, 1600, 2000]} sizes="(max-width: 767px) 100vw, 92vw" loading="eager" fetchpriority="high" />
+    </figure>
+
+    <section class="case__glance">
+      <p class="code">At a glance</p>
+      <p class="case__glance-text" data-split="lines">{c.glance}</p>
+      <p class="case__caveat">{c.caveat}</p>
+    </section>
+
+    <section class="case__sec" aria-labelledby="s1">
+      <p class="case__num code">01</p>
+      <h2 id="s1" class="case__h">Problem</h2>
+      <div class="case__body">
+        {c.problem.map((p) => <p>{p}</p>)}
+      </div>
+      {c.audience && (
+        <ul class="aud">
+          {c.audience.map((a) => <li data-reveal="up"><p class="aud__name">{a.name}</p><p class="aud__line">{a.line}</p></li>)}
+        </ul>
+      )}
+      <blockquote class="hmw"><p data-split="lines">{c.hmw}</p></blockquote>
+    </section>
+
+    <section class="case__sec" aria-labelledby="s2">
+      <p class="case__num code">02</p>
+      <h2 id="s2" class="case__h">Discovery</h2>
+      <div class="case__body"><p>{c.discovery}</p></div>
+      <ol class="findings">
+        {c.findings.map((f, i) => <li data-reveal="up" data-delay={(i * 0.05).toFixed(2)}><span class="code">F{i + 1}</span><span>{f}</span></li>)}
+      </ol>
+      <div class="turn" data-reveal="up">
+        <p class="code">What changed my direction</p>
+        <p class="turn__text">{c.turn}</p>
+      </div>
+    </section>
+
+    <section class="case__sec" aria-labelledby="s3">
+      <p class="case__num code">03</p>
+      <h2 id="s3" class="case__h">Decisions</h2>
+      <ol class="decisions">
+        {c.decisions.map((d, i) => (
+          <li class="dec" data-reveal="up">
+            <p class="dec__n code">D{i + 1}</p>
+            <h3 class="dec__title">{d.title}</h3>
+            <dl class="dec__grid">
+              <div><dt>Options</dt><dd>{d.options}</dd></div>
+              <div><dt>Chose</dt><dd>{d.chose}</dd></div>
+              <div><dt>Cost</dt><dd>{d.cost}</dd></div>
+            </dl>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="case__sec" aria-labelledby="s4">
+      <p class="case__num code">04</p>
+      <h2 id="s4" class="case__h">Final design</h2>
+      <div class="shots">
+        {c.shots.map((s) => (
+          <figure class:list={['shot', !/mobile/.test(s.src) && 'shot--wide']} data-reveal="clip">
+            <div class="shot__img"><Pic src={`work/${s.src}`} alt={s.alt} widths={[600, 1000, 1600]} sizes={!/mobile/.test(s.src) ? '(max-width: 767px) 100vw, 90vw' : '(max-width: 767px) 100vw, 45vw'} /></div>
+            {s.caption && <figcaption>{s.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <section class="case__sec" aria-labelledby="s5">
+      <p class="case__num code">05</p>
+      <h2 id="s5" class="case__h">Shipped and scrapped</h2>
+      <div class="ship">
+        <div><p class="code">Shipped</p><ul>{c.shipped.map((x) => <li>{x}</li>)}</ul></div>
+        <div><p class="code">Scrapped or deferred</p><ul class="ship__out">{c.scrapped.map((x) => <li>{x}</li>)}</ul></div>
+      </div>
+    </section>
+
+    <section class="case__sec" aria-labelledby="s6">
+      <p class="case__num code">06</p>
+      <h2 id="s6" class="case__h">Outcomes</h2>
+      <ul class="outcomes">
+        {c.outcomes.map((o, i) => <li data-reveal="up" data-delay={(i * 0.05).toFixed(2)}>{o}</li>)}
+      </ul>
+      <blockquote class="learned"><p class="code">What I learned</p><p class="learned__text" data-split="lines">{c.learned}</p></blockquote>
+      <div class="case__body"><p><strong>Next.</strong> {c.next}</p></div>
+    </section>
+
+    <nav class="nextcase" aria-label="Next case study">
+      <a href={`/work/${next.slug}/`} class="nextcase__link" data-label={next.name} data-code={next.code}>
+        <span class="code">Next study, {next.code}</span>
+        <span class="nextcase__name">{next.name}</span>
+        <span class="nextcase__line">{next.oneLiner}</span>
+        <span class="nextcase__img" aria-hidden="true"><Pic src={`work/${next.cover}`} alt="" widths={[800, 1200]} sizes="(max-width: 767px) 92vw, 40vw" /></span>
+      </a>
+    </nav>
+  </article>
+</Base>

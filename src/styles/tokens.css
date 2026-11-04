@@ -1,0 +1,56 @@
+@font-face { font-family: 'Archivo'; src: url('/fonts/archivo-var.woff2') format('woff2'); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+@font-face { font-family: 'Newsreader'; src: url('/fonts/newsreader-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Newsreader'; src: url('/fonts/newsreader-400i.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Plex Mono'; src: url('/fonts/plex-mono-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Plex Mono'; src: url('/fonts/plex-mono-500.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+
+:root {
+  /* Color: precast paper, ink, and the Kit's module colours (fills and markers only) */
+  --c-bg: #e8e4dc;
+  --c-bg-2: #ddd8ce;
+  --c-fg: #151413;
+  --c-muted: #57534d;
+  --c-line: rgb(21 20 19 / 0.16);
+  --c-line-strong: rgb(21 20 19 / 0.4);
+  --c-accent: #151413;
+  --c-curtain: #151413;
+  --c-on-ink: #ece8e0;
+  --c-on-ink-muted: #a7a196;
+
+  --v-read: #7fa4da;
+  --v-play: #8dbf7c;
+  --v-build: #de7a5e;
+  --v-pause: #e2c463;
+  --v-sit: #edb088;
+  --v-gather: #aaa49a;
+  --v-green: #6f9a5d;
+
+  --f-display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --f-body: 'Archivo', system-ui, sans-serif;
+  --f-serif: 'Newsreader', Georgia, serif;
+  --f-mono: 'Plex Mono', ui-monospace, monospace;
+
+  --t-mega: clamp(4.5rem, 0.6rem + 17vw, 19rem);
+  --t-xxl: clamp(3.4rem, 1rem + 10vw, 11rem);
+  --t-xl: clamp(2.5rem, 1.2rem + 5.4vw, 6.25rem);
+  --t-l: clamp(1.75rem, 1.25rem + 2.1vw, 3.25rem);
+  --t-m: clamp(1.25rem, 1.08rem + 0.7vw, 1.75rem);
+  --t-body: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
+  --t-s: 0.9375rem;
+  --t-xs: 0.8125rem;
+
+  --u: clamp(0.5rem, 0.35rem + 0.6vw, 1rem);
+  --gutter: clamp(1rem, 0.55rem + 1.9vw, 2.5rem);
+  --cols: 12;
+  --radius: 0px;
+
+  --e-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --e-set: cubic-bezier(0.2, 0.9, 0.3, 1.04);
+
+  --z-gl: 0;
+  --z-content: 1;
+  --z-header: 50;
+  --z-cursor: 80;
+  --z-curtain: 90;
+  --z-loader: 100;
+}

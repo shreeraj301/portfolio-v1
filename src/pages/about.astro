@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import Pic from '../components/Pic.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { site, about, otla } from '../data/site';
+---
+<Base page="about" title="About" description="About Shreeraj Narwade: architect-trained product designer and design engineer from India. Experience, education, tools and how I work.">
+  <section class="sec apage" style="--c:var(--v-sit)">
+    <SectionHead verb="sit" id="about-title" as="h1" code="ST / About" line="Architect-trained product designer, UX researcher and design engineer. Based in India." />
+    <div class="apage__grid">
+      <figure class="apage__portrait">
+        <Pic src="avatar.jpg" alt="Illustrated portrait of Shreeraj: smiling, in glasses, a blue shirt and a grey jacket" widths={[400, 800, 1200]} sizes="(max-width: 767px) 80vw, 30vw" loading="eager" />
+      </figure>
+      <div class="apage__text">
+        {about.intro.map((p, i) => <p class={i === 0 ? 'apage__lead' : undefined} data-split={i === 0 ? 'lines' : undefined}>{p}</p>)}
+        <div class="apage__ctas">
+          <a class="btn" href={site.resume} target="_blank" aria-describedby="newtab" rel="noopener" data-fill><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">Open my resume</span></a>
+          <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
+        </div>
+      </div>
+    </div>
+
+    <a class="reel" href={site.showreel} target="_blank" aria-describedby="newtab" rel="noopener" data-reveal="clip">
+      <span class="reel__img"><Pic src="showreel.jpg" alt="" widths={[640, 1280]} sizes="(max-width: 767px) 92vw, 60vw" /></span>
+      <span class="reel__label"><span class="code">Showreel, 2026, 90 seconds</span><span class="reel__title">How I think and what I make <span aria-hidden="true">&#8599;</span></span></span>
+    </a>
+
+    <h2 class="apage__h2">Timeline</h2>
+    <ol class="tl">
+      {about.timeline.map((t) => (
+        <li data-reveal="up"><p class="code">{t.when}</p><h3>{t.what}</h3><p>{t.where}</p></li>
+      ))}
+    </ol>
+
+    <h2 class="apage__h2">Tools and methods</h2>
+    <dl class="tools">
+      {about.tools.map((t) => <div data-reveal="up"><dt class="code">{t.group}</dt><dd>{t.items}</dd></div>)}
+    </dl>
+
+    <h2 class="apage__h2">Why otla</h2>
+    <p class="apage__otla">{otla.line} <a class="link" href={otla.href} target="_blank" aria-describedby="newtab" rel="noopener">Visit Otla Pages</a></p>
+  </section>
+</Base>

@@ -1,0 +1,87 @@
+---
+import Base from '../layouts/Base.astro';
+import Pic from '../components/Pic.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { thesis, buildWork, practice } from '../data/site';
+const kit = [
+  { f: 'kit-balance', l: 'To Balance', d: 'Edges and curves to walk along and test your footing on.' },
+  { f: 'kit-perform', l: 'To Perform', d: 'Tiered edges around open ground: a stage for whoever turns up.' },
+  { f: 'kit-sit', l: 'To Sit', d: 'Seats and tables at many heights, from a perch to a picnic.' },
+  { f: 'kit-read-tree', l: 'To Read', d: 'Linear seating, integrated shelving and varying edges for reading, resting and talking.' },
+  { f: 'kit-play', l: 'To Play', d: 'Changes in level and fragmented surfaces that invite climbing, pausing and gathering.' },
+];
+---
+<Base page="build" title="Architecture" description="Architecture by Shreeraj Narwade: the Syntax of Behavior thesis, its kit of precast modules, a Lisbon reuse proposal and a fort wall in Daman.">
+  <section class="sec bpage" style="--c:var(--v-build)">
+    <SectionHead verb="build" id="build-title" as="h1" code="BD / Architecture" line="Before screens, I designed for streets. Everything I now do with software started here." />
+    <div class="bpage__intro">
+      <p class="code">BD-01 / {thesis.sub}</p>
+      <h2 class="bpage__title" data-split="lines">{thesis.title}</h2>
+      <p class="bpage__q" data-split="lines">{thesis.question}</p>
+      <div class="bpage__cols">
+        <p>{thesis.research}</p>
+        <p>{thesis.kit}</p>
+      </div>
+      <figure class="bpage__spread" data-reveal="clip">
+        <Pic src="build/thesis-spread.jpg" alt="Portfolio spread for Syntax of Behaviour: the design intent, an isometric of the kit and two clusters" widths={[800, 1400, 2000]} sizes="92vw" />
+        <figcaption>Portfolio spread: the design intent and two clusters coming together.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="kitscroll" data-kitscroll aria-labelledby="kit-title">
+    <div class="kitscroll__pin">
+      <div class="kitscroll__text">
+        <p class="code">The Kit, Manual 01</p>
+        <h2 id="kit-title" class="kitscroll__h">Modules sorted by what people do</h2>
+        <ol class="kitscroll__list">
+          {kit.map((k, i) => (
+            <li data-kit-item={i} class={i === 0 ? 'is-on' : undefined}>
+              <span class="code">{String(i + 1).padStart(2, '0')}</span>
+              <span class="kitscroll__l">{k.l}</span>
+              <span class="kitscroll__d">{k.d}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="kitscroll__media">
+        {kit.map((k, i) => (
+          <div class="kitscroll__img" data-kit-img={i}>
+            <Pic src={`build/${k.f}.jpg`} alt={`Render of a ${k.l} module from The Kit`} widths={[800, 1200, 1600]} sizes="(max-width: 767px) 92vw, 50vw" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="sec bpage2">
+    <figure class="plate" data-reveal="scale">
+      <Pic src="build/kit-plate.jpg" alt="Catalogue plate showing every module of The Kit laid out on an isometric grid" widths={[800, 1200, 1600]} sizes="(max-width: 767px) 92vw, 60vw" />
+      <figcaption>The full catalogue on one plate. Each module carries a code, core specifications and usage diagrams, like components in a design system.</figcaption>
+    </figure>
+    <p class="bpage__link"><a class="link" href={thesis.link} target="_blank" aria-describedby="newtab" rel="noopener">Read the three thesis manuals on Google Drive</a></p>
+
+    <h2 class="bpage__h2">Other work</h2>
+    <ol class="bwork">
+      {buildWork.map((w, i) => (
+        <li class:list={['bw', i % 2 && 'bw--flip']} data-reveal="up">
+          <div class="bw__img"><Pic src={w.img} alt={`Portfolio page for ${w.name}`} widths={[600, 1000, 1400]} sizes="(max-width: 767px) 92vw, 62vw" /></div>
+          <div class="bw__text">
+            <p class="code">{w.code}</p>
+            <h3 class="bw__name">{w.name}</h3>
+            <p class="bw__meta">{w.meta}</p>
+            <p>{w.line}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <h2 class="bpage__h2">In practice</h2>
+    <ul class="practice">
+      {practice.map((p) => (
+        <li data-reveal="up"><p class="code">{p.when}</p><h3>{p.place}</h3><p>{p.what}</p></li>
+      ))}
+    </ul>
+    <p class="bpage__link"><a class="link" href="https://drive.google.com/file/d/1GkhD5-IPe08Z_VPguGilvkyL2Guwmvc-/view" target="_blank" aria-describedby="newtab" rel="noopener">Architecture portfolio, 2026 (PDF)</a></p>
+  </section>
+</Base>

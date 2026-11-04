@@ -1,0 +1,15 @@
+---
+// Resolves a path under src/assets to an optimised <Image>. Usage: <Pic src="work/ledger/01_hero.png" alt="" />
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+interface Props {
+  src: string; alt: string; widths?: number[]; sizes?: string; class?: string;
+  loading?: 'lazy' | 'eager'; fetchpriority?: 'high' | 'low' | 'auto'; critical?: boolean;
+}
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/**/*.{png,jpg,jpeg}', { eager: true });
+const { src, alt, widths = [480, 800, 1200, 1600], sizes = '100vw', class: cls, loading = 'lazy', fetchpriority, critical } = Astro.props;
+const file = files[`../assets/${src}`];
+if (!file) throw new Error(`Missing asset: ${src}`);
+const w = widths.filter((n) => n <= file.default.width);
+---
+<Image src={file.default} alt={alt} widths={w.length ? w : [file.default.width]} sizes={sizes} class={cls} loading={loading} fetchpriority={fetchpriority} format="webp" quality={78} data-critical={critical ? '' : undefined} />

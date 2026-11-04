@@ -1,0 +1,59 @@
+---
+// The hero object: six Kit modules on a plate, one per verb. Decorative (aria-hidden);
+// the verb list beside it is the real navigation. Shadows are recomputed on the client by motion/sun.ts.
+import { modules, cells, faces, shadow, order, iso, type Box } from '../lib/iso';
+import { verbs, type Verb } from '../data/site';
+
+const s = 22;
+const colors: Record<Verb, string> = {
+  read: 'var(--v-read)', play: 'var(--v-play)', build: 'var(--v-build)',
+  pause: 'var(--v-pause)', sit: 'var(--v-sit)', gather: 'var(--v-gather)',
+};
+const plate: Box = { x: -2.6, y: -1.4, w: 17.6, d: 15.2, h: 0.3, z: -0.3 };
+const sun = { dx: Math.cos(2.0) * 0.95, dy: Math.sin(2.0) * 0.95 };
+
+// bounds
+const all: [number, number][] = [];
+for (const [x, y] of [[plate.x, plate.y], [plate.x + plate.w, plate.y], [plate.x, plate.y + plate.d], [plate.x + plate.w, plate.y + plate.d]]) {
+  all.push(iso(x, y, -0.3, s), iso(x, y, 5, s));
+}
+const xs = all.map((p) => p[0]); const ys = all.map((p) => p[1]);
+const pad = 8;
+const vb = [Math.min(...xs) - pad, Math.min(...ys) - pad - 30, Math.max(...xs) - Math.min(...xs) + pad * 2, Math.max(...ys) - Math.min(...ys) + pad * 2 + 30];
+
+const ids = verbs.map((v) => v.id);
+const drawOrder = [...ids].sort((a, b) => cells[a][0] + cells[a][1] - (cells[b][0] + cells[b][1]));
+const pf = faces(plate, s);
+---
+<svg class="cluster" viewBox={vb.map((n) => n.toFixed(1)).join(' ')} aria-hidden="true" focusable="false" data-cluster data-scale={s}>
+  <g class="cluster__plate">
+    <polygon points={pf.left} class="f-left" />
+    <polygon points={pf.right} class="f-right" />
+    <polygon points={pf.top} class="f-top" />
+  </g>
+  <g class="cluster__shadows">
+    {ids.map((id) => (
+      <g data-shadow={id}>
+        {modules[id].map((b) => (
+          <polygon points={shadow(b, s, sun.dx, sun.dy, cells[id][0], cells[id][1])} data-box={JSON.stringify(b)} data-ox={cells[id][0]} data-oy={cells[id][1]} />
+        ))}
+      </g>
+    ))}
+  </g>
+  {drawOrder.map((id) => (
+    <g class="mod" data-mod={id} style={`--c:${colors[id]}`}>
+      <g class="mod__body">
+        {order(modules[id]).map((b) => {
+          const f = faces(b, s, cells[id][0], cells[id][1]);
+          return (
+            <g class={b.top === 'green' ? 'is-green' : undefined}>
+              <polygon points={f.left} class="f-left" />
+              <polygon points={f.right} class="f-right" />
+              <polygon points={f.top} class="f-top" />
+            </g>
+          );
+        })}
+      </g>
+    </g>
+  ))}
+</svg>

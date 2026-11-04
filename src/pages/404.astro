@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import Glyph from '../components/Glyph.astro';
+import { verbs } from '../data/site';
+---
+<Base page="404" title="Not found" description="This page is not in the catalogue.">
+  <section class="nf">
+    <p class="code" data-reveal="fade" data-intro>Error 404 / Module not in the catalogue</p>
+    <h1 class="nf__title" data-split="chars" data-intro>Not cast yet</h1>
+    <p class="nf__line" data-split="lines" data-intro data-delay="0.2">This address has no module on it. The site has six; pick one.</p>
+    <ul class="nf__list">
+      {verbs.map((v, i) => (
+        <li data-reveal="up" data-intro data-delay={(0.3 + i * 0.06).toFixed(2)}>
+          <a href={v.href} class="nf__item" data-label={v.label} data-code={v.code} style={`--c:var(--v-${v.id})`}>
+            <Glyph verb={v.id} size={72} />
+            <span class="nf__label">{v.label}</span>
+            <span class="nf__sub">{v.line}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
