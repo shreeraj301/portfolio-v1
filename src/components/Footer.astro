@@ -1,13 +1,13 @@
 ---
 import { site } from '../data/site';
-import Glyph from './Glyph.astro';
+import Module from './Module.astro';
 const year = 2026;
 ---
 <footer class="ftr" id="gather" data-section="gather">
   <div class="ftr__top">
     <p class="code">GT / Contact</p>
     <h2 class="ftr__verb" data-set>Gather</h2>
-    <Glyph verb="gather" size={120} class="ftr__glyph" />
+    <Module verb="gather" size={180} class="ftr__glyph" />
   </div>
   <p class="ftr__lead">Hiring a product designer, or want a second pair of eyes on a flow? Write to me.</p>
   <a class="ftr__mail" href={`mailto:${site.email}`} data-fill>
@@ -24,7 +24,7 @@ const year = 2026;
     <div>
       <p class="code">Documents</p>
       <ul class="ftr__list">
-        <li><a class="util" href={site.resume} target="_blank" aria-describedby="newtab" rel="noopener">Resume</a></li>
+        <li><a class="util" href="/resume/" data-label="Resume" data-code="CV">Resume</a></li>
         <li><a class="util" href={site.showreel} target="_blank" aria-describedby="newtab" rel="noopener">Showreel, 90s</a></li>
         <li><a class="util" href="https://otla-pages-lofi.vercel.app" target="_blank" aria-describedby="newtab" rel="noopener">Otla Pages</a></li>
       </ul>

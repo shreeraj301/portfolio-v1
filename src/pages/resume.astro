@@ -1,0 +1,80 @@
+---
+// The resume as a page of this site: a spec sheet, codes hanging in the margin like the Kit catalogue.
+// Prints to a clean A4 (see the print styles in site.css); the original PDF is one click away.
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+import { resume, type Entry } from '../data/resume';
+// **bold** in the data becomes <strong>; everything else is escaped text.
+const rich = (s: string) => s.split(/(\*\*[^*]+\*\*)/).map((p) => p.startsWith('**') ? { b: true, t: p.slice(2, -2) } : { b: false, t: p });
+const blocks: { code: string; title: string; items: Entry[] }[] = [
+  { code: 'EX', title: 'Experience', items: resume.experience },
+  { code: 'PR', title: 'Projects', items: resume.projects },
+  { code: 'ED', title: 'Education and certifications', items: resume.education },
+];
+const n = (k: number) => String(k + 1).padStart(2, '0');
+---
+<Base page="resume" title="Resume" description="Resume of Shreeraj Narwade: architect-trained product designer. Experience at AcuAI Labs and Anagram Architects, seven live products, B.Arch thesis, skills and tools.">
+  <article class="cv">
+    <header class="cv__head">
+      <p class="code cv__code" data-reveal="fade" data-intro>CV / Resume, Nov 2026</p>
+      <h1 class="cv__name" data-split="chars" data-intro>{site.name}</h1>
+      <p class="cv__role" data-split="lines" data-intro data-delay="0.15"><strong>{resume.title}.</strong> {resume.sub}.</p>
+      <ul class="cv__contact" data-reveal="fade" data-intro data-delay="0.3">
+        <li>{site.based}</li>
+        <li><a class="link" href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><a class="link" href="/">This portfolio, with live projects</a></li>
+        <li><a class="link" href={site.socials[0].href} target="_blank" aria-describedby="newtab" rel="noopener">LinkedIn</a></li>
+      </ul>
+      <div class="cv__ctas" data-reveal="up" data-intro data-delay="0.35">
+        <a class="btn" href={resume.pdf} download data-fill><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">Download the PDF</span></a>
+        <button class="link cv__print" type="button" data-print>Print this page</button>
+      </div>
+    </header>
+
+    <section class="cv__sec" aria-labelledby="cv-sum">
+      <p class="cv__k code">SU</p>
+      <h2 id="cv-sum" class="cv__h">Summary</h2>
+      <p class="cv__summary">{resume.summary}</p>
+    </section>
+
+    {blocks.map((bl) => (
+      <section class="cv__sec" aria-labelledby={`cv-${bl.code}`}>
+        <p class="cv__k code">{bl.code}</p>
+        <h2 id={`cv-${bl.code}`} class="cv__h">{bl.title}</h2>
+        <ol class="cv__list">
+          {bl.items.map((e, i) => (
+            <li class="cv__entry">
+              <p class="cv__n code">{bl.code}-{n(i)}</p>
+              <div class="cv__top">
+                <h3 class="cv__title">
+                  {e.href ? <a class="cv__a" href={e.href}>{e.name}</a> : e.name}{e.role && <span class="cv__sub">, {e.role}</span>}
+                </h3>
+                <p class="cv__meta code">{[e.tag, e.place, e.when].filter(Boolean).join(' / ')}</p>
+              </div>
+              <ul class="cv__points">
+                {e.points.map((p) => <li>{rich(p).map((x) => x.b ? <strong>{x.t}</strong> : x.t)}</li>)}
+              </ul>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+
+    <section class="cv__sec" aria-labelledby="cv-wr">
+      <p class="cv__k code">WR</p>
+      <h2 id="cv-wr" class="cv__h">Writing</h2>
+      <p class="cv__para">{resume.writing}</p>
+    </section>
+
+    <section class="cv__sec" aria-labelledby="cv-sk">
+      <p class="cv__k code">SK</p>
+      <h2 id="cv-sk" class="cv__h">Skills and tools</h2>
+      <dl class="cv__skills">
+        {resume.skills.map((s) => <div><dt class="code">{s.group}</dt><dd>{s.items}</dd></div>)}
+      </dl>
+    </section>
+  </article>
+  <script>
+    document.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('[data-print]')) window.print(); });
+  </script>
+</Base>

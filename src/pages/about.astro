@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Pic from '../components/Pic.astro';
 import SectionHead from '../components/SectionHead.astro';
-import { site, about, otla } from '../data/site';
+import { site, about } from '../data/site';
 ---
 <Base page="about" title="About" description="About Shreeraj Narwade: architect-trained product designer and design engineer from India. Experience, education, tools and how I work.">
   <section class="sec apage" style="--c:var(--v-sit)">
@@ -14,7 +14,7 @@ import { site, about, otla } from '../data/site';
       <div class="apage__text">
         {about.intro.map((p, i) => <p class={i === 0 ? 'apage__lead' : undefined} data-split={i === 0 ? 'lines' : undefined}>{p}</p>)}
         <div class="apage__ctas">
-          <a class="btn" href={site.resume} target="_blank" aria-describedby="newtab" rel="noopener" data-fill><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">Open my resume</span></a>
+          <a class="btn" href="/resume/" data-fill data-label="Resume" data-code="CV"><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">Read my resume</span></a>
           <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
         </div>
       </div>
@@ -26,18 +26,24 @@ import { site, about, otla } from '../data/site';
     </a>
 
     <h2 class="apage__h2">Timeline</h2>
-    <ol class="tl">
-      {about.timeline.map((t) => (
-        <li data-reveal="up"><p class="code">{t.when}</p><h3>{t.what}</h3><p>{t.where}</p></li>
-      ))}
-    </ol>
+    <div class="tl" data-tl>
+      <span class="tl__rail" aria-hidden="true"><span class="tl__fill"></span></span>
+      <ol class="tl__list">
+        {about.timeline.map((t) => (
+          <li class="tl__item" data-kind={t.kind}>
+            <p class="tl__when code">{t.when}</p>
+            <span class="tl__mark" aria-hidden="true"></span>
+            <p class="tl__text"><strong>{t.what}.</strong> <span>{t.line}</span></p>
+          </li>
+        ))}
+      </ol>
+      <p class="tl__key code" aria-hidden="true"><span data-kind="design"><i></i>Design</span><span data-kind="arch"><i></i>Architecture</span><span data-kind="study"><i></i>Study</span></p>
+    </div>
 
     <h2 class="apage__h2">Tools and methods</h2>
     <dl class="tools">
       {about.tools.map((t) => <div data-reveal="up"><dt class="code">{t.group}</dt><dd>{t.items}</dd></div>)}
     </dl>
 
-    <h2 class="apage__h2">Why otla</h2>
-    <p class="apage__otla">{otla.line} <a class="link" href={otla.href} target="_blank" aria-describedby="newtab" rel="noopener">Visit Otla Pages</a></p>
   </section>
 </Base>

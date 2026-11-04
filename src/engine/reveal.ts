@@ -28,6 +28,9 @@ function splitTween(el: HTMLElement, isIntro: boolean) {
   const s = { tween: undefined as gsap.core.Tween | undefined, done: false, requested: false };
   SplitText.create(el, {
     type: type === 'lines' ? 'lines' : `lines,${type}`,
+    // Accessibility: lines and words keep their text readable as is. Letters are hidden from screen
+    // readers and named once: on the heading itself, or (for a span) by its parent's aria-label.
+    aria: type !== 'chars' ? 'none' : /^H[1-6]$/.test(el.tagName) ? 'auto' : 'hidden',
     mask: 'lines',
     autoSplit: true,
     linesClass: 'split-line',

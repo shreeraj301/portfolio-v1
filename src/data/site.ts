@@ -8,10 +8,10 @@ export const site = {
   role: 'Product designer and design engineer',
   url: 'https://shreerajnarwade.vercel.app',
   description:
-    'Architect turned product designer. I design for how people think and decide, from AI tools to fintech. Case studies, live prototypes, architecture and poems.',
+    'Architect turned product designer. I design for how people think and decide, from AI tools to fintech, and I build what I design. Seven live products, architecture and poems.',
   email: 'shreerajn.work@gmail.com',
   based: 'India',
-  now: 'Product designer intern at Acuai Labs',
+  now: 'Product designer intern at AcuAI Labs',
   socials: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shreerajnarwade301/' },
     { label: 'Behance', href: 'https://www.behance.net/shreerajnarwade1' },
@@ -20,13 +20,13 @@ export const site = {
     { label: 'X', href: 'https://x.com/_shreeraj__' },
     { label: 'Linktree', href: 'https://linktr.ee/shreeraj301' },
   ],
-  resume: 'https://otla-pages-lofi.vercel.app/resume',
+  resume: '/resume/',
   showreel: 'https://youtu.be/GGkTevFw6dA',
 };
 
 // The six behaviours. Order = the hero cluster and the home page sections.
 export const verbs: { id: Verb; label: string; code: string; href: string; line: string }[] = [
-  { id: 'read', label: 'Read', code: 'RD', href: '/#read', line: 'Case studies' },
+  { id: 'read', label: 'Read', code: 'RD', href: '/#read', line: 'Products, built and live' },
   { id: 'play', label: 'Play', code: 'PL', href: '/#play', line: 'Prototypes and experiments' },
   { id: 'build', label: 'Build', code: 'BD', href: '/build/', line: 'Architecture' },
   { id: 'pause', label: 'Pause', code: 'PS', href: '/#pause', line: 'Poems and essays' },
@@ -51,20 +51,19 @@ export type Case = {
   timeline: string;
   status: string;
   tools: string;
-  evidence: string; // the one number on the index row
-  cover: string;
+  cover: string; // a still in src/assets/covers/; its loop lives in public/covers/<slug>.mp4 and .webm
   glance: string;
   problem: string[];
   hmw: string;
   audience?: { name: string; line: string }[];
   discovery: string;
-  findings: string[];
-  turn: string;
+  findings?: string[];
+  turn?: string;
   decisions: Decision[];
   shots: Shot[];
   shipped: string[];
-  scrapped: string[];
-  outcomes: string[];
+  scrapped?: string[];
+  outcomes?: string[];
   learned: string;
   next: string;
   live: string;
@@ -85,8 +84,7 @@ export const cases: Case[] = [
     timeline: 'Oct 2026, 4 weeks, self-initiated',
     status: 'Live prototype',
     tools: 'AI design and coding tools built the prototype from my prompts. I ran the research and wrote the detection rules, flows and copy.',
-    evidence: '13 of 15 imported without help',
-    cover: 'found-it/01_hero.jpg',
+    cover: 'found-it',
     glance:
       '8 interviews, a 2-week diary study with 12 people, a survey of 214 students, an audit of 6 tools, then 3 usability rounds of 5. In round 3, 13 of 15 people completed the import without help, and trust in the local CSV import rose from 2.9 to 4.4 out of 5.',
     problem: [
@@ -173,8 +171,7 @@ export const cases: Case[] = [
     timeline: 'Oct 2026, 3 weeks, self-initiated',
     status: 'Live prototype',
     tools: 'AI coding tools wrote most of the code from my specs. I ran the research and wrote the stage model, flows and every client-facing sentence.',
-    evidence: '4 of 4 clients approved from a link',
-    cover: 'ledger/01_hero.jpg',
+    cover: 'ledger',
     glance:
       'A 6-month architectural internship, two research rounds with 6 architects and 4 homeowners in Pune, Bengaluru and Mumbai, and an audit of six approaches. In round 2, all 6 architects found what was open and all 4 clients approved from a link and read the fee before saying yes.',
     problem: [
@@ -250,8 +247,70 @@ export const cases: Case[] = [
     caveat: 'Ten people across two rounds, so treat this as direction, not proof. No pilot has run yet.',
   },
   {
-    slug: 'settle',
+    slug: 'otla-pages',
     code: 'RD-03',
+    name: 'Otla Pages',
+    title: 'Otla Pages: a hand-drawn digital library',
+    oneLiner: 'A library for my poems and stories, drawn by hand and coded into four quiet rooms.',
+    year: '2026',
+    role: 'Designer, illustrator, writer and builder (solo)',
+    platform: 'Web, desktop and mobile',
+    timeline: 'Oct 2026, self-initiated',
+    status: 'Live',
+    tools: 'Pen and paper for every visual. AI coding tools, GitHub and Vercel built it from my drawings and specs. I wrote all the copy.',
+    cover: 'otla-pages',
+    glance:
+      'A home for four poetry books and 35 pieces of writing, from first sketch to live site. Four rooms: a poetry shelf, a story shelf, a writing room and a guestbook, with a link for every book and piece. No stock or AI imagery anywhere.',
+    problem: [
+      'My poems lived in flipbook links and a newsletter. They were readable, but nothing about them felt like a place someone could come back to.',
+      'Blog templates make every piece look the same, and stock or generated images would have made the work look like everyone else’s.',
+    ],
+    hmw: 'How might a writing archive feel like a quiet room you walk into, not a feed you scroll past?',
+    discovery:
+      'I started from the otla, the raised doorstep seat of a Maharashtrian house, where people sit between the street and home. A doorstep is where you pause before going in. That became the structure: you sit at the door, then walk into rooms.',
+    decisions: [
+      {
+        title: 'Drawn by hand, not generated',
+        options: 'Stock illustration, AI imagery, or drawing every visual myself.',
+        chose: 'Every visual drawn by hand and translated into code, so the site looks the way the poems sound: personal and a little uneven.',
+        cost: 'Time: every new room needs new drawings.',
+      },
+      {
+        title: 'Rooms, not a feed',
+        options: 'A blog list, a grid of cards, or rooms you walk through.',
+        chose: 'Four rooms: a poetry shelf, a story shelf, a writing room and a guestbook. Every book and piece has its own shareable link, so a reader can send one poem, not the whole site.',
+        cost: 'Discovery: a reader has to wander a little to find things.',
+      },
+      {
+        title: 'A reader that respects the reader',
+        options: 'Embed the existing flipbooks, or build a reader.',
+        chose: 'A custom reader for the four books with keyboard page turns, a plain-text edition of the whole library and a skip link.',
+        cost: 'Two versions of every book to keep in step.',
+      },
+    ],
+    shots: [
+      { src: 'otla-pages/01_door.jpg', alt: 'Otla Pages landing: the name in serif capitals, a handwritten greeting and an enter button on paper', caption: 'The doorstep: one handwritten line and one way in.', wide: true },
+      { src: 'otla-pages/02_shelf.jpg', alt: 'The poetry shelf, a hand-drawn bookcase where four coloured spines stand out among blank ones', caption: 'The poetry shelf. The four coloured spines are the four books; the blank ones are room to grow.', wide: true },
+      { src: 'otla-pages/03_writing_room.jpg', alt: 'The writing room, a pinboard of hand-drawn notes, one per poem or essay', caption: 'The writing room: 35 pieces pinned up, each one a link.', wide: true },
+      { src: 'otla-pages/04_text.jpg', alt: 'The plain-text edition listing every shelf and piece as simple links', caption: 'The plain-text edition: the whole library as a list, for screen readers and slow connections.', wide: true },
+    ],
+    shipped: [
+      'Four rooms: poetry shelf, story shelf, writing room and guestbook',
+      'A custom reader with keyboard page turns',
+      'A plain-text edition of the whole library, and a skip link',
+      'A shareable link for every book and piece',
+      'Music and page sounds, both off with one tap',
+    ],
+    scrapped: ['Stories: the shelf is built, the stories are still being written'],
+    learned:
+      'Drawing every visual by hand slowed me down in the right places. Each room had to earn its drawing, which kept the library small, quiet and mine.',
+    next: 'Fill the story shelf, and keep adding to the writing room.',
+    live: 'https://otla-pages-lofi.vercel.app',
+    caveat: 'A personal project: no research numbers here, only the craft and the decisions behind it.',
+  },
+  {
+    slug: 'settle',
+    code: 'RD-04',
     name: 'Settle',
     title: 'Settle: GST credit review for small businesses',
     oneLiner: 'Reads bills, GSTR-2B and the bank statement together, and says in plain words why each credit is blocked.',
@@ -261,8 +320,7 @@ export const cases: Case[] = [
     timeline: 'Oct 2026, 4 weeks, self-initiated',
     status: 'Live prototype',
     tools: 'A design tool for round one. AI assistants wrote most of the code from my specs; I wrote the copy, matching rules and every flag sentence.',
-    evidence: 'Unaided tasks 14 to 22 of 24',
-    cover: 'settle/00_hero.jpg',
+    cover: 'settle',
     glance:
       'Six interviews (3 owners, 2 Chartered Accountants, 1 CA aspirant), then three test rounds with the same six people: a clickable prototype, an early coded build and the live build. Unaided completion went from 14 of 24 tasks to 22 of 24.',
     problem: [
@@ -339,7 +397,7 @@ export const cases: Case[] = [
   },
   {
     slug: 'plain-paper',
-    code: 'RD-04',
+    code: 'RD-05',
     name: 'Plain Paper',
     title: 'Plain Paper: research abstracts for non-experts',
     oneLiner: 'An AI research reader with guardrails that keep the source in view: summary, jargon in place, questions worth asking.',
@@ -349,8 +407,7 @@ export const cases: Case[] = [
     timeline: 'Oct 2026, 4 weeks, self-initiated',
     status: 'Live prototype (input flow) and concept build (results)',
     tools: 'Figma Make built the input flow from my prompts; Claude and Grok helped draft code and explanations. I ran the research, designed the results view and wrote the guardrail copy.',
-    evidence: 'Trust 2.8 to 4.2 with the source in view',
-    cover: 'plain-paper/01_hero.jpg',
+    cover: 'plain-paper',
     glance:
       'A baseline comprehension test with 212 college peers, 18 interviews, a 2-week diary study with 9 people, an audit of 11 tools and a 4-person expert panel, then a rerun with 96 new peers. Correctly explaining the main finding went from 34% to 81%.',
     problem: [
@@ -426,7 +483,7 @@ export const cases: Case[] = [
   },
   {
     slug: 'plainform',
-    code: 'RD-05',
+    code: 'RD-06',
     name: 'Plainform',
     title: 'Plainform: official forms in plain language',
     oneLiner: 'Every question shown as written and in plain language side by side, with answer checks that wait until you have finished.',
@@ -436,8 +493,7 @@ export const cases: Case[] = [
     timeline: 'Oct 2026, 3 weeks, self-initiated',
     status: 'Live prototype',
     tools: 'Figma Make built the prototype from my prompts, with Claude and Grok helping on code. I wrote the rule list, every hint and all feedback messages.',
-    evidence: 'Reading ease 29 to 61',
-    cover: 'plainform/01_hero.jpg',
+    cover: 'plainform',
     glance:
       '12 think-aloud sessions with college peers, drop-off data from form sessions, coded support tickets and a readability audit of one 8-question form. Average reading ease went from 29 to 61 on the prototype’s own scoring.',
     problem: [
@@ -512,7 +568,7 @@ export const cases: Case[] = [
   },
   {
     slug: 'lease-lens',
-    code: 'RD-06',
+    code: 'RD-07',
     name: 'Lease Lens',
     title: 'Lease Lens: a lease reader that shows its working',
     oneLiner: 'Reads a pasted lease inside the browser and flags clauses that could cost a renter money, rights or the freedom to leave, each with a polite question for the landlord.',
@@ -522,8 +578,7 @@ export const cases: Case[] = [
     timeline: 'Oct 2026, 3 weeks, self-initiated',
     status: 'Live prototype',
     tools: 'An AI tool built the prototype from my prompts. I wrote the rules, every flag explanation and every question to ask; the tone of each line was my design.',
-    evidence: '18 of 22 found a clause they missed',
-    cover: 'lease-lens/01.jpg',
+    cover: 'lease-lens',
     glance:
       'Interviews with 14 college peers and 3 legal-aid staff, a review of 40 public lease templates, then moderated tests with 22 college peers. 18 of 22 found a clause they had missed on their own read.',
     problem: [
@@ -652,7 +707,7 @@ export const essays = [
 export const otla = {
   name: 'Otla Pages',
   href: 'https://otla-pages-lofi.vercel.app',
-  line: 'My hand-drawn library. Named after the otla, the raised doorstep seat of a Maharashtrian house where people sit between the street and home. Four rooms: a poetry shelf, a story shelf, a writing room with 35 pieces, and a guestbook. Every visual drawn by hand and translated into code.',
+  line: 'My writing lives in a library I drew by hand and coded, named after the otla, the doorstep seat of a Maharashtrian house.',
 };
 
 // SIT: about
@@ -662,15 +717,16 @@ export const about = {
     'What I bring is patience with mess. Architecture taught me to sit with budgets, codes, clients and the people who have to live with the result, and to find the version that works for all of them. I research before I draw, and every decision comes with a reason a user would understand.',
     'I want to design products that handle money, decisions and everyday life, at a team that cares about details, and make complicated things feel calm.',
   ],
+  // Newest first, strictly by date. kind colours the marker: design, architecture or study.
   timeline: [
-    { when: 'Oct 2026, now', what: 'Product designer intern, Acuai Labs', where: 'Remote. Redesigning the core app UI of a B2B SaaS platform for AI product feeds and ad creatives.' },
-    { when: 'Oct 2026', what: 'Six product case studies', where: 'Found It, Ledger, Settle, Plain Paper, Plainform, Lease Lens. Researched, designed and shipped as live prototypes.' },
-    { when: '2025 to 2026', what: 'B.Arch thesis, Syntax of Behavior', where: 'Street behaviour mapped into a kit of precast modules.' },
-    { when: 'Nov 2024 to Apr 2025', what: 'Architectural intern, Anagram Architects', where: 'New Delhi. Schools and retail, concept to execution set.' },
-    { when: 'Apr to May 2024', what: 'Architectural intern, LocalxSociety', where: 'Field research in four European cities, ABRIR / OPEN.' },
-    { when: '2021 to 2026', what: 'Bachelor of Architecture', where: 'School of Environment and Architecture, Mumbai. CGPA 3.5/4.' },
-    { when: '2022', what: '1st place, Esri StoryMaps contest', where: 'CEPT University.' },
-    { when: '2025 to 2026', what: 'Google UX Design Certificate', where: 'Coursera.' },
+    { when: 'Oct 2026, now', kind: 'design', what: 'Product designer intern, AcuAI Labs', line: 'Remote. Redesigning the core app of a B2B SaaS platform for AI product feeds and ad creatives.' },
+    { when: 'Oct 2026', kind: 'design', what: 'Seven products, designed, built and shipped', line: 'Found It, Ledger, Otla Pages, Settle, Plain Paper, Plainform and Lease Lens, all live.' },
+    { when: 'Dec 2025 to May 2026', kind: 'study', what: 'Google UX Design Certificate', line: 'Coursera, alongside the thesis.' },
+    { when: 'Aug 2025 to Apr 2026', kind: 'arch', what: 'B.Arch thesis, Syntax of Behavior', line: 'Street behaviour mapped over 50+ hours a site, turned into a kit of precast modules.' },
+    { when: 'Nov 2024 to Apr 2025', kind: 'arch', what: 'Architectural intern, Anagram Architects', line: 'New Delhi. A school and a store, from concept to the execution set.' },
+    { when: 'Apr to May 2024', kind: 'arch', what: 'Architectural intern, LocalxSociety', line: 'Led field research in four European cities for ABRIR / OPEN, Lisbon.' },
+    { when: '2022', kind: 'study', what: '1st place, Esri StoryMaps contest', line: 'CEPT University.' },
+    { when: 'Dec 2021 to Apr 2026', kind: 'study', what: 'Bachelor of Architecture', line: 'School of Environment and Architecture, Mumbai. CGPA 3.5/4.' },
   ],
   tools: [
     { group: 'Research', items: 'Interviews, diary studies, surveys, think-alouds, behavioural mapping, journey maps, information architecture' },

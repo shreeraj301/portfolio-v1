@@ -1,0 +1,13 @@
+---
+// A product cover: the designed still, plus its short loop (played on hover in the index,
+// and when it scrolls into view on the case page). The loop is fetched only when it is about to play.
+import Pic from './Pic.astro';
+interface Props { slug: string; alt: string; widths?: number[]; sizes: string; loading?: 'eager' | 'lazy'; fetchpriority?: 'high' | 'auto'; loop?: boolean; class?: string }
+const { slug, alt, widths = [800, 1200, 1600], sizes, loading = 'lazy', fetchpriority, loop = true, class: cls } = Astro.props;
+---
+<div class:list={['cover', cls]} data-cover>
+  <Pic src={`covers/${slug}.png`} alt={alt} widths={widths} sizes={sizes} loading={loading} fetchpriority={fetchpriority} />
+  {loop && (
+    <video class="cover__loop" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-mp4={`/covers/${slug}.mp4`} data-webm={`/covers/${slug}.webm`}></video>
+  )}
+</div>

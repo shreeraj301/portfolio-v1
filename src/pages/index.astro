@@ -1,8 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import Cluster from '../components/Cluster.astro';
-import Glyph from '../components/Glyph.astro';
 import Pic from '../components/Pic.astro';
+import Cover from '../components/Cover.astro';
 import SectionHead from '../components/SectionHead.astro';
 import { site, verbs, statement, cases, experiments, thesis, books, essays, otla, about } from '../data/site';
 const words = statement.split(' ');
@@ -13,7 +13,7 @@ const words = statement.split(' ');
       <p><span class="code">Sheet 00</span> Portfolio, 2026</p>
       <p><span class="code">Now</span> {site.now}</p>
     </div>
-    <h1 class="hero__name" id="hero-title">
+    <h1 class="hero__name" id="hero-title" aria-label={site.name}>
       <span class="hero__line" data-split="chars" data-intro>Shreeraj</span>
       <span class="hero__line" data-split="chars" data-intro data-delay="0.08">Narwade</span>
     </h1>
@@ -48,7 +48,7 @@ const words = statement.split(' ');
   </section>
 
   <section class="sec read" id="read" data-section="read" aria-labelledby="read-title">
-    <SectionHead verb="read" id="read-title" code="RD-01 to RD-06" line="Six case studies. Research first, then decisions with their costs, then a prototype you can open." />
+    <SectionHead verb="read" id="read-title" code={`RD-01 to RD-${String(cases.length).padStart(2, '0')}`} line="Seven products I designed, built and shipped. Every one is live. Open it and use it." />
     <div class="index" data-index>
       <ol class="index__list">
         {cases.map((c, i) => (
@@ -57,8 +57,8 @@ const words = statement.split(' ');
               <span class="row__code">{c.code}</span>
               <span class="row__name">{c.name}</span>
               <span class="row__line">{c.oneLiner}</span>
-              <span class="row__ev">{c.evidence}</span>
-              <span class="row__thumb" aria-hidden="true"><Pic src={`work/${c.cover}`} alt="" widths={[480, 800]} sizes="(max-width: 767px) 92vw, 1px" /></span>
+              <span class="row__live"><span class="row__dot" aria-hidden="true"></span>Live <span class="row__host">{new URL(c.live).hostname.split('.').slice(-2).join('.')}</span></span>
+              <span class="row__thumb" aria-hidden="true"><Pic src={`covers/${c.cover}.png`} alt="" widths={[480, 800, 1200]} sizes="(max-width: 767px) 92vw, 1px" /></span>
             </a>
           </li>
         ))}
@@ -67,10 +67,10 @@ const words = statement.split(' ');
         <div class="index__frame">
           {cases.map((c, i) => (
             <div class="index__img" data-preview={i}>
-              <Pic src={`work/${c.cover}`} alt="" widths={[800, 1200]} sizes="42vw" />
+              <Cover slug={c.cover} alt="" widths={[800, 1200]} sizes="42vw" />
             </div>
           ))}
-          <p class="index__hint">Point at a study</p>
+          <p class="index__hint">Point at a product</p>
         </div>
       </div>
     </div>
@@ -82,7 +82,7 @@ const words = statement.split(' ');
       {experiments.filter((x) => x.kind !== 'Practice').map((x, i) => (
         <li class:list={['card', i < 2 && 'card--big']} data-reveal="up" data-delay={((i % 3) * 0.06).toFixed(2)}>
           <a href={x.href} target="_blank" aria-describedby="newtab" rel="noopener" class="card__link">
-            <span class="card__media"><Pic src={x.img} alt={`Screenshot of ${x.name}`} widths={[480, 800]} sizes="(max-width: 767px) 92vw, 40vw" /></span>
+            <span class="card__media"><Cover slug={`play-${x.img.replace(/^play\/|\.jpg$/g, '')}`} alt={`${x.name}, running live`} widths={[480, 800, 1200]} sizes="(max-width: 767px) 92vw, 40vw" /></span>
             <span class="card__meta"><span class="code">{x.code}</span><span class="card__kind">{x.kind}</span></span>
             <span class="card__name">{x.name} <span class="card__arrow" aria-hidden="true">&#8599;</span></span>
             <span class="card__line">{x.line}</span>
@@ -115,9 +115,9 @@ const words = statement.split(' ');
       </div>
     </div>
     <ul class="build__strip" aria-label="Modules from The Kit">
-      {[['kit-balance', 'To Balance'], ['kit-sit', 'To Sit'], ['kit-play', 'To Play'], ['kit-perform', 'To Perform']].map(([f, l], i) => (
+      {[['tile-read', 'To Read'], ['tile-play', 'To Play'], ['tile-gather', 'To Perform'], ['tile-sit', 'To Sit']].map(([f, l], i) => (
         <li data-reveal="up" data-delay={(i * 0.07).toFixed(2)}>
-          <div class="strip__img"><Pic src={`build/${f}.jpg`} alt={`Render of a ${l} module from The Kit`} widths={[480, 800]} sizes="(max-width: 767px) 46vw, 23vw" /></div>
+          <div class="strip__img"><Pic src={`build/${f}.png`} alt={`A ${l} module from The Kit, modelled in 3D`} widths={[480, 800]} sizes="(max-width: 767px) 46vw, 23vw" /></div>
           <p class="code">{l}</p>
         </li>
       ))}
@@ -125,15 +125,15 @@ const words = statement.split(' ');
   </section>
 
   <section class="sec pause" id="pause" data-section="pause" aria-labelledby="pause-title">
-    <SectionHead verb="pause" id="pause-title" code="PS-01 to PS-04" line="Four books of poems, essays on intuition and taste, and a hand-drawn library to keep them in." />
+    <SectionHead verb="pause" id="pause-title" code="PS-01 to PS-04" line="Four books of poems, and essays on intuition and taste." />
     <div class="pause__grid">
       <ul class="shelf" aria-label="Poetry books">
         {books.map((b, i) => (
-          <li style={`--c:var(--v-${b.tone}); --i:${i}`} data-reveal="up" data-delay={(i * 0.07).toFixed(2)}>
-            <a class="spine" href={b.href} target="_blank" aria-describedby="newtab" rel="noopener">
-              <span class="spine__title">{b.title}</span>
-              <span class="spine__code">PS-0{i + 1}</span>
-              <span class="sr-only">, poetry book</span>
+          <li data-reveal="up" data-delay={(i * 0.07).toFixed(2)}>
+            <a class="bookc" href={b.href} target="_blank" aria-describedby="newtab" rel="noopener">
+              <span class="bookc__img"><Pic src={`covers/book-${['universe', 'window', 'heart', 'zones'][i]}.png`} alt="" widths={[320, 480, 640]} sizes="(max-width: 899px) 44vw, 12vw" /></span>
+              <span class="bookc__code code">PS-0{i + 1}</span>
+              <span class="sr-only">{b.title}, poetry book</span>
             </a>
           </li>
         ))}

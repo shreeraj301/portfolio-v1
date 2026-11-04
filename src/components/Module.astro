@@ -1,0 +1,12 @@
+---
+// One Kit module, rendered from the hero's 3D scene (same models, materials and light).
+// Beside section heads it turns as you scroll (a 15-frame swing, see motion/interactions.ts);
+// everywhere else it is a still. Decorative: the heading or label next to it carries the meaning.
+import type { Verb } from '../data/site';
+interface Props { verb: Verb; size?: number; class?: string; turn?: boolean; small?: boolean; eager?: boolean }
+const { verb, size = 160, class: cls, turn = false, small = false, eager = false } = Astro.props;
+const src = small ? `/kit/${verb}-sm.webp` : `/kit/${verb}.webp`;
+---
+<span class:list={['kmod', cls]} data-turn={turn ? `/kit/${verb}-turn.webp` : undefined} aria-hidden="true">
+  <img src={src} width={size} height={size} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" draggable="false" />
+</span>

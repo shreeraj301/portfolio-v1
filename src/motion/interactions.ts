@@ -94,6 +94,10 @@ export function initInteractions() {
     }
 
     cluster(intro, off);
+    turners(off);
+    heroLoop(off);
+    cardLoops(off);
+    timeline();
     statement();
     caseIndex(off);
     kitScroll();
@@ -148,15 +152,12 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
     if (id === active) return;
     active = id;
     links.forEach((a) => a.classList.toggle('is-active', a.dataset.verb === id));
-    if (kit) { kit.focus(id as never); return; }
-    box.dataset.active = id;
-    const body = box.querySelector(`[data-mod="${id}"] .mod__body`);
-    if (body && !reduced()) gsap.fromTo(body, { y: -18 }, { y: 0, duration: 0.75, ease: 'set', overwrite: 'auto', force3D: true });
+    kit?.focus(id as never);
   };
   const clear = () => {
     active = '';
     links.forEach((a) => a.classList.remove('is-active'));
-    if (kit) kit.focus(null); else delete box.dataset.active;
+    kit?.focus(null);
   };
   for (const a of links) {
     const on = () => activate(a.dataset.verb!);
@@ -176,7 +177,7 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
   }
 
   if (use3d) {
-    // The real thing: a 3D plaza with physics. The SVG plate holds the place until it is ready.
+    // The real thing: the 3D plaza. A render of the empty plate holds the place until it is ready.
     box.classList.add('is-3d');
     const gl = document.createElement('div');
     gl.className = 'cluster__gl';
@@ -207,25 +208,44 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
     return;
   }
 
-  // Fallback without WebGL: the layered SVG drawing.
-  const order = ['read', 'play', 'build', 'pause', 'sit', 'gather'];
-  const mods = new Map<string, HTMLElement>();
-  box.querySelectorAll<HTMLElement>('[data-mod]').forEach((m) => mods.set(m.dataset.mod!, m));
-  if (!reduced()) {
-    const sorted = order.map((id) => mods.get(id)!.querySelector('.mod__body')!);
-    gsap.set(sorted, { y: -120, autoAlpha: 0, force3D: true });
-    gsap.set(box.querySelectorAll('[data-shadow]'), { autoAlpha: 0 });
-    intro.add(gsap.to(sorted, { y: 0, autoAlpha: 1, duration: 1.3, ease: 'set', stagger: { each: 0.09, ease: 'power1.in' } }), 0.15);
-    intro.add(gsap.to(order.map((id) => box.querySelector(`[data-shadow="${id}"]`)), { autoAlpha: 1, duration: 0.9, ease: ease.soft, stagger: 0.11 }), 0.45);
-  }
-  if (!isTouch()) {
-    const move = (e: PointerEvent) => { const m = (e.target as Element).closest<HTMLElement>('[data-mod]'); if (m) activate(m.dataset.mod!); else clear(); };
-    const click = (e: MouseEvent) => { const m = (e.target as Element).closest<HTMLElement>('[data-mod]'); links.find((l) => l.dataset.verb === m?.dataset.mod)?.click(); };
-    box.addEventListener('pointermove', move);
-    box.addEventListener('pointerleave', clear);
-    box.addEventListener('click', click);
-    off.push(() => { box.removeEventListener('pointermove', move); box.removeEventListener('pointerleave', clear); box.removeEventListener('click', click); });
-  }
+  // Without WebGL the full render of the plaza stands in (see Cluster.astro); the verb list still drives focus.
+}
+
+// About: the timeline rail draws itself as you read down it.
+function timeline() {
+  const fill = document.querySelector<HTMLElement>('.tl__fill');
+  if (!fill || reduced()) return;
+  gsap.fromTo(fill, { scaleY: 0 }, { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '.tl', start: 'top 75%', end: 'bottom 60%', scrub: 0.4 } });
+}
+
+// Kit modules beside section heads turn through a short swing as you scroll past them.
+// The sprite (15 frames) is fetched only when the head comes near; until it is decoded the still shows.
+function turners(off: (() => void)[]) {
+  if (reduced()) return;
+  const els = [...document.querySelectorAll<HTMLElement>('.kmod[data-turn]')];
+  if (!els.length) return;
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      io.unobserve(e.target);
+      const el = e.target as HTMLElement;
+      const img = new Image();
+      img.src = el.dataset.turn!;
+      img.decode().then(() => {
+        el.style.backgroundImage = `url(${img.src})`;
+        const set = (p: number) => {
+          const k = Math.round(p * 14);
+          el.style.backgroundPosition = `${(k % 5) * 25}% ${Math.floor(k / 5) * 50}%`;
+        };
+        const st = ScrollTrigger.create({ trigger: el, start: 'top bottom', end: 'bottom top', onUpdate: (s) => set(s.progress) });
+        set(st.progress);
+        el.classList.add('is-turning');
+        off.push(() => st.kill());
+      }).catch(() => {});
+    }
+  }, { rootMargin: '600px 0px' });
+  els.forEach((el) => io.observe(el));
+  off.push(() => io.disconnect());
 }
 
 // The statement lights up word by word as it crosses the middle of the screen.
@@ -239,16 +259,60 @@ function statement() {
   });
 }
 
-// The case index: the hovered study's cover is lowered into the frame beside the list.
+// Product cover loops: fetched only when about to play, shown over the still once frames are running.
+function playCover(cover: HTMLElement | null | undefined) {
+  const v = cover?.querySelector<HTMLVideoElement>('video');
+  if (!cover || !v || reduced()) return;
+  if (!v.dataset.loaded) {
+    v.dataset.loaded = '1';
+    for (const [src, type] of [[v.dataset.mp4!, 'video/mp4'], [v.dataset.webm!, 'video/webm']]) { const s = document.createElement('source'); s.src = src; s.type = type; v.appendChild(s); }
+    v.load();
+  }
+  v.currentTime = 0;
+  v.play().then(() => cover.classList.add('is-playing')).catch(() => {});
+}
+function stopCover(cover: HTMLElement | null | undefined) {
+  const v = cover?.querySelector<HTMLVideoElement>('video');
+  if (!cover || !v) return;
+  cover.classList.remove('is-playing');
+  v.pause();
+}
+
+// Play: each experiment's card plays a few seconds of it running while you point at it.
+function cardLoops(off: (() => void)[]) {
+  if (reduced() || isTouch()) return;
+  document.querySelectorAll<HTMLElement>('.card__link').forEach((a) => {
+    const cover = a.querySelector<HTMLElement>('[data-cover]');
+    const on = () => playCover(cover);
+    const offf = () => stopCover(cover);
+    a.addEventListener('pointerenter', on); a.addEventListener('pointerleave', offf);
+    a.addEventListener('focus', on); a.addEventListener('blur', offf);
+    off.push(() => { a.removeEventListener('pointerenter', on); a.removeEventListener('pointerleave', offf); a.removeEventListener('focus', on); a.removeEventListener('blur', offf); stopCover(cover); });
+  });
+}
+
+// Case page: the cover's loop plays while the hero is on screen.
+function heroLoop(off: (() => void)[]) {
+  const cover = document.querySelector<HTMLElement>('[data-hero] [data-cover]');
+  if (!cover || reduced()) return;
+  const io = new IntersectionObserver(([e]) => (e.isIntersecting ? playCover(cover) : stopCover(cover)), { threshold: 0.35 });
+  io.observe(cover);
+  off.push(() => { io.disconnect(); stopCover(cover); });
+}
+
+// The case index: the hovered product's cover is lowered into the frame beside the list, and its loop plays.
 function caseIndex(off: (() => void)[]) {
   const root = document.querySelector<HTMLElement>('[data-index]');
   if (!root || isTouch() || isMobile()) return;
   const imgs = [...root.querySelectorAll<HTMLElement>('[data-preview]')];
   let current = -1;
+  let armed = false; // loops play only once the visitor is pointing at the list
   const show = (i: number) => {
     if (i === current) return;
     const prev = imgs[current];
     current = i;
+    stopCover(prev?.querySelector<HTMLElement>('[data-cover]'));
+    if (armed) playCover(imgs[i].querySelector<HTMLElement>('[data-cover]'));
     root.classList.add('has-preview');
     const el = imgs[i];
     gsap.set(el, { zIndex: 2 });
@@ -256,7 +320,7 @@ function caseIndex(off: (() => void)[]) {
     if (reduced()) { imgs.forEach((x, k) => gsap.set(x, { autoAlpha: k === i ? 1 : 0, clipPath: 'inset(0% 0% 0% 0%)' })); return; }
     gsap.fromTo(el, { autoAlpha: 1, clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.75, ease: 'set', overwrite: true,
       onComplete: () => imgs.forEach((x, k) => k !== current && gsap.set(x, { autoAlpha: 0 })) });
-    gsap.fromTo(el.querySelector('img'), { yPercent: -6, scale: 1.08 }, { yPercent: 0, scale: 1, duration: 1, ease: ease.out, overwrite: true });
+    gsap.fromTo(el.querySelector('.cover'), { yPercent: -6, scale: 1.08 }, { yPercent: 0, scale: 1, duration: 1, ease: ease.out, overwrite: true });
   };
   const rows = [...root.querySelectorAll<HTMLElement>('[data-row]')];
   rows.forEach((r) => {
@@ -265,6 +329,11 @@ function caseIndex(off: (() => void)[]) {
     r.addEventListener('focus', on);
     off.push(() => { r.removeEventListener('pointerenter', on); r.removeEventListener('focus', on); });
   });
+  const enter = () => { armed = true; playCover(imgs[current]?.querySelector<HTMLElement>('[data-cover]')); };
+  const leave = () => { armed = false; stopCover(imgs[current]?.querySelector<HTMLElement>('[data-cover]')); };
+  root.addEventListener('pointerenter', enter);
+  root.addEventListener('pointerleave', leave);
+  off.push(() => { root.removeEventListener('pointerenter', enter); root.removeEventListener('pointerleave', leave); imgs.forEach((x) => stopCover(x.querySelector<HTMLElement>('[data-cover]'))); });
   show(0);
 }
 

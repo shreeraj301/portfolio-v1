@@ -85,3 +85,12 @@ The sun. One driver variable (sun angle) from time plus pointer x moves every ca
 - Light: hemisphere fill plus one sun that follows the site's simulated sun; soft (VSM) shadows updated only when something moved; contact shadows under every module.
 - Motion: modules are lowered from above the frame one by one and land with weight (impact ring, dust, a tiny camera shake). Hover lifts a module on a spring like a crane; the others go back to bare concrete. On desktop a module can be picked up, carried and dropped; it knocks into its neighbours. "Put the modules back" re-casts the plaza. Scroll opens an exploded axonometric. The tree sways; the camera leans a little toward the pointer.
 - Quality adapts: if frames run long it drops to 1x pixels and crisp shadows, then to contact shadows only. Reduced motion: placed at rest, rendered on demand.
+
+## Round 3: motion fixes, the Kit everywhere, covers, resume
+- Reveals start the moment an element touches the viewport (0.6 to 0.75s). Anything on screen at load is simply there. Big images are never fully hidden.
+- Hero motion is designed, not simulated: modules fall under gravity and land with a hard stop and a tiny give; hover lifts on a critically damped spring; a carried module rises over the others and is set down in a bay of the plan, and the module already there slides into the bay you emptied. cannon-es removed.
+- The six hero modules are the only module graphics on the site: rendered from the same scene into turning sprites (section heads, turning with scroll) and stills (nav, menu, footer, 404, loader). The old SVG glyphs and the SVG hero drawing are gone; renders of the plaza stand in before 3D and without WebGL.
+- Read is products (seven, all live), with Otla Pages as RD-03. Every product has a designed 4:3 cover in its own visual language, built from the live app's real copy and screens, plus a 6s loop that starts and ends on the still. Clicking a product carries its cover into the case page hero.
+- Play covers are the experiments running live (screen recordings, seamless loops). Build covers are re-cut from the portfolio PDF at print resolution. Pause has four book covers in the colours of the Otla Pages spines; no generated imagery.
+- About: one-column timeline on a single rail, newest first. Resume is a page (/resume/) with a print stylesheet and the original PDF.
+- Removed: the sun clock (hero and footer), the evidence column, the portrait ground line, Why Otla.

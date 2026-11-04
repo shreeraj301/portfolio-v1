@@ -1,6 +1,6 @@
 // The six Kit modules, modelled after the thesis renders: bevelled precast parts, an arch, curved steps,
 // shelves with books, a planter with a tree. Every module returns its parts (for the exploded view) and
-// a set of boxes that approximate it for the physics body. Units: one module sits on a 4 x 4 footprint,
+// a set of boxes that approximate its volume. Units: one module sits on a 4 x 4 footprint,
 // local origin at the centre of the footprint, on the ground.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';

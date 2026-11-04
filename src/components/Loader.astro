@@ -9,7 +9,7 @@ import { verbs } from '../data/site';
   <div class="loader__inner">
     <span class="loader__name" data-loader-out>Shreeraj Narwade</span>
     <ol class="loader__cells" aria-hidden="true">
-      {verbs.map((v) => <li style={`--c:var(--v-${v.id})`}><span>{v.code}</span></li>)}
+      {verbs.map((v) => <li style={`--c:var(--v-${v.id})`}><img src={`/kit/${v.id}-sm.webp`} width="48" height="48" alt="" /><span>{v.code}</span></li>)}
     </ol>
     <span class="loader__count" data-loader-out><span data-loader-count>000</span> cast</span>
   </div>

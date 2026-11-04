@@ -13,11 +13,26 @@ CustomEase.create('set', 'M0,0 C0.12,0.6 0.24,0.94 0.48,1.004 0.66,1.006 0.82,1 
 
 // Remember what was clicked, so the curtain can name where you are going.
 let next = { label: '', code: '' };
+// A product picked from the index carries its cover with it: the cover grows out of the preview frame
+// and is set down as the hero of the case page.
+let flip: { rect: DOMRect; src: string } | null = null;
 document.addEventListener('click', (e) => {
   const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
   if (!a) return;
   next = { label: a.dataset.label || a.textContent?.trim().split('\n')[0] || '', code: a.dataset.code || '' };
+  flip = null;
+  if (a.dataset.row !== undefined && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const frame = document.querySelector<HTMLElement>('.index__frame');
+    const img = document.querySelector<HTMLImageElement>(`[data-preview="${a.dataset.row}"] .cover img`);
+    if (frame && img && frame.offsetParent) flip = { rect: frame.getBoundingClientRect(), src: img.currentSrc || img.src };
+  }
 }, true);
+
+function flipLayer(c: HTMLElement) {
+  let el = c.querySelector<HTMLImageElement>('.curtain__flip');
+  if (!el) { el = document.createElement('img'); el.className = 'curtain__flip'; el.alt = ''; c.appendChild(el); }
+  return el;
+}
 
 export function setupMotion() {
   setLoaderFormat((p) => String(Math.round(p)).padStart(3, '0'));
@@ -36,6 +51,20 @@ export function setupMotion() {
   // Page transition: an ink slab is lowered over the page carrying the destination, then lifted.
   setTransition({
     leave: (c) => {
+      if (flip) {
+        // The cover leaves the index frame and grows toward the middle while the page goes quiet behind it.
+        const f = flip; const img = flipLayer(c); img.src = f.src;
+        const panel = c.querySelector<HTMLElement>('.curtain__panel')!;
+        const w = Math.min(innerWidth * 0.62, innerHeight * 0.78 * 4 / 3);
+        document.documentElement.classList.add('is-flip');
+        return gsap.timeline()
+          .set(c, { autoAlpha: 1 })
+          .set(c.querySelectorAll('.curtain__panel > span'), { autoAlpha: 0 })
+          .set(panel, { backgroundColor: 'var(--c-bg)' })
+          .set(img, { display: 'block', left: f.rect.left, top: f.rect.top, width: f.rect.width, height: f.rect.height })
+          .fromTo(panel, { autoAlpha: 0, yPercent: 0 }, { autoAlpha: 1, duration: 0.45, ease: ease.out }, 0)
+          .to(img, { left: (innerWidth - w) / 2, top: (innerHeight - w * 0.75) / 2, width: w, height: w * 0.75, duration: 0.75, ease: 'power4.inOut' }, 0);
+      }
       const panel = c.querySelector<HTMLElement>('.curtain__panel')!;
       c.querySelector('[data-curtain-label]')!.textContent = next.label || 'Shreeraj Narwade';
       c.querySelector('[data-curtain-code]')!.textContent = next.code ? `${next.code} /` : '';
@@ -44,10 +73,26 @@ export function setupMotion() {
         .fromTo(panel, { yPercent: -100 }, { yPercent: 0, duration: 0.8, ease: 'power4.inOut' })
         .fromTo(c.querySelectorAll('.curtain__panel > span'), { yPercent: -60, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.6, ease: ease.out, stagger: 0.05 }, 0.25);
     },
-    enter: (c) => gsap.timeline()
+    enter: (c) => {
+      if (flip) {
+        // Set down as the hero: the cover travels to where the case page keeps it, then hands over.
+        flip = null;
+        const img = flipLayer(c);
+        const panel = c.querySelector<HTMLElement>('.curtain__panel')!;
+        const hero = document.querySelector<HTMLElement>('[data-hero] .cover');
+        const r = hero?.getBoundingClientRect();
+        const tl = gsap.timeline({ onComplete: () => { gsap.set(img, { display: 'none' }); gsap.set(panel, { clearProps: 'backgroundColor,opacity,visibility' }); gsap.set(c, { autoAlpha: 0 }); document.documentElement.classList.remove('is-flip'); } });
+        if (r) tl.to(img, { left: r.left, top: r.top, width: r.width, height: r.height, duration: 0.9, ease: 'set' }, 0);
+        tl.to(panel, { autoAlpha: 0, duration: 0.5, ease: ease.out }, 0.35)
+          .to(img, { autoAlpha: 0, duration: 0.25 }, r ? 0.95 : 0.3)
+          .set(img, { autoAlpha: 1 });
+        return tl;
+      }
+      return gsap.timeline()
       .to(c.querySelectorAll('.curtain__panel > span'), { yPercent: -60, autoAlpha: 0, duration: 0.35, ease: ease.inOut })
       .to(c.querySelector('.curtain__panel'), { yPercent: -100, duration: 0.85, ease: ease.inOut }, 0.1)
-      .set(c, { autoAlpha: 0 }),
+      .set(c, { autoAlpha: 0 });
+    },
   });
 
   startSun();

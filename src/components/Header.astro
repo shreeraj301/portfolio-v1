@@ -1,6 +1,6 @@
 ---
 import { verbs } from '../data/site';
-import Glyph from './Glyph.astro';
+import Module from './Module.astro';
 interface Props { page: string }
 const { page } = Astro.props;
 const current = (id: string) => (id === 'build' && page === 'build') || (id === 'sit' && page === 'about') || (id === 'read' && page === 'work');
@@ -15,7 +15,7 @@ const current = (id: string) => (id === 'build' && page === 'build') || (id === 
       {verbs.map((v) => (
         <li>
           <a class="verb" href={v.href} data-verb={v.id} data-label={v.label} data-code={v.code} aria-current={current(v.id) ? 'page' : undefined}>
-            <Glyph verb={v.id} size={22} class="verb__glyph" />
+            <Module verb={v.id} size={30} small eager class="verb__glyph" />
             <span class="verb__text" data-text={v.label}>{v.label}</span>
           </a>
         </li>
@@ -32,7 +32,7 @@ const current = (id: string) => (id === 'build' && page === 'build') || (id === 
       {verbs.map((v, i) => (
         <li style={`--i:${i}`}>
           <a href={v.href} data-verb={v.id} data-label={v.label} data-code={v.code} data-menu-link aria-current={current(v.id) ? 'page' : undefined}>
-            <Glyph verb={v.id} size={44} />
+            <Module verb={v.id} size={56} small class="menu__mod" />
             <span class="menu__code">{v.code}</span>
             <span class="menu__label">{v.label}</span>
             <span class="menu__line">{v.line}</span>

@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Glyph from '../components/Glyph.astro';
+import Module from '../components/Module.astro';
 import { verbs } from '../data/site';
 ---
 <Base page="404" title="Not found" description="This page is not in the catalogue.">
@@ -12,7 +12,7 @@ import { verbs } from '../data/site';
       {verbs.map((v, i) => (
         <li data-reveal="up" data-intro data-delay={(0.3 + i * 0.06).toFixed(2)}>
           <a href={v.href} class="nf__item" data-label={v.label} data-code={v.code} style={`--c:var(--v-${v.id})`}>
-            <Glyph verb={v.id} size={72} />
+            <Module verb={v.id} size={96} eager />
             <span class="nf__label">{v.label}</span>
             <span class="nf__sub">{v.line}</span>
           </a>
