@@ -269,11 +269,13 @@ html:not(.motion) .hero__exploded { display: none; }
 
 /* ---------- SIT teaser ---------- */
 .sit__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: start; }
-.sit__portrait { grid-column: 1 / 4; aspect-ratio: 1; overflow: hidden; }
-.sit__portrait img, .apage__portrait img { width: 100%; height: 100%; object-fit: cover; }
+/* The portrait is a cut-out: it stands on the page with a ground line under it, like a figure in a drawing. */
+.sit__portrait, .apage__portrait { border-bottom: 1px solid var(--c-line-strong); }
+.sit__portrait { grid-column: 1 / 4; }
+.sit__portrait img, .apage__portrait img { display: block; width: 100%; height: auto; aspect-ratio: 864 / 1152; object-fit: contain; }
 .sit__lead { grid-column: 4 / 10; font-size: var(--t-l); line-height: 1.12; letter-spacing: -0.015em; }
 .sit__side { grid-column: 10 / 13; display: grid; gap: 1.5rem; justify-items: start; color: var(--c-muted); }
-@media (max-width: 899px) { .sit__portrait { grid-column: 1 / 7; margin-bottom: 2rem; } .sit__lead, .sit__side { grid-column: 1 / -1; } .sit__side { margin-top: 2rem; } }
+@media (max-width: 899px) { .sit__portrait { grid-column: 2 / 8; margin-bottom: 2rem; } .sit__lead, .sit__side { grid-column: 1 / -1; } .sit__side { margin-top: 2rem; } }
 
 /* ---------- Footer: GATHER ---------- */
 .ftr { background: var(--c-fg); color: var(--c-on-ink); padding: calc(var(--u) * 10) var(--gutter) var(--gutter); --c-line-strong: rgb(236 232 224 / 0.28); }
@@ -434,7 +436,6 @@ figcaption { margin-top: 0.7rem; color: var(--c-muted); font-size: var(--t-s); }
 /* ---------- About page ---------- */
 .apage__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: start; }
 .apage__portrait { grid-column: 1 / 5; }
-.apage__portrait > img, .apage__portrait picture { aspect-ratio: 1; }
 .apage__text { grid-column: 6 / 13; display: grid; gap: 1.2rem; max-width: 62ch; }
 .apage__lead { font-size: var(--t-l); line-height: 1.12; letter-spacing: -0.015em; }
 .apage__ctas { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; margin-top: 1rem; }
@@ -453,7 +454,7 @@ figcaption { margin-top: 0.7rem; color: var(--c-muted); font-size: var(--t-s); }
 .tools > div { display: grid; grid-template-columns: 10rem 1fr; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--c-line-strong); }
 .apage__otla { max-width: 66ch; font-size: var(--t-m); line-height: 1.35; }
 @media (max-width: 899px) {
-  .apage__portrait { grid-column: 1 / 9; margin-bottom: 2rem; }
+  .apage__portrait { grid-column: 2 / 10; margin-bottom: 2rem; }
   .apage__text, .reel__img, .reel__label { grid-column: 1 / -1; }
   .reel__label { margin-top: 1rem; }
   .tl { grid-template-columns: 1fr; }
