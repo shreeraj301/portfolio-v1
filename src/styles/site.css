@@ -61,12 +61,22 @@ strong { font-weight: 600; }
 
 .menu { position: fixed; inset: 0; z-index: calc(var(--z-header) - 1); background: var(--c-fg); color: var(--c-on-ink); padding: calc(var(--u) * 8) var(--gutter) var(--gutter); overflow-y: auto; }
 .menu ul { list-style: none; padding: 0; display: grid; gap: 0; }
-.menu a { display: grid; grid-template-columns: 48px 3rem 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 0.75rem; padding: 0.7rem 0; border-top: 1px solid rgb(236 232 224 / 0.16); }
-.menu__mod { grid-row: span 2; width: 48px; height: 48px; }
-.menu__code { font-family: var(--f-mono); font-size: var(--t-xs); color: var(--c-on-ink-muted); }
-.menu__label { font-size: 2.6rem; line-height: 1; font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase; }
-.menu__line { grid-column: 2 / -1; font-size: var(--t-s); color: var(--c-on-ink-muted); }
-.menu a[aria-current='page'] .menu__label { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; }
+/* The menu fills the screen: the verb list on top, contact anchored at the bottom. */
+.menu > nav { min-height: 100%; display: flex; flex-direction: column; }
+/* Codes hang in the margin, label and line share one edge, the module sits at the row's end like a catalogue swatch. */
+.menu__list { border-bottom: 1px solid rgb(236 232 224 / 0.16); }
+.menu__item { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr) 48px; grid-template-areas: 'code label mod' '. line mod'; column-gap: 0.75rem; row-gap: 0.2rem; padding: 0.7rem 0; border-top: 1px solid rgb(236 232 224 / 0.16); }
+.menu__code { grid-area: code; align-self: baseline; font-family: var(--f-mono); font-size: var(--t-xs); color: var(--c-on-ink-muted); }
+.menu__label { grid-area: label; align-self: baseline; font-size: 2.6rem; line-height: 1; font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase; }
+.menu__line { grid-area: line; font-size: var(--t-s); color: var(--c-on-ink-muted); }
+.menu__mod { grid-area: mod; align-self: center; width: 48px; height: 48px; }
+.menu__item[aria-current='page'] .menu__label { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; }
+.menu__foot { margin-top: auto; padding-top: calc(var(--u) * 5); display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); column-gap: 0.75rem; }
+.menu__foot > * { grid-column: 2; }
+.menu__k { font-family: var(--f-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.02em; color: var(--c-on-ink-muted); }
+.menu__mail { justify-self: start; margin-top: 0.3rem; padding: 0.5rem 0; font-weight: 800; font-variation-settings: 'wdth' 70; font-size: clamp(1.35rem, 0.6rem + 4vw, 2rem); line-height: 1.1; border-bottom: 2px solid currentColor; overflow-wrap: anywhere; }
+.menu .menu__more { display: flex; gap: 1.75rem; margin-top: 0.4rem; }
+.menu .menu__more a { display: inline-flex; align-items: center; min-height: 44px; color: var(--c-on-ink); border-bottom: 1px solid rgb(236 232 224 / 0.35); }
 
 @media (max-width: 899px) {
   .hdr__nav { display: none; }

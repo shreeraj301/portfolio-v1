@@ -1,5 +1,5 @@
 ---
-import { verbs } from '../data/site';
+import { verbs, site } from '../data/site';
 import Module from './Module.astro';
 interface Props { page: string }
 const { page } = Astro.props;
@@ -28,17 +28,25 @@ const current = (id: string) => (id === 'build' && page === 'build') || (id === 
 </header>
 <div class="menu" id="menu" hidden data-menu>
   <nav aria-label="Mobile">
-    <ul>
+    <ul class="menu__list">
       {verbs.map((v, i) => (
         <li style={`--i:${i}`}>
-          <a href={v.href} data-verb={v.id} data-label={v.label} data-code={v.code} data-menu-link aria-current={current(v.id) ? 'page' : undefined}>
-            <Module verb={v.id} size={56} small class="menu__mod" />
+          <a class="menu__item" href={v.href} data-verb={v.id} data-label={v.label} data-code={v.code} data-menu-link aria-current={current(v.id) ? 'page' : undefined}>
             <span class="menu__code">{v.code}</span>
             <span class="menu__label">{v.label}</span>
             <span class="menu__line">{v.line}</span>
+            <Module verb={v.id} size={56} small class="menu__mod" />
           </a>
         </li>
       ))}
     </ul>
+    <div class="menu__foot">
+      <p class="menu__k">Write to me</p>
+      <a class="menu__mail" href={`mailto:${site.email}`}>{site.email}</a>
+      <ul class="menu__more">
+        <li><a href={site.resume} data-menu-link data-label="Resume" data-code="CV">Resume</a></li>
+        <li><a href={site.socials[0].href} target="_blank" rel="noopener" aria-describedby="newtab">LinkedIn <span aria-hidden="true">&#8599;</span></a></li>
+      </ul>
+    </div>
   </nav>
 </div>
