@@ -162,12 +162,12 @@ const words = statement.split(' ');
   <section class="sec sit" id="sit" data-section="sit" aria-labelledby="sit-title">
     <SectionHead verb="sit" id="sit-title" code="ST" line="Pull up a seat on the otla." note={otlaNote} />
     <div class="sit__grid">
-      <figure class="sit__portrait" data-reveal="scale"><Pic src="avatar.png" alt="Illustrated portrait of Shreeraj, smiling, in glasses" widths={[400, 800]} sizes="(max-width: 767px) 60vw, 22vw" /></figure>
-      <p class="sit__lead" data-marks>{marked(about.intro[0]).map((x) => x.k ? <mark class="hl" data-k={x.k}>{x.t}</mark> : x.t)}</p>
-      <div class="sit__side">
-        <p>{about.intro[1]}</p>
-        <a class="btn" href="/about/" data-fill data-label="Sit" data-code="ST"><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">More about me</span></a>
+      <div class="sit__text">
+        <p class="sit__lead" data-marks>{marked(about.intro[0]).map((x) => x.k ? <mark class="hl" data-k={x.k}>{x.t}</mark> : x.t)}</p>
+        <p class="sit__more">{about.intro[1]}</p>
+        <a class="btn" href="/about/" data-fill data-label="About" data-code="ST"><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">More about me</span></a>
       </div>
+      <figure class="sit__portrait" data-reveal="scale"><Pic src="avatar-trim.png" alt="Illustrated portrait of Shreeraj, smiling, in glasses" widths={[400, 800]} sizes="(max-width: 899px) 60vw, 30vw" /></figure>
     </div>
   </section>
 </Base>

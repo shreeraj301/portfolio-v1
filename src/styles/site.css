@@ -250,8 +250,9 @@ html:not(.motion) .hero__exploded { display: none; }
 .shelf { grid-column: 1 / 7; align-self: start; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.6rem, 1.4vw, 1.2rem); align-items: end; padding-bottom: 0; border-bottom: 10px solid var(--c-fg); }
 /* Books stand on the shelf, front out; the one you point at is lifted off it. */
 .bookc { display: grid; gap: 0.5rem; padding-bottom: 0.8rem; }
-.bookc__img { display: block; aspect-ratio: 2 / 3; overflow: hidden; box-shadow: 0 14px 24px -14px rgb(21 20 19 / 0.45); transition: transform 0.6s var(--e-set), box-shadow 0.6s var(--e-set); }
+.bookc__img { display: block; aspect-ratio: 5 / 8; overflow: hidden; box-shadow: 0 14px 24px -14px rgb(21 20 19 / 0.45); transition: transform 0.6s var(--e-set), box-shadow 0.6s var(--e-set); }
 .bookc__img img { width: 100%; height: 100%; object-fit: cover; }
+.bookc__img { outline: 1px solid rgb(21 20 19 / 0.08); outline-offset: -1px; }
 .bookc__code { text-align: center; }
 @media (hover: hover) { .bookc:hover .bookc__img { transform: translateY(-1.2rem) rotate(-1.2deg); box-shadow: 0 30px 40px -20px rgb(21 20 19 / 0.5); } }
 .bookc:focus-visible { outline: none; }
@@ -280,12 +281,15 @@ html:not(.motion) .hero__exploded { display: none; }
 .sit__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: start; }
 /* The portrait is a cut-out with no ground line: its lower edge dissolves into the page so it sits in it seamlessly. */
 .sit__portrait img, .apage__portrait img { -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); }
-.sit__portrait { grid-column: 8 / 11; grid-row: 1; }
-.sit__portrait img, .apage__portrait img { display: block; width: 100%; height: auto; aspect-ratio: 864 / 1152; object-fit: contain; }
+.sit__portrait img, .apage__portrait img { display: block; width: 100%; height: auto; aspect-ratio: 812 / 1034; object-fit: contain; }
 /* Sit on the grid: the paragraph in columns 1 to 7, portrait and the rest from column 8, under the head line. */
-.sit__lead { grid-column: 1 / 8; grid-row: 1 / 3; font-size: var(--t-l); line-height: 1.12; letter-spacing: -0.015em; padding-right: var(--gutter); }
-.sit__side { grid-column: 8 / 13; grid-row: 2; margin-top: calc(var(--u) * 3); max-width: 46ch; display: grid; gap: 1.5rem; justify-items: start; color: var(--c-muted); }
-@media (max-width: 899px) { .sit__portrait { grid-column: 1 / 7; grid-row: auto; margin-bottom: 2rem; } .sit__lead, .sit__side { grid-column: 1 / -1; grid-row: auto; padding-right: 0; } .sit__side { margin-top: 2rem; } }
+.sit__text { grid-column: 1 / 8; display: grid; justify-items: start; padding-right: var(--gutter); }
+.sit__lead { font-size: var(--t-l); line-height: 1.12; letter-spacing: -0.015em; }
+.sit__more { margin-top: calc(var(--u) * 3); max-width: 52ch; color: var(--c-muted); }
+.sit__text .btn { margin-top: calc(var(--u) * 3); }
+/* The portrait starts on column 8, the same column as the head line above it, and its top meets the first line. */
+.sit__portrait { grid-column: 8 / 13; padding-top: 0.35em; }
+@media (max-width: 899px) { .sit__portrait { grid-column: 1 / 8; grid-row: 1; margin-bottom: 2rem; padding-top: 0; } .sit__text { grid-column: 1 / -1; grid-row: 2; padding-right: 0; } }
 
 /* ---------- Footer: GATHER ---------- */
 .ftr { background: var(--c-fg); color: var(--c-on-ink); padding: calc(var(--u) * 10) var(--gutter) var(--gutter); --c-line-strong: rgb(236 232 224 / 0.28); }
@@ -442,7 +446,7 @@ figcaption { margin-top: 0.7rem; color: var(--c-muted); font-size: var(--t-s); }
 
 /* ---------- About page ---------- */
 .apage__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: start; }
-.apage__portrait { grid-column: 1 / 5; }
+.apage__portrait { grid-column: 1 / 5; padding-top: 0.5rem; }
 .apage__text { grid-column: 6 / 13; display: grid; gap: 1.2rem; max-width: 62ch; }
 .apage__lead { font-size: var(--t-l); line-height: 1.12; letter-spacing: -0.015em; }
 .apage__ctas { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; margin-top: 1rem; }
@@ -481,7 +485,7 @@ html:not(.motion) .tl__fill { transform: none; }
 }
 .tools > div { display: grid; grid-template-columns: 10rem 1fr; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--c-line-strong); }
 @media (max-width: 899px) {
-  .apage__portrait { grid-column: 2 / 10; margin-bottom: 2rem; }
+  .apage__portrait { grid-column: 1 / 8; margin-bottom: 2rem; padding-top: 0; }
   .apage__text, .reel__img, .reel__label { grid-column: 1 / -1; }
   .reel__label { margin-top: 1rem; }
   .tools > div { grid-template-columns: 1fr; gap: 0.3rem; }
@@ -532,7 +536,9 @@ html.seen #loader { display: none; }
 .loader__bar { display: none; }
 .curtain__panel { display: grid; align-content: end; justify-items: start; padding: var(--gutter); color: var(--c-on-ink); }
 .curtain__code { font-family: var(--f-mono); font-size: var(--t-s); text-transform: uppercase; color: var(--c-on-ink-muted); }
-.curtain__label { font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase; font-size: var(--t-mega); line-height: 0.8; letter-spacing: -0.02em; }
+.curtain__label { font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase; line-height: 0.86; letter-spacing: -0.02em; max-width: 100%; overflow-wrap: anywhere; text-wrap: balance;
+  /* Sized by its own length (--len, set in motion/setup.ts) so any destination fits inside the panel. */
+  font-size: min(var(--t-mega), calc((100vw - 2 * var(--gutter)) / (var(--len, 8) * 0.5)), 30svh); padding-top: 0.08em; }
 
 ::selection { background: var(--v-pause); color: var(--c-fg); }
 :focus-visible { outline: 2px solid var(--c-fg); outline-offset: 3px; }

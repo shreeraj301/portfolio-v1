@@ -22,7 +22,7 @@ const n = (k: number) => String(k + 1).padStart(2, '0');
       <ul class="cv__contact" data-reveal="fade" data-intro data-delay="0.3">
         <li>{site.based}</li>
         <li><a class="link" href={`mailto:${site.email}`}>{site.email}</a></li>
-        <li><a class="link" href="/">This portfolio, with live projects</a></li>
+        <li><a class="link" href="/" data-label="Home">This portfolio, with live projects</a></li>
         <li><a class="link" href={site.socials[0].href} target="_blank" aria-describedby="newtab" rel="noopener">LinkedIn</a></li>
       </ul>
       <div class="cv__ctas" data-reveal="up" data-intro data-delay="0.35">
@@ -46,7 +46,7 @@ const n = (k: number) => String(k + 1).padStart(2, '0');
               <p class="cv__n code">{bl.code}-{n(i)}</p>
               <div class="cv__top">
                 <h3 class="cv__title">
-                  {e.href ? <a class="cv__a" href={e.href}>{e.name}</a> : e.name}{e.role && <span class="cv__sub">, {e.role}</span>}
+                  {e.href ? <a class="cv__a" href={e.href} data-label={e.name}>{e.name}</a> : e.name}{e.role && <span class="cv__sub">, {e.role}</span>}
                 </h3>
                 <p class="cv__meta code">{[e.tag, e.place, e.when].filter(Boolean).join(' / ')}</p>
               </div>

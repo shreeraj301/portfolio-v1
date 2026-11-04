@@ -19,7 +19,7 @@ let flip: { rect: DOMRect; src: string } | null = null;
 document.addEventListener('click', (e) => {
   const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
   if (!a) return;
-  next = { label: a.dataset.label || a.textContent?.trim().split('\n')[0] || '', code: a.dataset.code || '' };
+  next = { label: a.dataset.label || shortName(a), code: a.dataset.code || '' };
   flip = null;
   if (a.dataset.row !== undefined && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const frame = document.querySelector<HTMLElement>('.index__frame');
@@ -27,6 +27,14 @@ document.addEventListener('click', (e) => {
     if (frame && img && frame.offsetParent) flip = { rect: frame.getBoundingClientRect(), src: img.currentSrc || img.src };
   }
 }, true);
+
+// Without a data-label, the curtain names the page by its address, never by a long link text.
+const PAGES: Record<string, string> = { '/': 'Home', '/about/': 'About', '/build/': 'Build', '/resume/': 'Resume' };
+function shortName(a: HTMLAnchorElement) {
+  const t = (a.textContent || '').trim().split('\n')[0];
+  if (t && t.length <= 18) return t;
+  try { const u = new URL(a.href); return PAGES[u.pathname] || (u.pathname.split('/').filter(Boolean).pop() || 'Home').replace(/-/g, ' '); } catch { return 'Shreeraj Narwade'; }
+}
 
 function flipLayer(c: HTMLElement) {
   let el = c.querySelector<HTMLImageElement>('.curtain__flip');
@@ -66,7 +74,9 @@ export function setupMotion() {
           .to(img, { left: (innerWidth - w) / 2, top: (innerHeight - w * 0.75) / 2, width: w, height: w * 0.75, duration: 0.75, ease: 'power4.inOut' }, 0);
       }
       const panel = c.querySelector<HTMLElement>('.curtain__panel')!;
-      c.querySelector('[data-curtain-label]')!.textContent = next.label || 'Shreeraj Narwade';
+      const lab = c.querySelector<HTMLElement>('[data-curtain-label]')!;
+      lab.textContent = next.label || 'Shreeraj Narwade';
+      lab.style.setProperty('--len', String(Math.max(6, lab.textContent.length)));
       c.querySelector('[data-curtain-code]')!.textContent = next.code ? `${next.code} /` : '';
       return gsap.timeline()
         .set(c, { autoAlpha: 1 })

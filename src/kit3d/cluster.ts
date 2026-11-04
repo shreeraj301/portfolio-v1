@@ -44,6 +44,31 @@ export function shadowFloor(scene: THREE.Scene, opacity = 0.2) {
   return p;
 }
 
+/** Frame the cluster: the title sits in the top TITLE of the frame, the cluster is centred in the rest
+ *  with even margins. Shared with the offline still so the two line up exactly. */
+const TITLE = 0.2, MARGIN = 0.06;
+export function frameCluster(cam: THREE.OrthographicCamera, box: THREE.Box3, aspect: number) {
+  cam.position.copy(CLUSTER_CENTER).add(new THREE.Vector3(20, 20, 20));
+  cam.lookAt(CLUSTER_CENTER);
+  cam.updateMatrixWorld();
+  const v = cam.matrixWorldInverse;
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
+    const q = new THREE.Vector3(x, y, z).applyMatrix4(v);
+    x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); y0 = Math.min(y0, q.y); y1 = Math.max(y1, q.y);
+  }
+  const w = x1 - x0, h = y1 - y0;
+  // The usable area is the frame minus the title band and the margins.
+  const useW = 1 - 2 * MARGIN, useH = 1 - TITLE - 2 * MARGIN;
+  let fw = w / useW, fh = h / useH;
+  if (fw / fh < aspect) fw = fh * aspect; else fh = fw / aspect;
+  const cx = (x0 + x1) / 2;
+  const midFromTop = TITLE + MARGIN + useH / 2; // centre of the usable area, as a fraction from the top
+  const top = (y0 + y1) / 2 + midFromTop * fh;
+  cam.left = cx - fw / 2; cam.right = cx + fw / 2; cam.top = top; cam.bottom = top - fh;
+  cam.updateProjectionMatrix();
+}
+
 const GREY = new THREE.Color('#d2cdc3');
 const H = 10; // pieces fall from this high
 const spring = (p: number, v: number, target: number, w: number, dt: number) => v + (w * w * (target - p) - 2 * w * v) * dt;
@@ -74,6 +99,7 @@ export class KitCluster {
   private base = { left: -1, right: 1, top: 1, bottom: -1 };
   private lastSun = -1;
   private blobTex = contactTexture();
+  private restBox = new THREE.Box3();
   onHover: (label: string | null) => void = () => {};
 
   constructor(private el: HTMLElement, private o: Opts) {
@@ -89,6 +115,8 @@ export class KitCluster {
       b.group.traverse((ob) => this.byMesh.set(ob, p));
       this.parts.push(p);
     });
+    this.restBox = new THREE.Box3();
+    this.parts.forEach((p) => this.restBox.expandByObject(p.group));
     this.fit();
     this.ro = new ResizeObserver(() => { this.fit(); this.dirty = true; });
     this.ro.observe(el);
@@ -103,29 +131,14 @@ export class KitCluster {
     gsap.ticker.add(this.tickFn);
   }
 
-  /** Fit the cluster at rest into the frame: width-led, centred, a little room above for the drops. */
+  /** Fit the finished cluster into the frame. Measured from the pieces at rest, so a resize while
+   *  they are falling never reframes the shot around pieces in the air. */
   private fit() {
     const r = this.el.getBoundingClientRect();
     if (!r.width || !r.height) return;
     this.renderer.setSize(r.width, r.height, false);
+    frameCluster(this.camera, this.restBox, r.width / r.height);
     const cam = this.camera;
-    cam.position.copy(CLUSTER_CENTER).add(new THREE.Vector3(20, 20, 20));
-    cam.lookAt(CLUSTER_CENTER);
-    cam.updateMatrixWorld();
-    const box = new THREE.Box3();
-    this.parts.forEach((p) => box.expandByObject(p.group));
-    const v = cam.matrixWorldInverse;
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
-      const q = new THREE.Vector3(x, y, z).applyMatrix4(v);
-      x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); y0 = Math.min(y0, q.y); y1 = Math.max(y1, q.y);
-    }
-    const aspect = r.width / r.height;
-    let hw = (x1 - x0) / 2 * 1.06, hh = (y1 - y0) / 2 * 1.1;
-    if (hw / hh < aspect) hw = hh * aspect; else hh = hw / aspect;
-    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2 - hh * 0.04;
-    cam.left = cx - hw; cam.right = cx + hw; cam.bottom = cy - hh; cam.top = cy + hh;
-    cam.updateProjectionMatrix();
     this.base = { left: cam.left, right: cam.right, top: cam.top, bottom: cam.bottom };
   }
 
