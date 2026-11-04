@@ -173,7 +173,7 @@ html:not(.motion) .hero__exploded { display: none; }
 /* ---------- Sections ---------- */
 .sec { padding: calc(var(--u) * 7) var(--gutter) calc(var(--u) * 9); border-top: 1px solid var(--c-line-strong); }
 /* About and Build open their pages, so they clear the fixed header like case pages and the resume. */
-.sec.apage, .sec.bpage { padding-top: calc(var(--u) * 11); }
+.sec.apage, .sec.bpage, .sec.wpage { padding-top: calc(var(--u) * 11); }
 .shead { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); margin-bottom: calc(var(--u) * 6); }
 .shead__code { grid-column: 1 / -1; }
 /* The head sits on the grid: verb and module in columns 1 to 7, the line from column 8, the same column the
@@ -204,6 +204,17 @@ html:not(.motion) .hero__exploded { display: none; }
 .row:focus-visible .row__name { transform: translateX(0.35em); }
 .row:focus-visible::before { transform: scaleX(1); }
 .row__thumb { display: none; }
+/* Closing row of the home index: same rule, rhythm and code column as a product row, one line, leads to /work/. */
+.index__more { grid-column: 1 / -1; }
+.more { display: grid; grid-template-columns: 5.5rem 1fr auto; align-items: baseline; column-gap: 1rem; min-height: 44px; padding: 1.3rem 0; border-bottom: 1px solid var(--c-line-strong); position: relative; }
+.more__code { font-family: var(--f-mono); font-size: var(--t-xs); letter-spacing: 0.02em; text-transform: uppercase; color: var(--c-muted); white-space: nowrap; }
+.more__label { font-weight: 800; font-variation-settings: 'wdth' 70; text-transform: uppercase; font-size: var(--t-m); line-height: 1; transition: transform 0.6s var(--e-set); }
+.more__arrow { font-size: var(--t-m); transition: transform 0.6s var(--e-set); }
+.more::before { content: ''; position: absolute; left: 0; top: -1px; height: 3px; width: 100%; background: var(--v-read); transform: scaleX(0); transform-origin: left; transition: transform 0.6s var(--e-set); }
+@media (hover: hover) { .more:hover .more__label { transform: translateX(0.35em); } .more:hover .more__arrow { transform: translateX(0.35em); } .more:hover::before { transform: scaleX(1); } }
+.more:focus-visible .more__label, .more:focus-visible .more__arrow { transform: translateX(0.35em); }
+.more:focus-visible::before { transform: scaleX(1); }
+@media (max-width: 767px) { .more { grid-template-columns: 1fr auto; grid-template-areas: 'code arrow' 'label arrow'; row-gap: 0.35rem; } .more__code { grid-area: code; } .more__label { grid-area: label; } .more__arrow { grid-area: arrow; align-self: center; } }
 .index__preview { grid-column: 8 / 13; position: relative; }
 .index__frame { position: sticky; top: 16vh; aspect-ratio: 4 / 3; overflow: hidden; background: var(--c-bg-2); outline: 1px solid var(--c-line-strong); outline-offset: -1px; }
 .index__img { position: absolute; inset: 0; visibility: hidden; }

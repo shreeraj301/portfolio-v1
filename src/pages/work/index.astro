@@ -1,0 +1,14 @@
+---
+// Read: the full product catalogue. The home page shows the first four and links here.
+import Base from '../../layouts/Base.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import ProductIndex from '../../components/ProductIndex.astro';
+import { cases } from '../../data/site';
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+<Base page="work" title="Products" description="Seven live products by Shreeraj Narwade: Found It, Ledger, Otla Pages, Plainform, Settle, Plain Paper and Lease Lens. Each with a case study and a working prototype.">
+  <section class="sec wpage" style="--c:var(--v-read)">
+    <SectionHead verb="read" id="work-title" as="h1" code={`RD-01 to RD-${pad(cases.length)} / All products`} line="Seven products I designed, built and shipped. Every one is live. Open it and use it." />
+    <ProductIndex items={cases} />
+  </section>
+</Base>

@@ -4,9 +4,14 @@ import Cluster from '../components/Cluster.astro';
 import Pic from '../components/Pic.astro';
 import Cover from '../components/Cover.astro';
 import SectionHead from '../components/SectionHead.astro';
+import ProductIndex from '../components/ProductIndex.astro';
 import { site, verbs, statement, cases, experiments, thesis, books, essays, otla, about } from '../data/site';
 import { otlaNote, marked } from '../data/sit';
 const words = statement.split(' ');
+// Read on the home page shows the first four products; the rest live on /work/.
+const featured = cases.slice(0, 4);
+const pad = (n: number) => String(n).padStart(2, '0');
+const words7 = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][cases.length] ?? String(cases.length);
 ---
 <Base page="home">
   <section class="hero" data-section="hero" aria-labelledby="hero-title">
@@ -49,32 +54,8 @@ const words = statement.split(' ');
   </section>
 
   <section class="sec read" id="read" data-section="read" aria-labelledby="read-title">
-    <SectionHead verb="read" id="read-title" code={`RD-01 to RD-${String(cases.length).padStart(2, '0')}`} line="Seven products I designed, built and shipped. Every one is live. Open it and use it." />
-    <div class="index" data-index>
-      <ol class="index__list">
-        {cases.map((c, i) => (
-          <li>
-            <a class="row" href={`/work/${c.slug}/`} data-row={i} data-label={c.name} data-code={c.code}>
-              <span class="row__code">{c.code}</span>
-              <span class="row__name">{c.name}</span>
-              <span class="row__line">{c.oneLiner}</span>
-              <span class="row__live"><span class="row__dot" aria-hidden="true"></span>Live <span class="row__host">{new URL(c.live).hostname.split('.').slice(-2).join('.')}</span></span>
-              <span class="row__thumb" aria-hidden="true"><Pic src={`covers/${c.cover}.png`} alt="" widths={[480, 800, 1200]} sizes="(max-width: 767px) 92vw, 1px" /></span>
-            </a>
-          </li>
-        ))}
-      </ol>
-      <div class="index__preview" aria-hidden="true">
-        <div class="index__frame">
-          {cases.map((c, i) => (
-            <div class="index__img" data-preview={i}>
-              <Cover slug={c.cover} alt="" widths={[800, 1200]} sizes="42vw" />
-            </div>
-          ))}
-          <p class="index__hint">Point at a product</p>
-        </div>
-      </div>
-    </div>
+    <SectionHead verb="read" id="read-title" code={`RD-01 to RD-${pad(featured.length)} of ${pad(cases.length)}`} line="Seven products I designed, built and shipped. Every one is live. Open it and use it." />
+    <ProductIndex items={featured} more={{ href: '/work/', code: `RD-${pad(featured.length + 1)} to ${pad(cases.length)}`, label: `See all ${words7} products` }} />
   </section>
 
   <section class="sec build" id="build" data-section="build" aria-labelledby="build-title">
