@@ -80,6 +80,15 @@ export function initInteractions() {
       });
     }
 
+    // Decode images before they scroll into view, so a reveal never waits on (or stutters for) a decode.
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) if (e.isIntersecting) { io.unobserve(e.target); (e.target as HTMLImageElement).decode?.().catch(() => {}); }
+      }, { rootMargin: '1200px 0px' });
+      document.querySelectorAll<HTMLImageElement>('main img').forEach((img) => io.observe(img));
+      off.push(() => io.disconnect());
+    }
+
     cluster(intro, off);
     statement();
     caseIndex(off);
@@ -98,7 +107,7 @@ function openMenu() {
   btn.setAttribute('aria-expanded', 'true');
   btn.querySelector('.hdr__menu-label')!.textContent = 'Close';
   if (!reduced()) {
-    gsap.fromTo(menu, { yPercent: -100 }, { yPercent: 0, duration: 0.7, ease: 'set' });
+    gsap.fromTo(menu, { yPercent: -100 }, { yPercent: 0, duration: 0.75, ease: ease.inOut });
     gsap.fromTo(menu.querySelectorAll('li'), { y: -30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6, ease: 'set', stagger: 0.04, delay: 0.2 });
   }
   menu.querySelector<HTMLElement>('a')?.focus();
@@ -119,28 +128,28 @@ function closeMenu(refocus = false) {
 // The hero cluster: modules are lowered in at load; hovering or focusing a verb lowers its module
 // again and lets it keep its colour while the others go back to bare concrete.
 function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
-  const svg = document.querySelector<SVGSVGElement>('[data-cluster]');
+  const svg = document.querySelector<HTMLElement>('[data-cluster]');
   if (!svg) return;
-  const mods = new Map<string, SVGGElement>();
-  svg.querySelectorAll<SVGGElement>('[data-mod]').forEach((m) => mods.set(m.dataset.mod!, m));
-  const bodies = [...mods.values()].map((m) => m.querySelector<SVGGElement>('.mod__body')!);
+  const mods = new Map<string, HTMLElement>();
+  svg.querySelectorAll<HTMLElement>('[data-mod]').forEach((m) => mods.set(m.dataset.mod!, m));
+  const bodies = [...mods.values()].map((m) => m.querySelector<HTMLElement>('.mod__body')!);
 
   if (!reduced()) {
     const order = ['read', 'play', 'build', 'pause', 'sit', 'gather'];
     const sorted = order.map((id) => mods.get(id)!.querySelector('.mod__body')!);
-    gsap.set(sorted, { y: -140, autoAlpha: 0 });
+    gsap.set(sorted, { y: -120, autoAlpha: 0, force3D: true });
     gsap.set(svg.querySelectorAll('[data-shadow]'), { autoAlpha: 0 });
-    intro.add(gsap.to(sorted, { y: 0, autoAlpha: 1, duration: 1.15, ease: 'set', stagger: 0.11 }), 0.15);
+    intro.add(gsap.to(sorted, { y: 0, autoAlpha: 1, duration: 1.3, ease: 'set', stagger: { each: 0.09, ease: 'power1.in' } }), 0.15);
     intro.add(gsap.to(order.map((id) => svg.querySelector(`[data-shadow="${id}"]`)), { autoAlpha: 1, duration: 0.9, ease: ease.soft, stagger: 0.11 }), 0.45);
     // Scroll: the cluster opens into an exploded axonometric as the hero leaves, every part lifted
     // by its height in the stack, the way an assembly drawing shows how a module is put together.
     const hero = svg.closest('.hero') || svg;
     // Phones keep the assembled drawing: a scrubbed SVG costs frames there.
     if (!isMobile() && !isTouch()) {
-    const xtl = gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 20%', scrub: 0.8 } });
+    const xtl = gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 20%', scrub: 1 } });
     order.forEach((id, m) => {
-      const parts = [...mods.get(id)!.querySelectorAll<SVGGElement>('.mod__body > g')];
-      parts.forEach((g, k) => xtl.to(g, { y: -(k + 1) * 22 - m * 3, ease: 'none', duration: 1 }, 0));
+      const parts = [...mods.get(id)!.querySelectorAll<SVGSVGElement>('.part')];
+      parts.forEach((g, k) => xtl.to(g, { y: -(k + 1) * 22 - m * 3, ease: 'none', duration: 1, force3D: true }, 0));
     });
     xtl.to(svg.querySelector('.cluster__shadows'), { autoAlpha: 0.35, ease: 'none', duration: 1 }, 0)
       .to('.hero__caption', { autoAlpha: 0, ease: 'none', duration: 0.2 }, 0.1)
@@ -156,7 +165,7 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
     svg.dataset.active = id;
     document.querySelectorAll<HTMLElement>('.hv[data-verb]').forEach((a) => a.classList.toggle('is-active', a.dataset.verb === id));
     const body = mods.get(id)?.querySelector('.mod__body');
-    if (body && !reduced()) gsap.fromTo(body, { y: -22 }, { y: 0, duration: 0.7, ease: 'set', overwrite: 'auto' });
+    if (body && !reduced()) gsap.fromTo(body, { y: -18 }, { y: 0, duration: 0.75, ease: 'set', overwrite: 'auto', force3D: true });
   };
   const clear = () => { active = ''; delete svg.dataset.active; document.querySelectorAll('.hv.is-active').forEach((a) => a.classList.remove('is-active')); };
 
@@ -172,11 +181,11 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
   // Pointer on the drawing itself: the module under the pointer takes its colour; a click follows its link.
   if (!isTouch()) {
     const move = (e: PointerEvent) => {
-      const m = (e.target as Element).closest<SVGGElement>('[data-mod]');
+      const m = (e.target as Element).closest<HTMLElement>('[data-mod]');
       if (m) activate(m.dataset.mod!); else clear();
     };
     const click = (e: MouseEvent) => {
-      const m = (e.target as Element).closest<SVGGElement>('[data-mod]');
+      const m = (e.target as Element).closest<HTMLElement>('[data-mod]');
       const a = m && links.find((l) => l.dataset.verb === m.dataset.mod);
       a?.click();
     };

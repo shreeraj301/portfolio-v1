@@ -8,7 +8,8 @@ import { initInteractions } from './interactions';
 
 gsap.registerPlugin(CustomEase, ScrollTrigger);
 // Fast drop, hard stop, a 2 percent give, settle.
-CustomEase.create('set', 'M0,0 C0.18,0.62 0.32,1.03 0.55,1.02 0.75,1.01 0.86,1 1,1');
+// A long, heavy deceleration with the faintest give at the end (0.6 percent): weight, not bounce.
+CustomEase.create('set', 'M0,0 C0.12,0.6 0.24,0.94 0.48,1.004 0.66,1.006 0.82,1 1,1');
 
 // Remember what was clicked, so the curtain can name where you are going.
 let next = { label: '', code: '' };
@@ -40,7 +41,7 @@ export function setupMotion() {
       c.querySelector('[data-curtain-code]')!.textContent = next.code ? `${next.code} /` : '';
       return gsap.timeline()
         .set(c, { autoAlpha: 1 })
-        .fromTo(panel, { yPercent: -100 }, { yPercent: 0, duration: 0.75, ease: 'set' })
+        .fromTo(panel, { yPercent: -100 }, { yPercent: 0, duration: 0.8, ease: 'power4.inOut' })
         .fromTo(c.querySelectorAll('.curtain__panel > span'), { yPercent: -60, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.6, ease: ease.out, stagger: 0.05 }, 0.25);
     },
     enter: (c) => gsap.timeline()

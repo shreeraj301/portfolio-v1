@@ -1,6 +1,10 @@
 ---
 // The hero object: six Kit modules on a plate, one per verb. Decorative (aria-hidden);
 // the verb list beside it is the real navigation. Shadows are recomputed on the client by motion/sun.ts.
+//
+// Built as layers for smooth motion: the plate and the shadows are one SVG each, and every box of every
+// module is its own small, absolutely positioned SVG. Moving a part (intro drop, hover, exploded view)
+// is then a composited transform on a small layer, never a repaint of the whole drawing.
 import { modules, cells, faces, shadow, order, iso, type Box } from '../lib/iso';
 import { verbs, type Verb } from '../data/site';
 
@@ -12,7 +16,7 @@ const colors: Record<Verb, string> = {
 const plate: Box = { x: -2.6, y: -1.4, w: 17.6, d: 15.2, h: 0.3, z: -0.3 };
 const sun = { dx: Math.cos(2.0) * 0.95, dy: Math.sin(2.0) * 0.95 };
 
-// bounds
+// Overall frame
 const all: [number, number][] = [];
 for (const [x, y] of [[plate.x, plate.y], [plate.x + plate.w, plate.y], [plate.x, plate.y + plate.d], [plate.x + plate.w, plate.y + plate.d]]) {
   all.push(iso(x, y, -0.3, s), iso(x, y, 5, s));
@@ -20,18 +24,34 @@ for (const [x, y] of [[plate.x, plate.y], [plate.x + plate.w, plate.y], [plate.x
 const xs = all.map((p) => p[0]); const ys = all.map((p) => p[1]);
 const pad = 8;
 const vb = [Math.min(...xs) - pad, Math.min(...ys) - pad - 30, Math.max(...xs) - Math.min(...xs) + pad * 2, Math.max(...ys) - Math.min(...ys) + pad * 2 + 30];
+const vbStr = vb.map((n) => n.toFixed(1)).join(' ');
+
+// A box's own frame, as a percentage box inside the overall frame.
+function frame(b: Box, ox: number, oy: number) {
+  const z0 = b.z ?? 0; const z1 = z0 + b.h;
+  const pts: [number, number][] = [];
+  for (const x of [b.x, b.x + b.w]) for (const y of [b.y, b.y + b.d]) for (const z of [z0, z1]) pts.push(iso(x + ox, y + oy, z, s));
+  const m = 2;
+  const x0 = Math.min(...pts.map((p) => p[0])) - m, x1 = Math.max(...pts.map((p) => p[0])) + m;
+  const y0 = Math.min(...pts.map((p) => p[1])) - m, y1 = Math.max(...pts.map((p) => p[1])) + m;
+  const pc = (n: number) => `${n.toFixed(3)}%`;
+  return {
+    viewBox: `${x0.toFixed(1)} ${y0.toFixed(1)} ${(x1 - x0).toFixed(1)} ${(y1 - y0).toFixed(1)}`,
+    style: `left:${pc(((x0 - vb[0]) / vb[2]) * 100)};top:${pc(((y0 - vb[1]) / vb[3]) * 100)};width:${pc(((x1 - x0) / vb[2]) * 100)};height:${pc(((y1 - y0) / vb[3]) * 100)}`,
+  };
+}
 
 const ids = verbs.map((v) => v.id);
 const drawOrder = [...ids].sort((a, b) => cells[a][0] + cells[a][1] - (cells[b][0] + cells[b][1]));
 const pf = faces(plate, s);
 ---
-<svg class="cluster" viewBox={vb.map((n) => n.toFixed(1)).join(' ')} aria-hidden="true" focusable="false" data-cluster data-scale={s}>
-  <g class="cluster__plate">
+<div class="cluster" aria-hidden="true" data-cluster data-scale={s} style={`aspect-ratio:${vb[2].toFixed(1)} / ${vb[3].toFixed(1)}`}>
+  <svg class="cluster__layer cluster__plate" viewBox={vbStr} focusable="false">
     <polygon points={pf.left} class="f-left" />
     <polygon points={pf.right} class="f-right" />
     <polygon points={pf.top} class="f-top" />
-  </g>
-  <g class="cluster__shadows">
+  </svg>
+  <svg class="cluster__layer cluster__shadows" viewBox={vbStr} focusable="false">
     {ids.map((id) => (
       <g data-shadow={id}>
         {modules[id].map((b) => (
@@ -39,21 +59,22 @@ const pf = faces(plate, s);
         ))}
       </g>
     ))}
-  </g>
+  </svg>
   {drawOrder.map((id) => (
-    <g class="mod" data-mod={id} style={`--c:${colors[id]}`}>
-      <g class="mod__body">
+    <div class="mod" data-mod={id} style={`--c:${colors[id]}`}>
+      <div class="mod__body">
         {order(modules[id]).map((b) => {
           const f = faces(b, s, cells[id][0], cells[id][1]);
+          const fr = frame(b, cells[id][0], cells[id][1]);
           return (
-            <g class={b.top === 'green' ? 'is-green' : undefined}>
+            <svg class:list={['part', b.top === 'green' && 'is-green']} viewBox={fr.viewBox} style={fr.style} focusable="false">
               <polygon points={f.left} class="f-left" />
               <polygon points={f.right} class="f-right" />
               <polygon points={f.top} class="f-top" />
-            </g>
+            </svg>
           );
         })}
-      </g>
-    </g>
+      </div>
+    </div>
   ))}
-</svg>
+</div>

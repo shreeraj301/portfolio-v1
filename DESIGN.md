@@ -70,3 +70,11 @@ The sun. One driver variable (sun angle) from time plus pointer x moves every ca
 - The hero cluster opens into an exploded axonometric as the hero scrolls away: each part lifts by its position in the stack.
 - The header is a solid strip once you scroll (no blend mode) so text never sits on an image.
 - Lease Lens uses the Behance case study (22 testers), which supersedes the older in-app case page that used sample data.
+
+## Motion pass for smoothness
+- Only transform and opacity animate. Width-axis (font-variation) hovers became transform shifts, because they relaid out text on every frame.
+- The hero cluster is built from layers: one SVG for the plate, one for the shadows, and one small SVG per box. Drops, hovers and the exploded view move composited layers instead of repainting one big drawing.
+- Mask reveals ('clip', 'scale') are a mask moving one way while its content moves the other: no clip-path animation, no mid-animation rescaling of big images.
+- Images are decoded ahead of time (1200px before they arrive), so reveals never wait on a decode.
+- The "set" ease keeps weight but its give is now 0.6 percent; CSS hovers use a clean ease-out with no overshoot. Curtains and the mobile menu use expo/power4 in-out, never an overshoot that would open a gap.
+- Lenis glides a touch heavier (lerp 0.085). Sun shadows redraw every frame the light moves on desktop, and pause while scrolling.

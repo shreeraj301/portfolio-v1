@@ -50,22 +50,35 @@ function splitTween(el: HTMLElement, isIntro: boolean) {
 function blockTween(el: HTMLElement, paused: boolean) {
   const kind = el.dataset.reveal || 'up';
   const delay = parseFloat(el.dataset.delay || '0');
-  const from: gsap.TweenVars =
-    kind === 'fade' ? { autoAlpha: 0 }
-    : kind === 'clip' ? { clipPath: 'inset(100% 0% 0% 0%)', autoAlpha: 1 }
-    : kind === 'scale' ? { scale: 1.15, clipPath: 'inset(12% 12% 12% 12%)', autoAlpha: 1 }
-    : { y: 48, autoAlpha: 0 };
-  const to: gsap.TweenVars = kind === 'clip' || kind === 'scale' ? { clipPath: 'inset(0% 0% 0% 0%)', scale: 1 } : {};
+  const st = paused ? undefined : { trigger: el, start: 'top 90%', once: true };
   gsap.set(el, { visibility: 'visible' });
-  return gsap.fromTo(el, from, {
-    ...to,
+  // Project change: 'clip' and 'scale' are built from transforms only (a mask that moves one way while
+  // its content moves the other), so they run on the compositor instead of repainting a clip-path each frame.
+  const inner = el.firstElementChild as HTMLElement | null;
+  if ((kind === 'clip' || kind === 'scale') && inner) {
+    gsap.set(el, { overflow: 'hidden' });
+    const tl = gsap.timeline({ paused, delay, scrollTrigger: st, defaults: { duration: 1.35, ease: ease.out, force3D: true },
+      onComplete: () => gsap.set([el, inner], { clearProps: 'overflow,transform' }) });
+    if (kind === 'clip') {
+      tl.fromTo(el, { yPercent: 100, autoAlpha: 1 }, { yPercent: 0 }, 0)
+        .fromTo(inner, { yPercent: -100 }, { yPercent: 0 }, 0);
+    } else {
+      // 'scale' is lowered into place: the frame rises and fades in while the picture settles inside it.
+      // Translation only, so large images are never re-rasterised at a new scale mid-animation.
+      tl.fromTo(el, { y: 70, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.2 }, 0)
+        .fromTo(inner, { yPercent: -12 }, { yPercent: 0, duration: 1.6 }, 0);
+    }
+    return tl;
+  }
+  return gsap.fromTo(el, kind === 'fade' ? { autoAlpha: 0 } : { y: 48, autoAlpha: 0 }, {
     y: 0,
     autoAlpha: 1,
     duration: kind === 'fade' ? 1 : 1.3,
     ease: ease.out,
     delay,
     paused,
-    scrollTrigger: paused ? undefined : { trigger: el, start: 'top 90%', once: true },
+    force3D: true,
+    scrollTrigger: st,
   });
 }
 
@@ -86,9 +99,11 @@ export function initReveals(root: ParentNode = document) {
   });
   root.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
     const amount = parseFloat(el.dataset.parallax || '0.15');
+    gsap.set(el, { willChange: 'transform' }); // project: keep the parallax layer composited for its whole life
     gsap.fromTo(el, { yPercent: -amount * 100 }, {
       yPercent: amount * 100,
       ease: 'none',
+      force3D: true,
       scrollTrigger: { trigger: el.parentElement || el, start: 'top bottom', end: 'bottom top', scrub: true },
     });
   });

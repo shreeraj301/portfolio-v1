@@ -36,7 +36,7 @@ export function startSun() {
   setAngle(BASE);
 
   onPage(() => {
-    const svg = document.querySelector<SVGSVGElement>('[data-cluster]');
+    const svg = document.querySelector<HTMLElement>('[data-cluster]');
     const clocks = [...document.querySelectorAll<HTMLElement>('[data-sun-clock]')];
     const s = svg ? Number(svg.dataset.scale) : 22;
     const polys = svg
@@ -67,9 +67,12 @@ export function startSun() {
       setAngle(BASE + Math.sin(time * 0.06) * 0.7 + sun.px * 0.9);
       // Redraw at most ~30 times a second; shadows move slowly.
       const quiet = performance.now() - scrolledAt > 180;
-      const step = touch ? 0.006 : 0.0015;
-      if (visible && quiet && time - last > 0.033 && Math.abs(sun.angle - drawn) > step) { last = time; drawn = sun.angle; draw(); }
-      else if (!visible && time - last > 1) { last = time; draw(); } // keep the footer clock honest
+      // Desktop redraws every frame the light actually moved (the shadows have their own layer, so this is
+      // cheap and never steps); phones redraw a few times a second.
+      const step = touch ? 0.006 : 0.0006;
+      const gap = touch ? 0.12 : 0;
+      if (visible && quiet && time - last >= gap && Math.abs(sun.angle - drawn) > step) { last = time; drawn = sun.angle; draw(); }
+      else if (!visible && time - last > 1) { last = time; const t = clockText(); for (const c of clocks) if (c.textContent !== t) c.textContent = t; } // footer clock only
     };
     gsap.ticker.add(tick);
     const st = svg ? ScrollTrigger.create({ trigger: svg, start: 'top bottom', end: 'bottom top', onToggle: (self) => { visible = self.isActive; } }) : null;

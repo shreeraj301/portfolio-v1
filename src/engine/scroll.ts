@@ -19,7 +19,7 @@ export function initScroll() {
     if (!lenis) addEventListener('scroll', nativeTick, { passive: true });
     return;
   }
-  lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1, touchMultiplier: 1.2, anchors: true });
+  lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, touchMultiplier: 1.2, anchors: true }); // project: a touch heavier glide
   lenis.on('scroll', (l: Lenis) => {
     state.y = l.scroll;
     state.velocity = l.velocity;
