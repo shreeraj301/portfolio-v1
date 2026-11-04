@@ -26,7 +26,7 @@ const current = (id: string) => (id === 'build' && page === 'build') || (id === 
     <span class="hdr__menu-label">Menu</span>
   </button>
 </header>
-<div class="menu" id="menu" hidden data-menu>
+<div class="menu" id="menu" hidden data-menu data-lenis-prevent>
   <nav aria-label="Mobile">
     <ul class="menu__list">
       {verbs.map((v, i) => (

@@ -59,7 +59,9 @@ strong { font-weight: 600; }
 .hdr.is-on-ink :focus-visible, .menu-open .hdr :focus-visible { outline-color: var(--c-on-ink); }
 .hdr__menu { display: none; min-height: 44px; min-width: 44px; padding: 0 0.5rem; font-family: var(--f-mono); text-transform: uppercase; font-size: var(--t-xs); letter-spacing: 0.04em; border: 1px solid currentColor; }
 
-.menu { position: fixed; inset: 0; z-index: calc(var(--z-header) - 1); background: var(--c-fg); color: var(--c-on-ink); padding: calc(var(--u) * 8) var(--gutter) var(--gutter); overflow-y: auto; }
+.menu { position: fixed; inset: 0; z-index: calc(var(--z-header) - 1); background: var(--c-fg); color: var(--c-on-ink); padding: calc(var(--u) * 8) var(--gutter) var(--gutter); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+/* Without smooth scroll (reduced motion) the page is locked by plain overflow while the menu is open. */
+html.menu-open, html.menu-open body { overflow: hidden; }
 .menu ul { list-style: none; padding: 0; display: grid; gap: 0; }
 /* The menu fills the screen: the verb list on top, contact anchored at the bottom. */
 .menu > nav { min-height: 100%; display: flex; flex-direction: column; }

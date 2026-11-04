@@ -2,7 +2,7 @@
 // the header and the mobile menu. Everything registers through onPage so it is reverted on navigation.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { onPage, onScroll, scrollToTarget, prefersReducedMotion, isTouch, isMobile, ease } from '../engine';
+import { onPage, onScroll, scrollToTarget, stopScroll, startScroll, prefersReducedMotion, isTouch, isMobile, ease } from '../engine';
 import { sun } from './sun';
 import { webglOK } from '../kit3d/gl-check';
 import { REVEAL_START, onScreenAtStart } from '../engine/reveal';
@@ -115,6 +115,8 @@ function openMenu() {
   if (!menu || !btn) return;
   menu.hidden = false;
   document.documentElement.classList.add('menu-open');
+  // The page behind holds still while the menu is open; the menu scrolls on its own (data-lenis-prevent).
+  stopScroll();
   btn.setAttribute('aria-expanded', 'true');
   btn.querySelector('.hdr__menu-label')!.textContent = 'Close';
   if (!reduced()) {
@@ -129,6 +131,7 @@ function closeMenu(refocus = false) {
   const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
   if (!menu || menu.hidden || !btn) return;
   document.documentElement.classList.remove('menu-open');
+  startScroll();
   btn.setAttribute('aria-expanded', 'false');
   btn.querySelector('.hdr__menu-label')!.textContent = 'Menu';
   const done = () => { menu.hidden = true; if (refocus) btn.focus(); };
