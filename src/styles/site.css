@@ -121,6 +121,17 @@ strong { font-weight: 600; }
 .hero__stage .cluster { width: 100%; max-width: calc(72svh * 1.4); margin-left: auto; }
 .hero__caption { font-family: var(--f-mono); font-size: var(--t-xs); color: var(--c-muted); text-align: right; text-transform: uppercase; margin-top: 0.4rem; }
 html:not(.motion) .hero__exploded { display: none; }
+/* 3D plaza: the SVG plate holds the place until the scene is ready, then the canvas fades in over it. */
+.cluster.is-3d .mod, .cluster.is-3d .cluster__shadows { display: none; }
+.cluster__plate { transition: opacity 0.6s var(--e-out); }
+.cluster.is-3d-ready .cluster__plate { opacity: 0; }
+.cluster__gl { position: absolute; left: -3%; right: -3%; top: -42%; bottom: 3%; opacity: 0; transition: opacity 0.7s var(--e-out); }
+.cluster.is-3d-ready .cluster__gl { opacity: 1; }
+@media (max-width: 899px) { .cluster__gl { top: -18%; left: -4%; right: -4%; } }
+.cluster__gl canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+.recast { position: absolute; left: 0; bottom: 0; z-index: 2; min-height: 40px; padding: 0.5rem 0.9rem; font-family: var(--f-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.03em; border: 1px solid var(--c-fg); background: var(--c-bg); transition: background-color 0.3s, color 0.3s; }
+@media (hover: hover) { .recast:hover { background: var(--c-fg); color: var(--c-bg); } }
+.recast:focus-visible { background: var(--c-fg); color: var(--c-bg); }
 .hero__exploded { position: absolute; right: 0; bottom: 0; text-align: right; font-family: var(--f-mono); font-size: var(--t-xs); text-transform: uppercase; color: var(--c-muted); visibility: hidden; }
 .hero__verbs { grid-column: 1 / -1; grid-row: 4; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--c-line-strong); margin-top: calc(var(--u) * 3); }
 .hv { position: relative; display: grid; gap: 0.15rem; padding: 0.9rem 0.9rem 0.9rem 0; min-height: 44px; border-right: 1px solid var(--c-line); }

@@ -78,3 +78,10 @@ The sun. One driver variable (sun angle) from time plus pointer x moves every ca
 - Images are decoded ahead of time (1200px before they arrive), so reveals never wait on a decode.
 - The "set" ease keeps weight but its give is now 0.6 percent; CSS hovers use a clean ease-out with no overshoot. Curtains and the mobile menu use expo/power4 in-out, never an overshoot that would open a gap.
 - Lenis glides a touch heavier (lerp 0.085). Sun shadows redraw every frame the light moves on desktop, and pause while scrolling.
+
+## Hero v2: the plaza in 3D
+- Three.js (orthographic, true isometric) and cannon-es physics, loaded only on the home page after first paint. The SVG drawing stays as the no-WebGL fallback and as the placeholder plate.
+- Modules are modelled after the Kit renders: bevelled precast parts, an open arch, curved amphitheatre steps, a shelf wall with books, stepped blocks with planters, a table seat with stools, a planter with a tree. Faint precast grain, paving grid on the plate.
+- Light: hemisphere fill plus one sun that follows the site's simulated sun; soft (VSM) shadows updated only when something moved; contact shadows under every module.
+- Motion: modules are lowered from above the frame one by one and land with weight (impact ring, dust, a tiny camera shake). Hover lifts a module on a spring like a crane; the others go back to bare concrete. On desktop a module can be picked up, carried and dropped; it knocks into its neighbours. "Put the modules back" re-casts the plaza. Scroll opens an exploded axonometric. The tree sways; the camera leans a little toward the pointer.
+- Quality adapts: if frames run long it drops to 1x pixels and crisp shadows, then to contact shadows only. Reduced motion: placed at rest, rendered on demand.

@@ -3,6 +3,8 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onPage, onScroll, scrollToTarget, prefersReducedMotion, isTouch, isMobile, ease } from '../engine';
+import { sun } from './sun';
+import { webglOK } from '../kit3d/gl-check';
 
 const reduced = () => prefersReducedMotion();
 
@@ -128,48 +130,32 @@ function closeMenu(refocus = false) {
 // The hero cluster: modules are lowered in at load; hovering or focusing a verb lowers its module
 // again and lets it keep its colour while the others go back to bare concrete.
 function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
-  const svg = document.querySelector<HTMLElement>('[data-cluster]');
-  if (!svg) return;
-  const mods = new Map<string, HTMLElement>();
-  svg.querySelectorAll<HTMLElement>('[data-mod]').forEach((m) => mods.set(m.dataset.mod!, m));
-  const bodies = [...mods.values()].map((m) => m.querySelector<HTMLElement>('.mod__body')!);
-
-  if (!reduced()) {
-    const order = ['read', 'play', 'build', 'pause', 'sit', 'gather'];
-    const sorted = order.map((id) => mods.get(id)!.querySelector('.mod__body')!);
-    gsap.set(sorted, { y: -120, autoAlpha: 0, force3D: true });
-    gsap.set(svg.querySelectorAll('[data-shadow]'), { autoAlpha: 0 });
-    intro.add(gsap.to(sorted, { y: 0, autoAlpha: 1, duration: 1.3, ease: 'set', stagger: { each: 0.09, ease: 'power1.in' } }), 0.15);
-    intro.add(gsap.to(order.map((id) => svg.querySelector(`[data-shadow="${id}"]`)), { autoAlpha: 1, duration: 0.9, ease: ease.soft, stagger: 0.11 }), 0.45);
-    // Scroll: the cluster opens into an exploded axonometric as the hero leaves, every part lifted
-    // by its height in the stack, the way an assembly drawing shows how a module is put together.
-    const hero = svg.closest('.hero') || svg;
-    // Phones keep the assembled drawing: a scrubbed SVG costs frames there.
-    if (!isMobile() && !isTouch()) {
-    const xtl = gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 20%', scrub: 1 } });
-    order.forEach((id, m) => {
-      const parts = [...mods.get(id)!.querySelectorAll<SVGSVGElement>('.part')];
-      parts.forEach((g, k) => xtl.to(g, { y: -(k + 1) * 22 - m * 3, ease: 'none', duration: 1, force3D: true }, 0));
-    });
-    xtl.to(svg.querySelector('.cluster__shadows'), { autoAlpha: 0.35, ease: 'none', duration: 1 }, 0)
-      .to('.hero__caption', { autoAlpha: 0, ease: 'none', duration: 0.2 }, 0.1)
-      .fromTo('[data-exploded]', { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, ease: 'none', duration: 0.3 }, 0.15)
-      .to(svg, { yPercent: -6, ease: 'none', duration: 1 }, 0);
-    }
-  }
+  const box = document.querySelector<HTMLElement>('[data-cluster]');
+  if (!box) return;
+  const hero = box.closest<HTMLElement>('.hero') || box;
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.hv[data-verb]')];
+  const recastBtn = document.querySelector<HTMLButtonElement>('[data-recast]');
+  const use3d = webglOK();
+  const desktopish = !isMobile() && !isTouch();
+  let kit: import('../kit3d/kit3d').Kit3D | null = null;
+  let dead = false;
+  const triggers: ScrollTrigger[] = [];
 
   let active = '';
   const activate = (id: string) => {
     if (id === active) return;
     active = id;
-    svg.dataset.active = id;
-    document.querySelectorAll<HTMLElement>('.hv[data-verb]').forEach((a) => a.classList.toggle('is-active', a.dataset.verb === id));
-    const body = mods.get(id)?.querySelector('.mod__body');
+    links.forEach((a) => a.classList.toggle('is-active', a.dataset.verb === id));
+    if (kit) { kit.focus(id as never); return; }
+    box.dataset.active = id;
+    const body = box.querySelector(`[data-mod="${id}"] .mod__body`);
     if (body && !reduced()) gsap.fromTo(body, { y: -18 }, { y: 0, duration: 0.75, ease: 'set', overwrite: 'auto', force3D: true });
   };
-  const clear = () => { active = ''; delete svg.dataset.active; document.querySelectorAll('.hv.is-active').forEach((a) => a.classList.remove('is-active')); };
-
-  const links = [...document.querySelectorAll<HTMLAnchorElement>('.hv[data-verb]')];
+  const clear = () => {
+    active = '';
+    links.forEach((a) => a.classList.remove('is-active'));
+    if (kit) kit.focus(null); else delete box.dataset.active;
+  };
   for (const a of links) {
     const on = () => activate(a.dataset.verb!);
     a.addEventListener('pointerenter', on);
@@ -178,23 +164,66 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
     a.addEventListener('blur', clear);
     off.push(() => { a.removeEventListener('pointerenter', on); a.removeEventListener('focus', on); a.removeEventListener('pointerleave', clear); a.removeEventListener('blur', clear); });
   }
-  // Pointer on the drawing itself: the module under the pointer takes its colour; a click follows its link.
-  if (!isTouch()) {
-    const move = (e: PointerEvent) => {
-      const m = (e.target as Element).closest<HTMLElement>('[data-mod]');
-      if (m) activate(m.dataset.mod!); else clear();
-    };
-    const click = (e: MouseEvent) => {
-      const m = (e.target as Element).closest<HTMLElement>('[data-mod]');
-      const a = m && links.find((l) => l.dataset.verb === m.dataset.mod);
-      a?.click();
-    };
-    svg.addEventListener('pointermove', move);
-    svg.addEventListener('pointerleave', clear);
-    svg.addEventListener('click', click);
-    off.push(() => { svg.removeEventListener('pointermove', move); svg.removeEventListener('pointerleave', clear); svg.removeEventListener('click', click); });
+
+  // Caption hand-off as the hero scrolls away (the drawing opens into an exploded view).
+  if (!reduced() && desktopish) {
+    gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 20%', scrub: 1 } })
+      .to('.hero__caption', { autoAlpha: 0, ease: 'none', duration: 0.2 }, 0.1)
+      .fromTo('[data-exploded]', { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, ease: 'none', duration: 0.3 }, 0.15)
+      .set({}, {}, 1);
   }
-  void bodies;
+
+  if (use3d) {
+    // The real thing: a 3D plaza with physics. The SVG plate holds the place until it is ready.
+    box.classList.add('is-3d');
+    const gl = document.createElement('div');
+    gl.className = 'cluster__gl';
+    box.appendChild(gl);
+    let introPlayed = false;
+    if (!reduced()) intro.add(() => { introPlayed = true; kit?.drop(); }, 0.05);
+    import('../kit3d/kit3d').then(({ Kit3D }) => {
+      if (dead) return;
+      kit = new Kit3D(gl, { reduced: reduced(), touch: isTouch(), mobile: isMobile(), sunAngle: () => sun.angle, pointerX: () => sun.px });
+      kit.onHover = (id) => (id ? activate(id) : clear());
+      kit.onPick = (id) => links.find((l) => l.dataset.verb === id)?.click();
+      kit.onDisplaced = (d) => {
+        if (!recastBtn) return;
+        if (d) { recastBtn.hidden = false; gsap.fromTo(recastBtn, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: ease.out }); }
+        else gsap.to(recastBtn, { autoAlpha: 0, duration: 0.3, onComplete: () => { recastBtn.hidden = true; } });
+      };
+      requestAnimationFrame(() => box.classList.add('is-3d-ready'));
+      if (reduced()) kit.settleAll();
+      else if (introPlayed || document.documentElement.classList.contains('is-loaded') && intro.progress() > 0) kit.drop();
+      triggers.push(ScrollTrigger.create({ trigger: gl, start: 'top bottom', end: 'bottom top', onToggle: (st) => kit?.setVisible(st.isActive) }));
+      if (!reduced() && desktopish) {
+        triggers.push(ScrollTrigger.create({ trigger: hero, start: 'top top', end: 'bottom 20%', onUpdate: (st) => kit?.setExplode(st.progress) }));
+      }
+    }).catch(() => box.classList.remove('is-3d'));
+    const recast = () => kit?.recast();
+    recastBtn?.addEventListener('click', recast);
+    off.push(() => { dead = true; recastBtn?.removeEventListener('click', recast); triggers.forEach((t) => t.kill()); kit?.dispose(); kit = null; gl.remove(); });
+    return;
+  }
+
+  // Fallback without WebGL: the layered SVG drawing.
+  const order = ['read', 'play', 'build', 'pause', 'sit', 'gather'];
+  const mods = new Map<string, HTMLElement>();
+  box.querySelectorAll<HTMLElement>('[data-mod]').forEach((m) => mods.set(m.dataset.mod!, m));
+  if (!reduced()) {
+    const sorted = order.map((id) => mods.get(id)!.querySelector('.mod__body')!);
+    gsap.set(sorted, { y: -120, autoAlpha: 0, force3D: true });
+    gsap.set(box.querySelectorAll('[data-shadow]'), { autoAlpha: 0 });
+    intro.add(gsap.to(sorted, { y: 0, autoAlpha: 1, duration: 1.3, ease: 'set', stagger: { each: 0.09, ease: 'power1.in' } }), 0.15);
+    intro.add(gsap.to(order.map((id) => box.querySelector(`[data-shadow="${id}"]`)), { autoAlpha: 1, duration: 0.9, ease: ease.soft, stagger: 0.11 }), 0.45);
+  }
+  if (!isTouch()) {
+    const move = (e: PointerEvent) => { const m = (e.target as Element).closest<HTMLElement>('[data-mod]'); if (m) activate(m.dataset.mod!); else clear(); };
+    const click = (e: MouseEvent) => { const m = (e.target as Element).closest<HTMLElement>('[data-mod]'); links.find((l) => l.dataset.verb === m?.dataset.mod)?.click(); };
+    box.addEventListener('pointermove', move);
+    box.addEventListener('pointerleave', clear);
+    box.addEventListener('click', click);
+    off.push(() => { box.removeEventListener('pointermove', move); box.removeEventListener('pointerleave', clear); box.removeEventListener('click', click); });
+  }
 }
 
 // The statement lights up word by word as it crosses the middle of the screen.
