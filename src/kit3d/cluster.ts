@@ -14,18 +14,21 @@ import { makeRenderer, addLights } from './stage';
 /** Where a piece waits before it is set into its bay: straight up, or out along a plan axis.
  *  Edge pieces leave through their own edge, so no path crosses another piece. */
 export type From = 'up' | 'left' | 'right' | 'front' | 'back';
-export type Item = { kind: Verb | Piece; label: string; color: string; x: number; z: number; rot: number; from: From };
+export type Item = { kind: Verb | Piece; label: string; color: string; x: number; z: number; rot: number; from: From; far: number };
 
-// Laid out on 4-unit cells so the pieces touch, the way they do on the cover.
+// Laid out on 4-unit cells so the pieces touch, the way they do on the cover. `from` and `far` set where
+// each piece waits in the exploded state: chosen so the parts spread evenly over the square frame (the
+// closest two centres sit about 6.5 units apart) while the frame pulls back only to ~0.73x of the
+// finished Kit, so the pieces stay large. Every path leaves through its own edge or from above.
 export const CLUSTER: Item[] = [
-  { kind: 'pause', label: 'To Refresh', color: '#e2c463', x: 12, z: 0, rot: 0, from: 'right' },
-  { kind: 'terraces', label: 'To Play', color: '#e2c463', x: 8, z: 0, rot: 0, from: 'back' },
-  { kind: 'play', label: 'To Play', color: '#8dbf7c', x: 4, z: 0, rot: 0, from: 'up' },
-  { kind: 'read', label: 'To Read', color: '#7fa4da', x: 0, z: 0, rot: 0, from: 'left' },
-  { kind: 'bridge', label: 'To Balance', color: '#eaa766', x: 12, z: 4, rot: 0, from: 'right' },
-  { kind: 'sit', label: 'To Sit', color: '#edb088', x: 8, z: 4, rot: Math.PI / 2, from: 'up' },
-  { kind: 'gather', label: 'To Perform', color: '#aaa49a', x: 4, z: 4, rot: 0, from: 'front' },
-  { kind: 'path', label: 'To Sit', color: '#de7a5e', x: 0, z: 4, rot: Math.PI / 2, from: 'left' },
+  { kind: 'pause', label: 'To Refresh', color: '#e2c463', x: 12, z: 0, rot: 0, from: 'right', far: 3.5 },
+  { kind: 'terraces', label: 'To Play', color: '#e2c463', x: 8, z: 0, rot: 0, from: 'back', far: 9.5 },
+  { kind: 'play', label: 'To Play', color: '#8dbf7c', x: 4, z: 0, rot: 0, from: 'back', far: 4.5 },
+  { kind: 'read', label: 'To Read', color: '#7fa4da', x: 0, z: 0, rot: 0, from: 'up', far: 11 },
+  { kind: 'bridge', label: 'To Balance', color: '#eaa766', x: 12, z: 4, rot: 0, from: 'front', far: 3.5 },
+  { kind: 'sit', label: 'To Sit', color: '#edb088', x: 8, z: 4, rot: Math.PI / 2, from: 'front', far: 8.5 },
+  { kind: 'gather', label: 'To Perform', color: '#aaa49a', x: 4, z: 4, rot: 0, from: 'up', far: 8 },
+  { kind: 'path', label: 'To Sit', color: '#de7a5e', x: 0, z: 4, rot: Math.PI / 2, from: 'left', far: 3.5 },
 ];
 export const CLUSTER_CENTER = new THREE.Vector3(6, 0, 2.5);
 const VERBS = ['read', 'play', 'build', 'pause', 'sit', 'gather'];
@@ -85,8 +88,6 @@ const DIR: Record<From, THREE.Vector3> = {
   back: new THREE.Vector3(0, 0, -1),
   front: new THREE.Vector3(0, 0, 1),
 };
-const RISE = 4.4;   // how high an 'up' piece waits
-const PULL = 3.6;   // how far a side piece waits from its bay: a clear gap, just under one cell
 const CARRY = 0.55; // side pieces travel this high, then are lowered the last bit, like off a crane
 // Piece i owns progress [i/n * SPREAD, ... + SLICE]; the frame closes in over [0, FRAME_END].
 const SPREAD = 0.62, SLICE = 0.3, FRAME_END = 0.9;
@@ -136,7 +137,7 @@ export class KitCluster {
       blob.position.set(CLUSTER[i].x, 0.012, CLUSTER[i].z);
       this.scene.add(blob);
       const it = CLUSTER[i];
-      const wait = DIR[it.from].clone().multiplyScalar(it.from === 'up' ? RISE : PULL);
+      const wait = DIR[it.from].clone().multiplyScalar(it.far); // each piece waits at its own distance, so the parts read as scattered, not as a ring
       if (it.from !== 'up') wait.y = CARRY;
       const p: Part = { ...b, item: it, y: 0, lift: 0, liftV: 0, landed: true, give: 0, focus: 0, base: b.mats.map((m) => m.color.clone()), blob, wait };
       b.group.traverse((ob) => this.byMesh.set(ob, p));
