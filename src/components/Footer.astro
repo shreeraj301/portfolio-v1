@@ -15,13 +15,13 @@ const year = 2026;
     <span class="ftr__mail-text">{site.email}</span>
   </a>
   <div class="ftr__grid">
-    <div>
+    <div class="ftr__col ftr__col--else">
       <p class="code">Elsewhere</p>
-      <ul class="ftr__list">
+      <ul class="ftr__list ftr__list--two">
         {site.socials.map((s) => <li><a class="util" href={s.href} rel="me noopener" target="_blank" aria-describedby="newtab">{s.label}</a></li>)}
       </ul>
     </div>
-    <div>
+    <div class="ftr__col ftr__col--docs">
       <p class="code">Documents</p>
       <ul class="ftr__list">
         <li><a class="util" href="/resume/" data-label="Resume" data-code="CV">Resume</a></li>
@@ -29,9 +29,14 @@ const year = 2026;
         <li><a class="util" href="https://otla-pages-lofi.vercel.app" target="_blank" aria-describedby="newtab" rel="noopener">Otla Pages</a></li>
       </ul>
     </div>
+    <div class="ftr__col ftr__col--now">
+      <p class="code">Now</p>
+      <p class="ftr__now">{site.now[0].toUpperCase() + site.now.slice(1)}.</p>
+      <p class="ftr__now">Based in {site.based}. {site.relocate}.</p>
+    </div>
   </div>
   <div class="ftr__base">
-    <p>&copy; {year} {site.name}. Based in {site.based}. {site.relocate}.</p>
+    <p>&copy; {year} {site.name}.</p>
     <p>Designed and built by me. Astro, GSAP, Three.js.</p>
   </div>
 </footer>

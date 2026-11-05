@@ -339,12 +339,20 @@ html:not(.motion) .hero__exploded { display: none; }
 @media (hover: hover) { .ftr__mail:hover { color: var(--c-fg); } .ftr__mail:hover .btn__fill { transform: translateY(0); } }
 .ftr__mail:focus-visible { color: var(--c-fg); outline-color: var(--c-on-ink); }
 .ftr__mail:focus-visible .btn__fill { transform: translateY(0); }
-.ftr__grid { margin-top: calc(var(--u) * 8); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); }
+/* One row on the 12-column grid: links in two short columns, documents, then where I am now. */
+.ftr__grid { margin-top: calc(var(--u) * 6); display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: calc(var(--u) * 4) var(--gutter); }
+.ftr__col--else { grid-column: 1 / 6; }
+.ftr__col--docs { grid-column: 6 / 9; }
+.ftr__col--now { grid-column: 9 / 13; }
+.ftr__list.ftr__list--two { grid-template-columns: repeat(2, max-content); column-gap: clamp(2rem, 5vw, 4.5rem); }
+.ftr__now { margin-top: 0.6rem; padding-block: 0.3rem; max-width: 30ch; }
+.ftr__now + .ftr__now { margin-top: 0; color: var(--c-on-ink-muted); }
 .ftr__list { list-style: none; padding: 0; margin-top: 0.6rem; display: grid; gap: 0.15rem; }
 .ftr__list a { display: inline-block; padding: 0.3rem 0; min-height: 36px; min-width: 44px; }
-.ftr__base { margin-top: calc(var(--u) * 8); padding-top: 1rem; border-top: 1px solid var(--c-line-strong); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 2rem; font-size: var(--t-xs); color: var(--c-on-ink-muted); }
+.ftr__base { margin-top: calc(var(--u) * 5); padding-top: 1rem; border-top: 1px solid var(--c-line-strong); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 2rem; font-size: var(--t-xs); color: var(--c-on-ink-muted); }
 .ftr :focus-visible { outline-color: var(--c-on-ink); }
-@media (max-width: 767px) { .ftr__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 899px) { .ftr__col--else { grid-column: 1 / -1; } .ftr__col--docs { grid-column: 1 / 7; } .ftr__col--now { grid-column: 7 / -1; } }
+@media (max-width: 359px) { .ftr__col--docs, .ftr__col--now { grid-column: 1 / -1; } }
 
 /* ---------- Case study ---------- */
 .case { padding: calc(var(--u) * 11) var(--gutter) 0; }
