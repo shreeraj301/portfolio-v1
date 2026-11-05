@@ -45,6 +45,9 @@ p { text-wrap: pretty; }
 
 /* Lenis */
 html.lenis, html.lenis body { height: auto; }
+/* Lenis owns the scroll position. Chrome's scroll anchoring would nudge it whenever a pin switches on,
+   and Lenis would glide back: a section that drifts and snaps instead of holding still. */
+html.lenis { overflow-anchor: none; }
 .lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
 .lenis [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-smooth iframe { pointer-events: none; }

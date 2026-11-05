@@ -313,7 +313,9 @@ function kitCluster(off: (() => void)[]) {
     mm.add({ wide: '(min-width: 900px)', narrow: '(max-width: 899px)' }, (c) => {
       const el = c.conditions?.wide ? stage : box;
       ScrollTrigger.create({
-        trigger: el, pin: true, anticipatePin: 1, scrub: 0.6, invalidateOnRefresh: true,
+        // No anticipatePin: it pins a frame early to beat native scrolling, and with Lenis that early
+        // pin is a visible snap that Lenis then glides back out of.
+        trigger: el, pin: true, scrub: 0.6, invalidateOnRefresh: true,
         start: () => (el.offsetHeight > innerHeight * 0.92 ? 'top top' : 'center center'),
         end: () => `+=${Math.round(innerHeight * 1.1)}`,
         onUpdate: (st) => { progress = st.progress; kit?.setProgress(progress); },
