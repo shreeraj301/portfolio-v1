@@ -13,14 +13,14 @@ const blocks: { code: string; title: string; items: Entry[] }[] = [
 ];
 const n = (k: number) => String(k + 1).padStart(2, '0');
 ---
-<Base page="resume" title="Resume" description="Resume of Shreeraj Narwade: architect-trained product designer. Experience at AcuAI Labs and Anagram Architects, seven live products, B.Arch thesis, skills and tools.">
+<Base page="resume" title="Resume" description="Resume of Shreeraj Narwade: architect-trained product designer. Experience at an AI lab and Anagram Architects, seven live products and prototypes, B.Arch thesis, skills and tools.">
   <article class="cv">
     <header class="cv__head">
       <p class="code cv__code" data-reveal="fade" data-intro>CV / Resume, Nov 2026</p>
       <h1 class="cv__name" data-split="chars" data-intro>{site.name}</h1>
       <p class="cv__role" data-split="lines" data-intro data-delay="0.15"><strong>{resume.title}.</strong> {resume.sub}.</p>
       <ul class="cv__contact" data-reveal="fade" data-intro data-delay="0.3">
-        <li>{site.based}</li>
+        <li>{site.based}, {site.relocate.toLowerCase()}</li>
         <li><a class="link" href={`mailto:${site.email}`}>{site.email}</a></li>
         <li><a class="link" href="/" data-label="Home">This portfolio, with live projects</a></li>
         <li><a class="link" href={site.socials[0].href} target="_blank" aria-describedby="newtab" rel="noopener">LinkedIn</a></li>

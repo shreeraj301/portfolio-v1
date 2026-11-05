@@ -9,7 +9,7 @@ export const resume = {
   summary:
     'Architect-trained product designer (B.Arch, 2026) who turns observed behaviour into systems. I design and ship web prototypes with Figma, AI tools (Claude, Figma Make, Grok, Cursor, Google AI Studio), GitHub and Vercel.',
   experience: [
-    { name: 'AcuAI Labs', role: 'Product designer intern', place: 'Remote', when: 'Oct 2026 to present', points: [
+    { name: 'An AI lab', role: 'Product designer intern', place: 'Remote', when: 'Oct 2026 to present', points: [
       'Redesigning the core app UI for a **B2B SaaS** platform that automates **AI product feeds and ad creatives** for e-commerce brands.',
       'Smoothed in-app flows and user journeys to improve the overall experience.',
     ] },
@@ -44,7 +44,7 @@ export const resume = {
       'Design: turned the insights into **The Kit**, precast concrete modules grouped by behaviour (To Sit, Play, Read, Perform, Balance, Refresh), with specs and two manuals, much like a design system.',
     ] },
     { name: 'Other builds', when: '2022 to 2026', points: [
-      'Bench (a comparison of six HCI programs); a Delta 3D printer (hardware and Python, team of 2); Hiring Panel (a Grok bot resume critic); web experiments. Also live on this site: Settle, Plainform and Lease Lens.',
+      'A Delta 3D printer (hardware and Python, team of 2); Hiring Panel (a Grok bot resume critic); web experiments. Also live on this site: Settle, Plainform and Lease Lens.',
     ] },
   ] as Entry[],
   education: [

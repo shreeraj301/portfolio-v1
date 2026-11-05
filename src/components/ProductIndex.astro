@@ -1,6 +1,6 @@
 ---
 // The product catalogue: coded rows on the left, the hovered product's cover lowered into the frame on the right.
-// Used on the home page (the first four, with a row to the full list) and on /work/ (all seven).
+// Used on the home page (the three flagships, with a row to the full list) and on /work/ (all seven).
 import Pic from './Pic.astro';
 import Cover from './Cover.astro';
 import type { Case } from '../data/site';
@@ -15,7 +15,7 @@ const { items, more } = Astro.props;
           <span class="row__code">{c.code}</span>
           <span class="row__name">{c.name}</span>
           <span class="row__line">{c.oneLiner}</span>
-          <span class="row__live"><span class="row__dot" aria-hidden="true"></span>Live <span class="row__host">{new URL(c.live).hostname.split('.').slice(-2).join('.')}</span></span>
+          <span class="row__live"><span class="row__dot" aria-hidden="true"></span>{c.status.startsWith('Live prototype') ? 'Live prototype' : c.status} <span class="row__host">{new URL(c.live).hostname.split('.').slice(-2).join('.')}</span></span>
           <span class="row__thumb" aria-hidden="true"><Pic src={`covers/${c.cover}.png`} alt="" widths={[480, 800, 1200]} sizes="(max-width: 767px) 92vw, 1px" /></span>
         </a>
       </li>

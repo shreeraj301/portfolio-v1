@@ -33,6 +33,7 @@ export function grainTexture() {
   }
   g.putImageData(img, 0, 0);
   grain = new THREE.CanvasTexture(c);
+  grain.userData.shared = true; // cached across scenes: never disposed with one of them
   grain.colorSpace = THREE.SRGBColorSpace;
   grain.wrapS = grain.wrapT = THREE.RepeatWrapping;
   grain.anisotropy = 4;

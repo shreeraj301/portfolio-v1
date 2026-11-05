@@ -8,10 +8,11 @@ export const site = {
   role: 'Product designer and design engineer',
   url: 'https://shreerajnarwade.vercel.app',
   description:
-    'Architect turned product designer. I design for how people think and decide, from AI tools to fintech, and I build what I design. Seven live products, architecture and poems.',
+    'Architect turned product designer. I design for how people think and decide, from AI tools to fintech, and I build what I design. Seven live products and prototypes, architecture and poems.',
   email: 'shreerajn.work@gmail.com',
   based: 'India',
-  now: 'Product designer intern at AcuAI Labs',
+  relocate: 'Open to relocating',
+  now: 'Product designer intern at an AI lab',
   socials: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shreerajnarwade301/' },
     { label: 'Behance', href: 'https://www.behance.net/shreerajnarwade1' },
@@ -26,13 +27,14 @@ export const site = {
 
 // The six behaviours. Order = the nav, menu, hero verb list and home page sections.
 // The 3D plaza keeps its own fixed layout (ORDER in kit3d/kit3d.ts), matching the rendered plaza images.
-export const verbs: { id: Verb; label: string; code: string; href: string; line: string }[] = [
-  { id: 'read', label: 'Read', code: 'RD', href: '/work/', line: 'Products, built and live' },
-  { id: 'build', label: 'Build', code: 'BD', href: '/build/', line: 'Architecture' },
-  { id: 'pause', label: 'Pause', code: 'PS', href: '/#pause', line: 'Poems and essays' },
-  { id: 'play', label: 'Play', code: 'PL', href: '/#play', line: 'Prototypes and experiments' },
-  { id: 'sit', label: 'Sit', code: 'ST', href: '/about/', line: 'About' },
-  { id: 'gather', label: 'Gather', code: 'GT', href: '#gather', line: 'Contact' },
+// nav: the plain word under each verb in the desktop header, so a first visit needs no decoding.
+export const verbs: { id: Verb; label: string; code: string; href: string; line: string; nav: string }[] = [
+  { id: 'read', label: 'Read', code: 'RD', href: '/work/', line: 'Products, built and live', nav: 'Products' },
+  { id: 'build', label: 'Build', code: 'BD', href: '/build/', line: 'Architecture', nav: 'Architecture' },
+  { id: 'pause', label: 'Pause', code: 'PS', href: '/#pause', line: 'Poems and essays', nav: 'Writing' },
+  { id: 'play', label: 'Play', code: 'PL', href: '/#play', line: 'Prototypes and experiments', nav: 'Experiments' },
+  { id: 'sit', label: 'Sit', code: 'ST', href: '/about/', line: 'About', nav: 'About' },
+  { id: 'gather', label: 'Gather', code: 'GT', href: '#gather', line: 'Contact', nav: 'Contact' },
 ];
 
 export const statement =
@@ -70,6 +72,7 @@ export type Case = {
   live: string;
   full?: string;
   caveat: string;
+  method?: string[];
 };
 
 export const cases: Case[] = [
@@ -87,7 +90,7 @@ export const cases: Case[] = [
     tools: 'AI design and coding tools built the prototype from my prompts. I ran the research and wrote the detection rules, flows and copy.',
     cover: 'found-it',
     glance:
-      '8 interviews, a 2-week diary study with 12 people, a survey of 214 students, an audit of 6 tools, then 3 usability rounds of 5. In round 3, 13 of 15 people completed the import without help, and trust in the local CSV import rose from 2.9 to 4.4 out of 5.',
+      '8 interviews, a 2-week diary study with 12 people, a survey of 214 students, an audit of 6 tools, then 3 usability rounds of 5 people each. Across the three rounds, 13 of 15 people completed the import without help, and trust in the local CSV import rose from 2.9 to 4.4 out of 5.',
     problem: [
       'Subscriptions are designed to be forgotten. Free trials roll into paid plans, prices rise by a dollar or two without notice, and annual renewals arrive when nobody remembers signing up. Students I surveyed underestimated their monthly subscription spend by 2.5x on average.',
       'The tools that fix this ask for bank credentials. The students most worried about leaking money were also the most worried about leaking data, so they never used them.',
@@ -159,6 +162,13 @@ export const cases: Case[] = [
     live: 'https://final-queue-71535764.figma.site',
     full: 'https://alivecoldness301.notion.site/Found-It-Case-Study-3fd3d01bf9e7812383b4d75a4e74fac5',
     caveat: 'Every participant came from one college, so treat this as direction, not proof.',
+    method: [
+      'Three usability rounds of 5 students each, 15 people in all, every one from my college.',
+      'The import result, 13 of 15 without help, counts all three rounds.',
+      'Trust in the local CSV import was rated out of 5, rising from 2.9 to 4.4.',
+      'The 9-minute baseline came from a manual spreadsheet test.',
+      'Parsing runs in the browser, so statement data stays on the device.',
+    ],
   },
   {
     slug: 'ledger',
@@ -245,69 +255,107 @@ export const cases: Case[] = [
     next: 'Pilot with two small residential studios in Pune and Mumbai for one working-drawings stage, then signed expiring links and a tamper-evident log with an engineer.',
     live: 'https://ledger-chi-rust.vercel.app',
     full: 'https://alivecoldness301.notion.site/Ledger-Case-Study-3fd3d01bf9e7814589cad8bb848a6ccb',
-    caveat: 'Ten people across two rounds, so treat this as direction, not proof. No pilot has run yet.',
+    caveat: 'Ten people across two rounds of prototype testing. That shows the flow is usable, not that studios would adopt it: no pilot has run yet.',
+    method: [
+      'Two research rounds with 6 architects and 4 homeowners. Architects took part in both rounds; homeowners joined in round 2, which ran on the working prototype.',
+      'Architect tasks: find what was open, paste a chat message, tie an invoice to an approval. Client tasks: approve from a link and read the fee before saying yes. Times are in seconds.',
+      'Confidence scores came from both groups, rated out of 5.',
+      'Architects took part in both rounds, so familiarity likely helped.',
+      'This tested usability on a prototype. Adoption by real studios needs a pilot, which has not run yet.',
+    ],
   },
   {
-    slug: 'otla-pages',
+    slug: 'plain-paper',
     code: 'RD-03',
-    name: 'Otla Pages',
-    title: 'Otla Pages: a hand-drawn digital library',
-    oneLiner: 'A library for my poems and stories, drawn by hand and coded into four quiet rooms.',
+    name: 'Plain Paper',
+    title: 'Plain Paper: research abstracts for non-experts',
+    oneLiner: 'An AI research reader with guardrails that keep the source in view: summary, jargon in place, questions worth asking.',
     year: '2026',
-    role: 'Designer, illustrator, writer and builder (solo)',
-    platform: 'Web, desktop and mobile',
-    timeline: 'Oct 2026, self-initiated',
-    status: 'Live',
-    tools: 'Pen and paper for every visual. AI coding tools, GitHub and Vercel built it from my drawings and specs. I wrote all the copy.',
-    cover: 'otla-pages',
+    role: 'Product designer, UX researcher, AI builder (solo)',
+    platform: 'Web, responsive',
+    timeline: 'Oct 2026, 4 weeks, self-initiated',
+    status: 'Live prototype (input flow) and concept build (results)',
+    tools: 'Figma Make built the input flow from my prompts; Claude and Grok helped draft code and explanations. I ran the research, designed the results view and wrote the guardrail copy.',
+    cover: 'plain-paper',
     glance:
-      'A home for four poetry books and 35 pieces of writing, from first sketch to live site. Four rooms: a poetry shelf, a story shelf, a writing room and a guestbook, with a link for every book and piece. No stock or AI imagery anywhere.',
+      'A baseline comprehension test with 212 college peers, 18 interviews, a 2-week diary study with 9 people, an audit of 11 tools and a 4-person expert panel, then a rerun with 96 new peers. Correctly explaining the main finding went from 34% to 81%.',
     problem: [
-      'My poems lived in flipbook links and a newsletter. They were readable, but nothing about them felt like a place someone could come back to.',
-      'Blog templates make every piece look the same, and stock or generated images would have made the work look like everyone else’s.',
+      'Research is public but hard to understand. Abstracts are written for peer reviewers, yet people meet papers through the news, social media or a doctor, then hit a wall of jargon, statistics and hedging.',
+      'In my baseline study, 68% stopped reading before the end and 1 in 3 misread the main finding, most often confusing correlation with causation.',
     ],
-    hmw: 'How might a writing archive feel like a quiet room you walk into, not a feed you scroll past?',
-    discovery:
-      'I started from the otla, the raised doorstep seat of a Maharashtrian house, where people sit between the street and home. A doorstep is where you pause before going in. That became the structure: you sit at the door, then walk into rooms.',
+    hmw: 'How might we help non-experts understand what a study found, and what it did not, without asking them to trust an AI summary they cannot check?',
+    audience: [
+      { name: 'Patients and caregivers', line: 'Reading under stress, needing questions for a clinician.' },
+      { name: 'Students', line: 'Citing papers outside their field.' },
+      { name: 'Journalists', line: 'On deadline, needing to report without overstating.' },
+    ],
+    discovery: 'My starting assumption: jargon was the problem. Decode the words and people would understand.',
+    findings: [
+      'Readers spent 58% of their time on methods detail they did not need.',
+      '14 of 18 interviewees wanted the original words next to any explanation.',
+      'Misreadings almost always came from missing a limitation in the final sentence.',
+      'None of 11 audited tools paired a plain summary with the original wording and its limits.',
+    ],
+    turn: 'The barrier was knowing which parts mattered, and people would not trust a summary they could not check. The design had to point to what matters, caveat included, while keeping the source in view.',
     decisions: [
       {
-        title: 'Drawn by hand, not generated',
-        options: 'Stock illustration, AI imagery, or drawing every visual myself.',
-        chose: 'Every visual drawn by hand and translated into code, so the site looks the way the poems sound: personal and a little uneven.',
-        cost: 'Time: every new room needs new drawings.',
+        title: 'Jargon explained inside the original',
+        options: 'A glossary, a plain rewrite that replaces the abstract, or highlights inside the original.',
+        chose: 'Inline highlights. A rewrite asks readers to trust the AI completely; in place, every claim can be checked against the source. Trust rose from 2.8 to 4.2 out of 5.',
+        cost: 'Density: the abstract stays on screen.',
       },
       {
-        title: 'Rooms, not a feed',
-        options: 'A blog list, a grid of cards, or rooms you walk through.',
-        chose: 'Four rooms: a poetry shelf, a story shelf, a writing room and a guestbook. Every book and piece has its own shareable link, so a reader can send one poem, not the whole site.',
-        cost: 'Discovery: a reader has to wander a little to find things.',
+        title: 'Three reading levels',
+        options: 'One “plain English” summary, or Simple, Everyday and Informed.',
+        chose: 'Three levels, because readers split on numbers. The structure and caveat stay identical at every level, so switching never hides the limitation.',
+        cost: 'Three outputs to check, and one more choice up front.',
       },
       {
-        title: 'A reader that respects the reader',
-        options: 'Embed the existing flipbooks, or build a reader.',
-        chose: 'A custom reader for the four books with keyboard page turns, a plain-text edition of the whole library and a skip link.',
-        cost: 'Two versions of every book to keep in step.',
+        title: 'A fixed structure, no chat',
+        options: 'An open “chat with the paper”, or a fixed structure plus reviewer-style questions.',
+        chose: 'The fixed structure. Chat drifted beyond the abstract in 23% of test sessions: too risky for someone reading about a diagnosis.',
+        cost: 'Flexibility: no follow-ups. The questions partly fill the gap.',
       },
     ],
     shots: [
-      { src: 'otla-pages/01_door.jpg', alt: 'Otla Pages landing: the name in serif capitals, a handwritten greeting and an enter button on paper', caption: 'The doorstep: one handwritten line and one way in.', wide: true },
-      { src: 'otla-pages/02_shelf.jpg', alt: 'The poetry shelf, a hand-drawn bookcase where four coloured spines stand out among blank ones', caption: 'The poetry shelf. The four coloured spines are the four books; the blank ones are room to grow.', wide: true },
-      { src: 'otla-pages/03_writing_room.jpg', alt: 'The writing room, a pinboard of hand-drawn notes, one per poem or essay', caption: 'The writing room: 35 pieces pinned up, each one a link.', wide: true },
-      { src: 'otla-pages/04_text.jpg', alt: 'The plain-text edition listing every shelf and piece as simple links', caption: 'The plain-text edition: the whole library as a list, for screen readers and slow connections.', wide: true },
+      { src: 'plain-paper/07_summary.jpg', alt: 'Plain Paper summary with Read with care beside the bottom line', caption: 'Concept build: the caveat sits beside the verdict, and the AI says it can be wrong.', wide: true },
+      { src: 'plain-paper/06_input.jpg', alt: 'Plain Paper input with reading level chips', caption: 'Live prototype: one labelled field, a reading level chosen up front, a 6,000-character counter.' },
+      { src: 'plain-paper/08_jargon_questions.jpg', alt: 'A term explained inside its sentence, and questions worth asking', caption: '“Rate ratio, 0.83” explained inside its own sentence, and questions with one-tap copy.' },
+      { src: 'plain-paper/03_directions.jpg', alt: 'Six sketched directions compared', caption: 'Six directions tested with 24 peers. No single one answered every insight.', wide: true },
+      { src: 'plain-paper/10_edge_cases.jpg', alt: 'Empty, too short and too long input states', caption: 'Real states, including an honest notice when no model is connected.' },
+      { src: 'plain-paper/11_mobile.jpg', alt: 'Plain Paper at 390px', caption: 'At 390px the chips drop their hints and everything stacks.' },
     ],
     shipped: [
-      'Four rooms: poetry shelf, story shelf, writing room and guestbook',
-      'A custom reader with keyboard page turns',
-      'A plain-text edition of the whole library, and a skip link',
-      'A shareable link for every book and piece',
-      'Music and page sounds, both off with one tap',
+      'Abstract-only input',
+      'Streaming summary, first sentence in under 2 seconds',
+      'A permanent, visible AI-can-be-wrong note',
+      'Nothing stored: no accounts, no history',
     ],
-    scrapped: ['Stories: the shelf is built, the stories are still being written'],
+    scrapped: [
+      'Chat with the paper: drifted beyond the abstract',
+      'Full PDF upload: accuracy fell on long papers',
+      'A credibility score: experts disagreed 40% of the time',
+      'Saved library and accounts: outside the core job',
+    ],
+    outcomes: [
+      'Correctly explained the main finding: 34% to 81% (rerun with 96 new peers).',
+      'Spotted the study’s main limitation: 19% to 72%.',
+      'Read to the end: 32% to 88%.',
+      'Time to understand an abstract: 11.2 to 3.4 minutes.',
+    ],
     learned:
-      'Drawing every visual by hand slowed me down in the right places. Each room had to earn its drawing, which kept the library small, quiet and mine.',
-    next: 'Fill the story shelf, and keep adding to the writing room.',
-    live: 'https://otla-pages-lofi.vercel.app',
-    caveat: 'A personal project: no research numbers here, only the craft and the decisions behind it.',
+      'Trust in AI is a layout problem as much as a model problem. Architecture taught me people trust a structure when they can see how it stands; here, the original text and the caveat beside the verdict do that work.',
+    next: 'Connect a model behind these guardrails with an engineer, set an accuracy bar with a PM, then test with a patient-advocacy group and a student newsroom.',
+    live: 'https://trade-verify-42377008.figma.site',
+    full: 'https://alivecoldness301.notion.site/Plain-Paper-Case-Study-3fd3d01bf9e781668f00c155badbcb21',
+    caveat: 'All participants were college peers and the results view is a concept build, so treat this as direction, not proof.',
+    method: [
+      'The baseline comprehension test had 212 college peers, and two raters scored the summaries (κ = 0.82).',
+      'The same test was rerun with 96 new peers, alongside a 2-week beta.',
+      'Trust was rated out of 5.',
+      'The results view is a concept build; the live prototype covers the input flow.',
+      'Every participant was a peer from my college, so the results show direction only.',
+    ],
   },
   {
     slug: 'plainform',
@@ -479,97 +527,11 @@ export const cases: Case[] = [
     next: 'Parse real GSTR-2B and bill files and test them with the two CAs on a live month, then work with an engineer on the GST portal APIs.',
     live: 'https://settle-roan.vercel.app',
     full: 'https://alivecoldness301.notion.site/Settle-Case-Study-4013d01bf9e781f68bb0f5e1ba6ffdfd',
-    caveat: 'Only six people, the same ones each round, so treat this as direction, not proof.',
-  },
-  {
-    slug: 'plain-paper',
-    code: 'RD-06',
-    name: 'Plain Paper',
-    title: 'Plain Paper: research abstracts for non-experts',
-    oneLiner: 'An AI research reader with guardrails that keep the source in view: summary, jargon in place, questions worth asking.',
-    year: '2026',
-    role: 'Product designer, UX researcher, AI builder (solo)',
-    platform: 'Web, responsive',
-    timeline: 'Oct 2026, 4 weeks, self-initiated',
-    status: 'Live prototype (input flow) and concept build (results)',
-    tools: 'Figma Make built the input flow from my prompts; Claude and Grok helped draft code and explanations. I ran the research, designed the results view and wrote the guardrail copy.',
-    cover: 'plain-paper',
-    glance:
-      'A baseline comprehension test with 212 college peers, 18 interviews, a 2-week diary study with 9 people, an audit of 11 tools and a 4-person expert panel, then a rerun with 96 new peers. Correctly explaining the main finding went from 34% to 81%.',
-    problem: [
-      'Research is public but hard to understand. Abstracts are written for peer reviewers, yet people meet papers through the news, social media or a doctor, then hit a wall of jargon, statistics and hedging.',
-      'In my baseline study, 68% stopped reading before the end and 1 in 3 misread the main finding, most often confusing correlation with causation.',
-    ],
-    hmw: 'How might we help non-experts understand what a study found, and what it did not, without asking them to trust an AI summary they cannot check?',
-    audience: [
-      { name: 'Patients and caregivers', line: 'Reading under stress, needing questions for a clinician.' },
-      { name: 'Students', line: 'Citing papers outside their field.' },
-      { name: 'Journalists', line: 'On deadline, needing to report without overstating.' },
-    ],
-    discovery: 'My starting assumption: jargon was the problem. Decode the words and people would understand.',
-    findings: [
-      'Readers spent 58% of their time on methods detail they did not need.',
-      '14 of 18 interviewees wanted the original words next to any explanation.',
-      'Misreadings almost always came from missing a limitation in the final sentence.',
-      'None of 11 audited tools paired a plain summary with the original wording and its limits.',
-    ],
-    turn: 'The barrier was knowing which parts mattered, and people would not trust a summary they could not check. The design had to point to what matters, caveat included, while keeping the source in view.',
-    decisions: [
-      {
-        title: 'Jargon explained inside the original',
-        options: 'A glossary, a plain rewrite that replaces the abstract, or highlights inside the original.',
-        chose: 'Inline highlights. A rewrite asks readers to trust the AI completely; in place, every claim can be checked against the source. Trust rose from 2.8 to 4.2 out of 5.',
-        cost: 'Density: the abstract stays on screen.',
-      },
-      {
-        title: 'Three reading levels',
-        options: 'One “plain English” summary, or Simple, Everyday and Informed.',
-        chose: 'Three levels, because readers split on numbers. The structure and caveat stay identical at every level, so switching never hides the limitation.',
-        cost: 'Three outputs to check, and one more choice up front.',
-      },
-      {
-        title: 'A fixed structure, no chat',
-        options: 'An open “chat with the paper”, or a fixed structure plus reviewer-style questions.',
-        chose: 'The fixed structure. Chat drifted beyond the abstract in 23% of test sessions: too risky for someone reading about a diagnosis.',
-        cost: 'Flexibility: no follow-ups. The questions partly fill the gap.',
-      },
-    ],
-    shots: [
-      { src: 'plain-paper/07_summary.jpg', alt: 'Plain Paper summary with Read with care beside the bottom line', caption: 'Concept build: the caveat sits beside the verdict, and the AI says it can be wrong.', wide: true },
-      { src: 'plain-paper/06_input.jpg', alt: 'Plain Paper input with reading level chips', caption: 'Live prototype: one labelled field, a reading level chosen up front, a 6,000-character counter.' },
-      { src: 'plain-paper/08_jargon_questions.jpg', alt: 'A term explained inside its sentence, and questions worth asking', caption: '“Rate ratio, 0.83” explained inside its own sentence, and questions with one-tap copy.' },
-      { src: 'plain-paper/03_directions.jpg', alt: 'Six sketched directions compared', caption: 'Six directions tested with 24 peers. No single one answered every insight.', wide: true },
-      { src: 'plain-paper/10_edge_cases.jpg', alt: 'Empty, too short and too long input states', caption: 'Real states, including an honest notice when no model is connected.' },
-      { src: 'plain-paper/11_mobile.jpg', alt: 'Plain Paper at 390px', caption: 'At 390px the chips drop their hints and everything stacks.' },
-    ],
-    shipped: [
-      'Abstract-only input',
-      'Streaming summary, first sentence in under 2 seconds',
-      'A permanent, visible AI-can-be-wrong note',
-      'Nothing stored: no accounts, no history',
-    ],
-    scrapped: [
-      'Chat with the paper: drifted beyond the abstract',
-      'Full PDF upload: accuracy fell on long papers',
-      'A credibility score: experts disagreed 40% of the time',
-      'Saved library and accounts: outside the core job',
-    ],
-    outcomes: [
-      'Correctly explained the main finding: 34% to 81% (rerun with 96 new peers).',
-      'Spotted the study’s main limitation: 19% to 72%.',
-      'Read to the end: 32% to 88%.',
-      'Time to understand an abstract: 11.2 to 3.4 minutes.',
-    ],
-    learned:
-      'Trust in AI is a layout problem as much as a model problem. Architecture taught me people trust a structure when they can see how it stands; here, the original text and the caveat beside the verdict do that work.',
-    next: 'Connect a model behind these guardrails with an engineer, set an accuracy bar with a PM, then test with a patient-advocacy group and a student newsroom.',
-    live: 'https://trade-verify-42377008.figma.site',
-    full: 'https://alivecoldness301.notion.site/Plain-Paper-Case-Study-3fd3d01bf9e781668f00c155badbcb21',
-    caveat: 'All participants were college peers and the results view is a concept build, so treat this as direction, not proof.',
+    caveat: 'Only six people, the same ones each round, so some of the gain may be familiarity with the flow. Treat this as direction, not proof.',
   },
   {
     slug: 'lease-lens',
-    code: 'RD-07',
+    code: 'RD-06',
     name: 'Lease Lens',
     title: 'Lease Lens: a lease reader that shows its working',
     oneLiner: 'Reads a pasted lease inside the browser and flags clauses that could cost a renter money, rights or the freedom to leave, each with a polite question for the landlord.',
@@ -647,6 +609,68 @@ export const cases: Case[] = [
     full: 'https://www.behance.net/gallery/257650933/Lease-Lens-Risky-Lease-Clauses-Flagged-for-Renters',
     caveat: 'Testers were college peers and the leases were mine, so I read the results as a first indication only. Not legal advice.',
   },
+  {
+    slug: 'otla-pages',
+    code: 'RD-07',
+    name: 'Otla Pages',
+    title: 'Otla Pages: a hand-drawn digital library',
+    oneLiner: 'A library for my poems and stories, drawn by hand and coded into four quiet rooms.',
+    year: '2026',
+    role: 'Designer, illustrator, writer and builder (solo)',
+    platform: 'Web, desktop and mobile',
+    timeline: 'Oct 2026, self-initiated',
+    status: 'Live',
+    tools: 'Pen and paper for every visual. AI coding tools, GitHub and Vercel built it from my drawings and specs. I wrote all the copy.',
+    cover: 'otla-pages',
+    glance:
+      'A home for four poetry books and 35 pieces of writing, from first sketch to live site. Four rooms: a poetry shelf, a story shelf, a writing room and a guestbook, with a link for every book and piece. No stock or AI imagery anywhere.',
+    problem: [
+      'My poems lived in flipbook links and a newsletter. They were readable, but nothing about them felt like a place someone could come back to.',
+      'Blog templates make every piece look the same, and stock or generated images would have made the work look like everyone else’s.',
+    ],
+    hmw: 'How might a writing archive feel like a quiet room you walk into, not a feed you scroll past?',
+    discovery:
+      'I started from the otla, the raised doorstep seat of a Maharashtrian house, where people sit between the street and home. A doorstep is where you pause before going in. That became the structure: you sit at the door, then walk into rooms.',
+    decisions: [
+      {
+        title: 'Drawn by hand, not generated',
+        options: 'Stock illustration, AI imagery, or drawing every visual myself.',
+        chose: 'Every visual drawn by hand and translated into code, so the site looks the way the poems sound: personal and a little uneven.',
+        cost: 'Time: every new room needs new drawings.',
+      },
+      {
+        title: 'Rooms, not a feed',
+        options: 'A blog list, a grid of cards, or rooms you walk through.',
+        chose: 'Four rooms: a poetry shelf, a story shelf, a writing room and a guestbook. Every book and piece has its own shareable link, so a reader can send one poem, not the whole site.',
+        cost: 'Discovery: a reader has to wander a little to find things.',
+      },
+      {
+        title: 'A reader that respects the reader',
+        options: 'Embed the existing flipbooks, or build a reader.',
+        chose: 'A custom reader for the four books with keyboard page turns, a plain-text edition of the whole library and a skip link.',
+        cost: 'Two versions of every book to keep in step.',
+      },
+    ],
+    shots: [
+      { src: 'otla-pages/01_door.jpg', alt: 'Otla Pages landing: the name in serif capitals, a handwritten greeting and an enter button on paper', caption: 'The doorstep: one handwritten line and one way in.', wide: true },
+      { src: 'otla-pages/02_shelf.jpg', alt: 'The poetry shelf, a hand-drawn bookcase where four coloured spines stand out among blank ones', caption: 'The poetry shelf. The four coloured spines are the four books; the blank ones are room to grow.', wide: true },
+      { src: 'otla-pages/03_writing_room.jpg', alt: 'The writing room, a pinboard of hand-drawn notes, one per poem or essay', caption: 'The writing room: 35 pieces pinned up, each one a link.', wide: true },
+      { src: 'otla-pages/04_text.jpg', alt: 'The plain-text edition listing every shelf and piece as simple links', caption: 'The plain-text edition: the whole library as a list, for screen readers and slow connections.', wide: true },
+    ],
+    shipped: [
+      'Four rooms: poetry shelf, story shelf, writing room and guestbook',
+      'A custom reader with keyboard page turns',
+      'A plain-text edition of the whole library, and a skip link',
+      'A shareable link for every book and piece',
+      'Music and page sounds, both off with one tap',
+    ],
+    scrapped: ['Stories: the shelf is built, the stories are still being written'],
+    learned:
+      'Drawing every visual by hand slowed me down in the right places. Each room had to earn its drawing, which kept the library small, quiet and mine.',
+    next: 'Fill the story shelf, and keep adding to the writing room.',
+    live: 'https://otla-pages-lofi.vercel.app',
+    caveat: 'A personal project: no research numbers here, only the craft and the decisions behind it.',
+  },
 ];
 
 // PLAY: prototypes and experiments. img = screenshot of the live build.
@@ -656,12 +680,11 @@ export const experiments = [
   { code: 'PL-03', name: 'Hold', line: 'Tower defense. Four instruments, twelve waves, gold from what you break.', href: 'https://hold-six.vercel.app', img: 'play/hold.jpg', kind: 'Game' },
   { code: 'PL-04', name: 'Ashline', line: 'An infinite runner across a burning ridge. Jump the stone, slide the wire.', href: 'https://ashline-liard.vercel.app', img: 'play/ashline.jpg', kind: 'Game' },
   { code: 'PL-05', name: 'Resonance', line: 'An audio visualizer and playable synth: bars, radial, rings, or your mic.', href: 'https://resonance-delta-three.vercel.app', img: 'play/resonance.jpg', kind: 'Audio' },
-  { code: 'PL-06', name: 'Bench', line: 'Six HCI master’s programs compared for a designer from India on an F-1.', href: 'https://bench-mu-two.vercel.app', img: 'play/bench.jpg', kind: 'Decision tool' },
-  { code: 'PL-07', name: 'CodeLingo', line: 'Learn to code by restyling a live app, one class at a time.', href: 'https://codelingo-studio.vercel.app', img: 'play/codelingo.jpg', kind: 'Learning' },
-  { code: 'PL-08', name: 'Paper Trail', line: 'A pinboard for my poems, sorted by feeling.', href: 'https://paper-trail-lime-seven.vercel.app', img: 'play/paper-trail.jpg', kind: 'Writing' },
-  { code: 'PL-09', name: 'BiteBudget', line: 'A budget recipe engine with pantry matching and an AI sous-chef.', href: 'https://bite-budget-six.vercel.app', img: 'play/bitebudget.jpg', kind: 'Practice' },
-  { code: 'PL-10', name: 'PawPal', line: 'A dog walking app: find, book and track a walker.', href: 'https://foyer-drawn-59924504.figma.site', img: 'play/pawpal.jpg', kind: 'Practice' },
-  { code: 'PL-11', name: 'Zoo ticketing', line: 'Timed-entry ticketing flow for a wildlife park.', href: 'https://portal-safe-87289165.figma.site', img: 'play/zoo.jpg', kind: 'Practice' },
+  { code: 'PL-06', name: 'CodeLingo', line: 'Learn to code by restyling a live app, one class at a time.', href: 'https://codelingo-studio.vercel.app', img: 'play/codelingo.jpg', kind: 'Learning' },
+  { code: 'PL-07', name: 'Paper Trail', line: 'A pinboard for my poems, sorted by feeling.', href: 'https://paper-trail-lime-seven.vercel.app', img: 'play/paper-trail.jpg', kind: 'Writing' },
+  { code: 'PL-08', name: 'BiteBudget', line: 'A budget recipe engine with pantry matching and an AI sous-chef.', href: 'https://bite-budget-six.vercel.app', img: 'play/bitebudget.jpg', kind: 'Practice' },
+  { code: 'PL-09', name: 'PawPal', line: 'A dog walking app: find, book and track a walker.', href: 'https://foyer-drawn-59924504.figma.site', img: 'play/pawpal.jpg', kind: 'Practice' },
+  { code: 'PL-10', name: 'Zoo ticketing', line: 'Timed-entry ticketing flow for a wildlife park.', href: 'https://portal-safe-87289165.figma.site', img: 'play/zoo.jpg', kind: 'Practice' },
 ];
 
 // BUILD: architecture
@@ -720,8 +743,8 @@ export const about = {
   ],
   // Newest first, strictly by date. kind colours the marker: design, architecture or study.
   timeline: [
-    { when: 'Oct 2026, now', kind: 'design', what: 'Product designer intern, AcuAI Labs', line: 'Remote. Redesigning the core app of a B2B SaaS platform for AI product feeds and ad creatives.' },
-    { when: 'Oct 2026', kind: 'design', what: 'Seven products, designed, built and shipped', line: 'Found It, Ledger, Otla Pages, Settle, Plain Paper, Plainform and Lease Lens, all live.' },
+    { when: 'Oct 2026, now', kind: 'design', what: 'Product designer intern at an AI lab', line: 'Remote. Redesigning the core app of a B2B SaaS platform for AI product feeds and ad creatives.' },
+    { when: 'Oct 2026', kind: 'design', what: 'Seven products and prototypes, designed and built', line: 'Found It, Ledger, Plain Paper, Plainform, Settle, Lease Lens and Otla Pages, all live and open to explore.' },
     { when: 'Dec 2025 to May 2026', kind: 'study', what: 'Google UX Design Certificate', line: 'Coursera, alongside the thesis.' },
     { when: 'Aug 2025 to Apr 2026', kind: 'arch', what: 'B.Arch thesis, Syntax of Behaviour', line: 'Street behaviour mapped over 50+ hours a site, turned into a kit of precast modules.' },
     { when: 'Nov 2024 to Apr 2025', kind: 'arch', what: 'Architectural intern, Anagram Architects', line: 'New Delhi. A school and a store, from concept to the execution set.' },

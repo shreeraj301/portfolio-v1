@@ -262,8 +262,14 @@ export class KitCluster {
       const m = o as THREE.Mesh;
       m.geometry?.dispose();
       const mat = m.material as THREE.Material | THREE.Material[] | undefined;
-      (Array.isArray(mat) ? mat : mat ? [mat] : []).forEach((x) => x.dispose());
+      (Array.isArray(mat) ? mat : mat ? [mat] : []).forEach((x) => {
+        const map = (x as THREE.MeshStandardMaterial).map;
+        if (map && !map.userData.shared) map.dispose();
+        x.dispose();
+      });
     });
+    this.blobTex.dispose();
+    this.renderer.forceContextLoss(); // hand the WebGL context back now, not whenever GC runs
     this.renderer.dispose();
     c.remove();
   }

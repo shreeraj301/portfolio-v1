@@ -134,6 +134,12 @@ const num = () => n(++sec);
           {c.outcomes.map((o, i) => <li data-reveal="up" data-delay={(i * 0.05).toFixed(2)}>{o}</li>)}
         </ul>
       )}
+      {c.method && (
+        <div class="method">
+          <p class="code">How I measured</p>
+          <ul>{c.method.map((m) => <li>{m}</li>)}</ul>
+        </div>
+      )}
       <blockquote class="learned"><p class="code">What I learned</p><p class="learned__text" data-split="lines">{c.learned}</p></blockquote>
       <div class="case__body"><p><strong>Next.</strong> {c.next}</p></div>
     </section>

@@ -6,9 +6,9 @@ import ProductIndex from '../../components/ProductIndex.astro';
 import { cases } from '../../data/site';
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
-<Base page="work" title="Products" description="Seven live products by Shreeraj Narwade: Found It, Ledger, Otla Pages, Plainform, Settle, Plain Paper and Lease Lens. Each with a case study and a working prototype.">
+<Base page="work" title="Products" description="Seven live products and prototypes by Shreeraj Narwade: Found It, Ledger, Plain Paper, Plainform, Settle, Lease Lens and Otla Pages. Each with a case study and a working prototype.">
   <section class="sec wpage" style="--c:var(--v-read)">
-    <SectionHead verb="read" id="work-title" as="h1" code={`RD-01 to RD-${pad(cases.length)} / All products`} line="Seven products I designed, built and shipped. Every one is live. Open it and use it." />
+    <SectionHead verb="read" id="work-title" as="h1" code={`RD-01 to RD-${pad(cases.length)} / All products`} line="Seven products and prototypes I designed and built. All live, open to explore." />
     <ProductIndex items={cases} />
   </section>
 </Base>

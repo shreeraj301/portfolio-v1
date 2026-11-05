@@ -53,6 +53,11 @@ strong { font-weight: 600; }
 .verb { display: inline-flex; align-items: center; gap: 0.45em; min-height: 44px; font-weight: 600; text-transform: uppercase; font-size: 0.95rem; letter-spacing: 0.02em; font-variation-settings: 'wdth' 70; }
 .verb__glyph { width: 30px; height: 30px; margin-block: -4px; transition: transform 0.5s var(--e-set); will-change: transform; }
 .verb:focus-visible .verb__glyph { transform: translateY(3px); }
+/* The plain word sits under each verb, set like the role under the name on the left. */
+.verb__stack { display: grid; line-height: 1.05; }
+.verb__nav { font-family: var(--f-mono); font-weight: 400; font-size: 0.6875rem; letter-spacing: 0; text-transform: uppercase; font-variation-settings: normal; color: var(--c-muted); }
+.menu-open .verb__nav { color: var(--c-on-ink-muted); }
+@media (max-width: 1199px) { .hdr__nav .verb__glyph { display: none; } }
 .verb__text { display: inline-flex; flex-direction: column; background: linear-gradient(currentColor 0 0) left bottom / 0% 1px no-repeat; transition: background-size 0.45s var(--e-out); }
 @media (hover: hover) { .verb:hover .verb__glyph { transform: translateY(3px); } .verb:hover .verb__text { background-size: 100% 1px; } }
 .verb:focus-visible .verb__text, .verb[aria-current='page'] .verb__text, .verb.is-here .verb__text { background-size: 100% 1px; }
@@ -394,6 +399,9 @@ html:not(.motion) .hero__exploded { display: none; }
 .ship__out li { color: var(--c-muted); }
 .outcomes { grid-column: 3 / 13; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--gutter); }
 .outcomes li { padding: 1.2rem 0; border-top: 3px solid var(--c-fg); font-size: var(--t-m); line-height: 1.25; letter-spacing: -0.01em; }
+.method { grid-column: 3 / 13; margin-top: calc(var(--u) * 5); }
+.method ul { list-style: none; padding: 0; margin-top: 0.6rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gutter); }
+.method li { padding: 0.7rem 0; border-top: 1px solid var(--c-line); font-size: var(--t-s); color: var(--c-muted); }
 .learned { grid-column: 3 / 12; margin: calc(var(--u) * 6) 0 calc(var(--u) * 3); }
 .learned__text { margin-top: 0.6rem; font-family: var(--f-serif); font-style: italic; font-size: var(--t-l); line-height: 1.12; letter-spacing: -0.015em; }
 .nextcase { margin: 0 calc(var(--gutter) * -1); }
@@ -411,10 +419,10 @@ html:not(.motion) .hero__exploded { display: none; }
 @media (hover: hover) { .nextcase__link:hover { background-color: color-mix(in srgb, var(--c-bg-2) 70%, var(--v-read)); } .nextcase__link:hover .nextcase__name { transform: translateX(0.12em); } }
 .nextcase__link:focus-visible .nextcase__name { transform: translateX(0.12em); }
 @media (max-width: 899px) {
-  .case__one, .case__glance-text, .case__caveat, .case__h, .case__body, .aud, .hmw, .findings, .turn, .decisions, .ship, .outcomes, .learned { grid-column: 1 / -1; }
+  .case__one, .case__glance-text, .case__caveat, .case__h, .case__body, .aud, .hmw, .findings, .turn, .decisions, .ship, .outcomes, .method, .learned { grid-column: 1 / -1; }
   .case__num, .case__glance .code { grid-column: 1 / -1; margin-bottom: 0.5rem; }
   .spec { grid-template-columns: 1fr; }
-  .aud, .findings, .outcomes, .ship, .shots { grid-template-columns: 1fr; }
+  .aud, .findings, .outcomes, .ship, .shots, .method ul { grid-template-columns: 1fr; }
   .dec { grid-template-columns: 1fr; }
   .dec__grid { grid-column: 1; grid-template-columns: 1fr; }
   .nextcase__link > *, .nextcase__img { grid-column: 1 / -1 !important; grid-row: auto !important; }
@@ -479,6 +487,7 @@ figcaption { margin-top: 0.7rem; color: var(--c-muted); font-size: var(--t-s); }
 .apage__portrait { grid-column: 1 / 5; padding-top: 0.5rem; }
 .apage__text { grid-column: 6 / 13; display: grid; gap: 1.2rem; max-width: 62ch; }
 .apage__lead { font-size: var(--t-l); line-height: 1.12; letter-spacing: -0.015em; }
+.apage__where { margin-top: 1.2rem; color: var(--c-muted); }
 .apage__ctas { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; margin-top: 1rem; }
 .reel { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); margin-top: calc(var(--u) * 10); align-items: end; }
 .reel__img { grid-column: 1 / 9; aspect-ratio: 16 / 9; overflow: hidden; background: var(--c-fg); }

@@ -109,12 +109,18 @@ export function initInteractions() {
   });
 }
 
+// Everything except the menu and its Close button: Tab cannot reach it and screen readers skip it.
+function setBehind(on: boolean) {
+  document.querySelectorAll<HTMLElement>('.skip-link, .hdr__home, .hdr__nav, #main, .ftr').forEach((el) => { el.inert = on; });
+}
+
 function openMenu() {
   const menu = document.querySelector<HTMLElement>('[data-menu]');
   const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
   if (!menu || !btn) return;
   menu.hidden = false;
   document.documentElement.classList.add('menu-open');
+  setBehind(true);
   // The page behind holds still while the menu is open; the menu scrolls on its own (data-lenis-prevent).
   stopScroll();
   btn.setAttribute('aria-expanded', 'true');
@@ -131,6 +137,7 @@ function closeMenu(refocus = false) {
   const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
   if (!menu || menu.hidden || !btn) return;
   document.documentElement.classList.remove('menu-open');
+  setBehind(false);
   startScroll();
   btn.setAttribute('aria-expanded', 'false');
   btn.querySelector('.hdr__menu-label')!.textContent = 'Menu';
@@ -200,6 +207,10 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
         if (d) { recastBtn.hidden = false; gsap.fromTo(recastBtn, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: ease.out }); }
         else gsap.to(recastBtn, { autoAlpha: 0, duration: 0.3, onComplete: () => { recastBtn.hidden = true; } });
       };
+      gl.querySelector('canvas')?.addEventListener('webglcontextlost', () => {
+        if (dead) return;
+        kit?.dispose(); kit = null; gl.remove(); box.classList.remove('is-3d', 'is-3d-ready');
+      }, { once: true });
       requestAnimationFrame(() => box.classList.add('is-3d-ready'));
       if (reduced()) kit.settleAll();
       else if (introPlayed || document.documentElement.classList.contains('is-loaded') && intro.progress() > 0) kit.drop();
@@ -302,6 +313,10 @@ function kitCluster(off: (() => void)[]) {
       if (dead) return;
       kit = new KitCluster(gl, { reduced: reduced(), touch: isTouch(), mobile: isMobile() });
       kit.onHover = (l) => { if (!label) return; if (l) label.textContent = l; label.classList.toggle('is-on', !!l); };
+      gl.querySelector('canvas')?.addEventListener('webglcontextlost', () => {
+        if (dead) return;
+        kit?.dispose(); kit = null; gl.remove(); box.classList.remove('is-3d-ready');
+      }, { once: true });
       requestAnimationFrame(() => box.classList.add('is-3d-ready'));
       triggers.push(ScrollTrigger.create({ trigger: box, start: 'top bottom', end: 'bottom top', onToggle: (s) => kit?.setVisible(s.isActive) }));
       if (!reduced()) {
@@ -321,7 +336,7 @@ function statement() {
   const p = document.querySelector<HTMLElement>('[data-words]');
   if (!p || reduced()) return;
   const words = p.querySelectorAll('.w');
-  gsap.fromTo(words, { opacity: 0.16 }, {
+  gsap.fromTo(words, { opacity: 0.5 }, { // 0.5 keeps unread words at 3.3:1, AA for large text
     opacity: 1, ease: 'none', stagger: 0.1,
     scrollTrigger: { trigger: p, start: 'top 78%', end: 'bottom 45%', scrub: 0.6 },
   });

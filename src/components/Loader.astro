@@ -5,13 +5,14 @@ import { verbs } from '../data/site';
 <script is:inline>
   try { if (sessionStorage.getItem('sn-cast')) document.documentElement.classList.add('seen'); sessionStorage.setItem('sn-cast', '1'); } catch (e) {}
 </script>
-<div id="loader" role="status" aria-label="Loading">
+<div id="loader">
+  <span class="sr-only" role="status">Loading portfolio</span>
   <div class="loader__inner">
     <span class="loader__name" data-loader-out>Shreeraj Narwade</span>
     <ol class="loader__cells" aria-hidden="true">
       {verbs.map((v) => <li style={`--c:var(--v-${v.id})`}><img src={`/kit/${v.id}-sm.webp`} width="48" height="48" alt="" /><span>{v.code}</span></li>)}
     </ol>
-    <span class="loader__count" data-loader-out><span data-loader-count>000</span> cast</span>
+    <span class="loader__count" data-loader-out aria-hidden="true"><span data-loader-count>000</span> cast</span>
   </div>
   <div class="loader__bar" data-loader-bar></div>
 </div>

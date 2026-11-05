@@ -16,7 +16,7 @@ const current = (id: string) => (id === 'build' && page === 'build') || (id === 
         <li>
           <a class="verb" href={v.href} data-verb={v.id} data-label={v.label} data-code={v.code} aria-current={current(v.id) ? 'page' : undefined}>
             <Module verb={v.id} size={30} small eager class="verb__glyph" />
-            <span class="verb__text" data-text={v.label}>{v.label}</span>
+            <span class="verb__stack"><span class="verb__text" data-text={v.label}>{v.label}</span><span class="verb__nav">{v.nav}</span></span>
           </a>
         </li>
       ))}
