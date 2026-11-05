@@ -1,24 +1,31 @@
 // The Build section scene: the Kit locked together into one piece, like the cover of Manual 01.
-// Scrolling into the section lowers the pieces in one by one (scrubbed, so scrolling back lifts them
-// out again); each lands with a hard stop, a small give and a puff of dust. Hover lifts a piece on the
-// crane spring and greys out the rest. The sun follows the pointer. No dragging: this one is finished.
+// It opens as an exploded axonometric: every piece already in view, pulled back from its bay along a
+// grid axis (up, the two long sides, front or back). Scrolling assembles it one piece at a time
+// (scrubbed, so scrolling back takes it apart again) while the frame closes in on the finished Kit.
+// Pieces move only along the plan's own axes, never toward the camera, so the isometric reads true,
+// and nothing ever enters through the edge of the frame. Each lands with a hard stop, a small give
+// and a puff of dust. Hover lifts a piece on the crane spring and greys out the rest. The sun follows
+// the pointer. No dragging: this one is finished.
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { buildModule, buildPiece, contactTexture, type Verb, type Piece, type Built } from './modules';
 import { makeRenderer, addLights } from './stage';
 
-export type Item = { kind: Verb | Piece; label: string; color: string; x: number; z: number; rot: number };
+/** Where a piece waits before it is set into its bay: straight up, or out along a plan axis.
+ *  Edge pieces leave through their own edge, so no path crosses another piece. */
+export type From = 'up' | 'left' | 'right' | 'front' | 'back';
+export type Item = { kind: Verb | Piece; label: string; color: string; x: number; z: number; rot: number; from: From };
 
 // Laid out on 4-unit cells so the pieces touch, the way they do on the cover.
 export const CLUSTER: Item[] = [
-  { kind: 'pause', label: 'To Refresh', color: '#e2c463', x: 12, z: 0, rot: 0 },
-  { kind: 'terraces', label: 'To Play', color: '#e2c463', x: 8, z: 0, rot: 0 },
-  { kind: 'play', label: 'To Play', color: '#8dbf7c', x: 4, z: 0, rot: 0 },
-  { kind: 'read', label: 'To Read', color: '#7fa4da', x: 0, z: 0, rot: 0 },
-  { kind: 'bridge', label: 'To Balance', color: '#eaa766', x: 12, z: 4, rot: 0 },
-  { kind: 'sit', label: 'To Sit', color: '#edb088', x: 8, z: 4, rot: Math.PI / 2 },
-  { kind: 'gather', label: 'To Perform', color: '#aaa49a', x: 4, z: 4, rot: 0 },
-  { kind: 'path', label: 'To Sit', color: '#de7a5e', x: 0, z: 4, rot: Math.PI / 2 },
+  { kind: 'pause', label: 'To Refresh', color: '#e2c463', x: 12, z: 0, rot: 0, from: 'right' },
+  { kind: 'terraces', label: 'To Play', color: '#e2c463', x: 8, z: 0, rot: 0, from: 'back' },
+  { kind: 'play', label: 'To Play', color: '#8dbf7c', x: 4, z: 0, rot: 0, from: 'up' },
+  { kind: 'read', label: 'To Read', color: '#7fa4da', x: 0, z: 0, rot: 0, from: 'left' },
+  { kind: 'bridge', label: 'To Balance', color: '#eaa766', x: 12, z: 4, rot: 0, from: 'right' },
+  { kind: 'sit', label: 'To Sit', color: '#edb088', x: 8, z: 4, rot: Math.PI / 2, from: 'up' },
+  { kind: 'gather', label: 'To Perform', color: '#aaa49a', x: 4, z: 4, rot: 0, from: 'front' },
+  { kind: 'path', label: 'To Sit', color: '#de7a5e', x: 0, z: 4, rot: Math.PI / 2, from: 'left' },
 ];
 export const CLUSTER_CENTER = new THREE.Vector3(6, 0, 2.5);
 const VERBS = ['read', 'play', 'build', 'pause', 'sit', 'gather'];
@@ -70,11 +77,26 @@ export function frameCluster(cam: THREE.OrthographicCamera, box: THREE.Box3, asp
 }
 
 const GREY = new THREE.Color('#d2cdc3');
-const H = 10; // pieces fall from this high
+// The exploded state. Plan axes only: +x runs to the lower right on screen, +z to the lower left.
+const DIR: Record<From, THREE.Vector3> = {
+  up: new THREE.Vector3(0, 1, 0),
+  left: new THREE.Vector3(-1, 0, 0),
+  right: new THREE.Vector3(1, 0, 0),
+  back: new THREE.Vector3(0, 0, -1),
+  front: new THREE.Vector3(0, 0, 1),
+};
+const RISE = 4.4;   // how high an 'up' piece waits
+const PULL = 3.6;   // how far a side piece waits from its bay: a clear gap, just under one cell
+const CARRY = 0.55; // side pieces travel this high, then are lowered the last bit, like off a crane
+// Piece i owns progress [i/n * SPREAD, ... + SLICE]; the frame closes in over [0, FRAME_END].
+const SPREAD = 0.62, SLICE = 0.3, FRAME_END = 0.9;
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+const smooth = (v: number) => v * v * (3 - 2 * v);
+const inOut = (v: number) => (v < 0.5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2);
 const spring = (p: number, v: number, target: number, w: number, dt: number) => v + (w * w * (target - p) - 2 * w * v) * dt;
 
 type Opts = { reduced: boolean; touch: boolean; mobile: boolean };
-type Part = Built & { item: Item; y: number; lift: number; liftV: number; landed: boolean; give: number; focus: number; base: THREE.Color[]; blob: THREE.Mesh };
+type Part = Built & { item: Item; y: number; lift: number; liftV: number; landed: boolean; give: number; focus: number; base: THREE.Color[]; blob: THREE.Mesh; wait: THREE.Vector3 };
 
 export class KitCluster {
   private renderer: THREE.WebGLRenderer;
@@ -96,7 +118,9 @@ export class KitCluster {
   private ro: ResizeObserver;
   private tickFn = (t: number, dt: number) => this.tick(t, dt);
   private on: { move: (e: PointerEvent) => void; leave: () => void; win: (e: PointerEvent) => void };
-  private base = { left: -1, right: 1, top: 1, bottom: -1 };
+  private base = { left: -1, right: 1, top: 1, bottom: -1 };      // the finished Kit, framed
+  private open = { left: -1, right: 1, top: 1, bottom: -1 };      // the exploded Kit, framed
+  private openBox = new THREE.Box3();
   private lastSun = -1;
   private blobTex = contactTexture();
   private restBox = new THREE.Box3();
@@ -111,12 +135,20 @@ export class KitCluster {
       blob.rotation.x = -Math.PI / 2;
       blob.position.set(CLUSTER[i].x, 0.012, CLUSTER[i].z);
       this.scene.add(blob);
-      const p: Part = { ...b, item: CLUSTER[i], y: 0, lift: 0, liftV: 0, landed: true, give: 0, focus: 0, base: b.mats.map((m) => m.color.clone()), blob };
+      const it = CLUSTER[i];
+      const wait = DIR[it.from].clone().multiplyScalar(it.from === 'up' ? RISE : PULL);
+      if (it.from !== 'up') wait.y = CARRY;
+      const p: Part = { ...b, item: it, y: 0, lift: 0, liftV: 0, landed: true, give: 0, focus: 0, base: b.mats.map((m) => m.color.clone()), blob, wait };
       b.group.traverse((ob) => this.byMesh.set(ob, p));
       this.parts.push(p);
     });
     this.restBox = new THREE.Box3();
-    this.parts.forEach((p) => this.restBox.expandByObject(p.group));
+    this.parts.forEach((p) => {
+      const b = new THREE.Box3().setFromObject(p.group);
+      this.restBox.union(b);
+      this.openBox.union(b.clone().translate(p.wait)); // where it waits in the exploded state
+    });
+    this.openBox.union(this.restBox);
     this.fit();
     this.ro = new ResizeObserver(() => { this.fit(); this.dirty = true; });
     this.ro.observe(el);
@@ -131,14 +163,17 @@ export class KitCluster {
     gsap.ticker.add(this.tickFn);
   }
 
-  /** Fit the finished cluster into the frame. Measured from the pieces at rest, so a resize while
-   *  they are falling never reframes the shot around pieces in the air. */
+  /** Two frames, both measured from fixed boxes rather than live positions: the finished Kit, and the
+   *  exploded Kit with every piece where it waits. Scroll moves between them, so every waiting piece is
+   *  always inside the frame at any size or aspect, and a resize mid-assembly never jumps the shot. */
   private fit() {
     const r = this.el.getBoundingClientRect();
     if (!r.width || !r.height) return;
     this.renderer.setSize(r.width, r.height, false);
-    frameCluster(this.camera, this.restBox, r.width / r.height);
     const cam = this.camera;
+    frameCluster(cam, this.openBox, r.width / r.height);
+    this.open = { left: cam.left, right: cam.right, top: cam.top, bottom: cam.bottom };
+    frameCluster(cam, this.restBox, r.width / r.height);
     this.base = { left: cam.left, right: cam.right, top: cam.top, bottom: cam.bottom };
   }
 
@@ -189,19 +224,32 @@ export class KitCluster {
     let moving = this.dirty || this.dust.length > 0 || this.rings.length > 0;
     const n = this.parts.length;
     this.parts.forEach((p, i) => {
-      // Each piece gets its own slice of the scroll; inside it, it falls like a dropped weight.
-      const t = reduced ? 1 : Math.max(0, Math.min(1, (this.progress - (i / n) * 0.62) / 0.3));
-      const y = H * (1 - t * t);
+      // Each piece gets its own slice of the scroll. 'up' pieces drop like a weight (gravity, hard stop).
+      // Side pieces glide in along their axis at carry height, easing out as they reach the bay, then
+      // are lowered the last bit, so every piece is set down the same way.
+      const t = reduced ? 1 : clamp01((this.progress - (i / n) * SPREAD) / SLICE);
+      let away = 0, y = 0;
+      if (p.item.from === 'up') {
+        y = p.wait.y * (1 - t * t);
+      } else {
+        const g = clamp01(t / 0.78), d = clamp01((t - 0.78) / 0.22);
+        away = 1 - inOut(g);
+        y = CARRY * (1 - d * d);
+      }
       if (t >= 1 && !p.landed) this.land(p);
       if (t < 1) p.landed = false;
       p.y = y;
+      p.group.position.x = p.item.x + p.wait.x * away;
+      p.group.position.z = p.item.z + p.wait.z * away;
       // Crane lift on hover: critically damped, so it rises and stops without wobble.
       const want = this.hovered === p && p.landed ? 0.9 : 0;
       if (!reduced) { p.liftV = spring(p.lift, p.liftV, want, 11, dt); p.lift += p.liftV * dt; } else p.lift = want;
       if (Math.abs(p.liftV) > 1e-3 || Math.abs(p.lift - want) > 1e-3) moving = true;
-      p.group.visible = t > 0;
-      p.blob.visible = t > 0;
-      (p.blob.material as THREE.MeshBasicMaterial).opacity = 0.55 * t * t;
+      // The soft contact shadow follows the piece across the floor and darkens as it comes down.
+      p.blob.position.x = p.group.position.x;
+      p.blob.position.z = p.group.position.z;
+      const near = 1 - clamp01(y / 3);
+      (p.blob.material as THREE.MeshBasicMaterial).opacity = 0.55 * near * near;
       p.group.position.y = y + p.lift - p.give;
       if (p.give) moving = true;
       // Focus: the others go back to bare concrete.
@@ -221,8 +269,12 @@ export class KitCluster {
 
     this.shake *= Math.pow(0.82, dt * 60);
     const sx = (Math.random() - 0.5) * this.shake, sy = (Math.random() - 0.5) * this.shake;
-    const cam = this.camera;
-    cam.left = this.base.left + sx; cam.right = this.base.right + sx; cam.top = this.base.top + sy; cam.bottom = this.base.bottom + sy;
+    // The frame closes in from the exploded Kit to the finished one as it assembles.
+    const k = reduced ? 1 : smooth(clamp01(this.progress / FRAME_END));
+    const o = this.open, b = this.base, cam = this.camera;
+    const lerp = (a: number, c: number) => a + (c - a) * k;
+    cam.left = lerp(o.left, b.left) + sx; cam.right = lerp(o.right, b.right) + sx;
+    cam.top = lerp(o.top, b.top) + sy; cam.bottom = lerp(o.bottom, b.bottom) + sy;
     cam.updateProjectionMatrix();
 
     for (let i = this.rings.length - 1; i >= 0; i--) {
