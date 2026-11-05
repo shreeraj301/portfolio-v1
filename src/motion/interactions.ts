@@ -295,14 +295,33 @@ function tileTurns(off: (() => void)[]) {
 }
 
 // Build: the live Kit cluster. Loaded only as the section comes near, run only while it is on screen,
-// and assembled by scroll: the pieces are lowered in as you scroll into the section.
+// and assembled by scroll. The stage pins once the Kit is fully on screen (centred, or at the top if it
+// is taller than the window), and the next stretch of scroll puts it together while you watch, then
+// the page moves on. Desktop pins the Kit with its text; phones pin the Kit alone.
 function kitCluster(off: (() => void)[]) {
   const box = document.querySelector<HTMLElement>('[data-kit-cluster]');
   if (!box || !webglOK()) return;
   const label = box.querySelector<HTMLElement>('[data-kit-piece]');
   let kit: import('../kit3d/cluster').KitCluster | null = null;
   let dead = false;
+  let progress = reduced() ? 1 : 0;
   const triggers: ScrollTrigger[] = [];
+  // The pin is set up now, not when the 3D arrives, so the page below never shifts under the reader.
+  const mm = gsap.matchMedia();
+  if (!reduced()) {
+    const stage = box.closest<HTMLElement>('.build__stage') ?? box;
+    mm.add({ wide: '(min-width: 900px)', narrow: '(max-width: 899px)' }, (c) => {
+      const el = c.conditions?.wide ? stage : box;
+      ScrollTrigger.create({
+        trigger: el, pin: true, anticipatePin: 1, scrub: 0.6, invalidateOnRefresh: true,
+        start: () => (el.offsetHeight > innerHeight * 0.92 ? 'top top' : 'center center'),
+        end: () => `+=${Math.round(innerHeight * 1.1)}`,
+        onUpdate: (st) => { progress = st.progress; kit?.setProgress(progress); },
+        onRefresh: (st) => { progress = st.progress; kit?.setProgress(progress); },
+      });
+    });
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }
   const gl = document.createElement('div');
   gl.className = 'kitc__gl';
   box.appendChild(gl);
@@ -318,17 +337,14 @@ function kitCluster(off: (() => void)[]) {
         kit?.dispose(); kit = null; gl.remove(); box.classList.remove('is-3d-ready');
       }, { once: true });
       requestAnimationFrame(() => box.classList.add('is-3d-ready'));
-      triggers.push(ScrollTrigger.create({ trigger: box, start: 'top bottom', end: 'bottom top', onToggle: (s) => kit?.setVisible(s.isActive) }));
-      if (!reduced()) {
-        const st = ScrollTrigger.create({ trigger: box, start: 'top 85%', end: 'center 45%', scrub: 0.6, onUpdate: (s) => kit?.setProgress(s.progress) });
-        triggers.push(st);
-        ScrollTrigger.refresh(); // positions above may have shifted since load (lazy images)
-        kit.setProgress(st.progress); // arriving mid-page: show the state that scroll position implies
-      }
+      // Watch the figure, not the box: on phones the box itself is pinned, which skews its own trigger.
+      const watch = box.closest<HTMLElement>('figure') ?? box;
+      triggers.push(ScrollTrigger.create({ trigger: watch, start: 'top bottom', end: 'bottom top', onToggle: (s) => kit?.setVisible(s.isActive) }));
+      kit.setProgress(progress); // arriving mid-page: show the state that scroll position implies
     }).catch(() => {});
   }, { rootMargin: '800px 0px' });
   io.observe(box);
-  off.push(() => { dead = true; io.disconnect(); triggers.forEach((t) => t.kill()); kit?.dispose(); kit = null; gl.remove(); box.classList.remove('is-3d-ready'); });
+  off.push(() => { dead = true; io.disconnect(); mm.revert(); triggers.forEach((t) => t.kill()); kit?.dispose(); kit = null; gl.remove(); box.classList.remove('is-3d-ready'); });
 }
 
 // The statement lights up word by word as it crosses the middle of the screen.

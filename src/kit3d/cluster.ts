@@ -150,7 +150,9 @@ export class KitCluster {
     });
     this.openBox.union(this.restBox);
     this.fit();
-    this.ro = new ResizeObserver(() => { this.fit(); this.dirty = true; });
+    // Resizing a canvas clears it, so draw straight away even if the ticker is idle (a pin releasing
+    // can nudge the box by a fraction of a pixel while it is off the ticker's watch).
+    this.ro = new ResizeObserver(() => { this.fit(); this.dirty = true; this.draw(); });
     this.ro.observe(el);
     this.on = {
       move: (e) => this.pointer(e),
@@ -175,6 +177,11 @@ export class KitCluster {
     this.open = { left: cam.left, right: cam.right, top: cam.top, bottom: cam.bottom };
     frameCluster(cam, this.restBox, r.width / r.height);
     this.base = { left: cam.left, right: cam.right, top: cam.top, bottom: cam.bottom };
+  }
+
+  private draw() {
+    this.renderer.shadowMap.needsUpdate = true;
+    this.renderer.render(this.scene, this.camera);
   }
 
   /** 0: nothing placed yet; 1: the whole Kit set down. Scrubbed by scroll. */
