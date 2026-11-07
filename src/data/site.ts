@@ -8,7 +8,7 @@ export const site = {
   role: 'Product designer and design engineer',
   url: 'https://shreerajnarwade.vercel.app',
   description:
-    'Architect turned product designer. I design for how people think and decide, from AI tools to fintech, and I build what I design. Seven live products and prototypes, architecture and poems.',
+    'Architect turned product designer. I design for how people think and decide, from AI tools to fintech, and I build what I design. Architecture and poems too.',
   email: 'shreerajn.work@gmail.com',
   based: 'India',
   relocate: 'Open to relocating',

@@ -11,8 +11,8 @@ let exit: ((root: HTMLElement) => gsap.core.Timeline) | null = null;
 /** Replace the exit choreography (the loader → hero handoff). Return a timeline. */
 export const setLoaderExit = (fn: (root: HTMLElement) => gsap.core.Timeline) => { exit = fn; };
 
-const MIN = 0.6; // seconds: long enough to read as a designed moment
-const MAX = 1.2; // seconds: a longer loader is a usability problem
+const MIN = 0.15; // seconds: a short cast, never a gate in front of the hero
+const MAX = 0.7; // seconds: hard ceiling so a slow font cannot hold the counter
 
 function criticalAssets(): Promise<unknown>[] {
   const imgs = [...document.querySelectorAll<HTMLImageElement>('img[data-critical], [data-intro] img, [data-gl-instant] img')];
@@ -22,6 +22,9 @@ function criticalAssets(): Promise<unknown>[] {
 export async function runLoader(): Promise<void> {
   const root = document.getElementById('loader');
   if (!root) return;
+  const skip = root.querySelector<HTMLButtonElement>('[data-loader-skip]');
+  let skipped = false;
+  skip?.addEventListener('click', () => { skipped = true; }, { once: true });
   if (prefersReducedMotion()) {
     await Promise.race([Promise.all(criticalAssets()), wait(MAX)]);
     await gsap.to(root, { autoAlpha: 0, duration: 0.3 });
@@ -43,6 +46,7 @@ export async function runLoader(): Promise<void> {
       const goal = elapsed > MAX ? 100 : Math.min(target.v, timeCap);
       shown.v += (goal - shown.v) * 0.12;
       if (goal === 100 && shown.v > 99.5) shown.v = 100;
+      if (skipped) shown.v = 100;
       if (count) count.textContent = format(shown.v);
       if (bar) bar.style.transform = `scaleX(${shown.v / 100})`;
       if (shown.v === 100) { gsap.ticker.remove(tick); resolve(); }

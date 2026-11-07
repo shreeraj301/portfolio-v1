@@ -17,27 +17,27 @@ const lastBig = (plays.length - 2) % 3 === 2 ? 2 : 0;
 const words7 = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][cases.length] ?? String(cases.length);
 ---
 <Base page="home">
-  <section class="hero" data-section="hero" aria-labelledby="hero-title">
-    <div class="hero__meta" data-reveal="fade" data-intro data-delay="0.5">
+  <section class="hero" id="hero" data-section="hero" aria-labelledby="hero-title">
+    <div class="hero__meta">
       <p><span class="code">Sheet 00</span> Portfolio, 2026</p>
       <p><span class="code">Now</span> {site.now}</p>
     </div>
     <h1 class="hero__name" id="hero-title" aria-label={site.name}>
-      <span class="hero__line" data-split="chars" data-intro>Shreeraj</span>
-      <span class="hero__line" data-split="chars" data-intro data-delay="0.08">Narwade</span>
+      <span class="hero__line">Shreeraj</span>
+      <span class="hero__line">Narwade</span>
     </h1>
-    <p class="hero__lead" data-split="lines" data-intro data-delay="0.35">
+    <p class="hero__lead">
       Architect turned product designer. I design for how people think and decide, from AI tools to fintech.
     </p>
     <div class="hero__stage" data-stage>
       <Cluster />
-      <p class="hero__caption" data-reveal="fade" data-intro data-delay="1.2">Six modules from my thesis kit, one for each thing you can do here.</p>
+      <p class="hero__caption hero__caption--plain">Six ways in. No hard hat required.</p>
       <button class="recast" type="button" data-recast hidden>Put the modules back</button>
       <p class="hero__exploded" data-exploded aria-hidden="true">Exploded axonometric: every part lifted to show how it is put together</p>
     </div>
     <ol class="hero__verbs" aria-label="What you can do here">
-      {verbs.map((v, i) => (
-        <li data-reveal="up" data-intro data-delay={(0.55 + i * 0.06).toFixed(2)}>
+      {verbs.map((v) => (
+        <li>
           <a href={v.href} class="hv" data-verb={v.id} data-label={v.label} data-code={v.code}>
             <span class="hv__code">{v.code}</span>
             <span class="hv__label">{v.label}</span>
@@ -48,6 +48,26 @@ const words7 = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', '
       ))}
     </ol>
   </section>
+
+  <nav class="explore" data-explore aria-label="Explore">
+    <ol class="explore__list">
+      <li><a class="explore__kit" href="#hero">The kit</a></li>
+      {verbs.map((v) => (
+        <li>
+          <a href={v.href} data-verb={v.id} data-label={v.label} data-code={v.code} style={`--c:var(--v-${v.id})`}>
+            <span class="explore__verb">{v.label}</span>
+            <span class="explore__nav">{v.nav}</span>
+          </a>
+        </li>
+      ))}
+      <li>
+        <a class="explore__surprise" href="/work/found-it/" data-label="Found It" data-code="RD-01">
+          <span class="explore__verb">Surprise me</span>
+          <span class="explore__nav">Poorly supervised curiosity.</span>
+        </a>
+      </li>
+    </ol>
+  </nav>
 
   <section class="statement" aria-label="How I work">
     <p class="statement__text" data-words>

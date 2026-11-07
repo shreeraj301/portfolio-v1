@@ -44,10 +44,10 @@ function flipLayer(c: HTMLElement) {
 
 export function setupMotion() {
   setLoaderFormat((p) => String(Math.round(p)).padStart(3, '0'));
-  // Second and later visits in a session skip the casting: the loader is only for the first impression.
-  // Phones skip it too: on a slow connection the first screen should be the hero, not a counter.
+  // The full-screen cast used to cover the hero until fonts and an exit animation finished.
+  // The plaza drop is the arrival. The counter must not sit in front of the name or the poster.
+  document.getElementById('loader')?.remove();
   const phone = matchMedia('(max-width: 767px), (hover: none)').matches;
-  if (document.documentElement.classList.contains('seen') || phone) document.getElementById('loader')?.remove();
   // Phones: the hero text is there from the first frame (it is the LCP); only the modules are lowered in.
   if (phone) document.querySelectorAll('.hero [data-split], .hero [data-reveal], .nf [data-split], .nf [data-reveal]').forEach((el) => { el.removeAttribute('data-split'); el.removeAttribute('data-reveal'); });
 
