@@ -3,6 +3,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onPage, onScroll, scrollToTarget, stopScroll, startScroll, prefersReducedMotion, isTouch, isMobile, ease } from '../engine';
+import { isScrolling } from '../engine/scroll';
 import { sun } from './sun';
 import { webglOK } from '../kit3d/gl-check';
 import { REVEAL_START, onScreenAtStart } from '../engine/reveal';
@@ -45,6 +46,7 @@ export function initInteractions() {
     if (y < 120 || up) hdr.classList.remove('is-hidden');
     else if (down && !document.documentElement.classList.contains('menu-open')) hdr.classList.add('is-hidden');
     lastY = y;
+    syncExplore();
   });
 
   onPage(({ intro }) => {
@@ -52,13 +54,27 @@ export function initInteractions() {
     const hdr = document.querySelector<HTMLElement>('[data-hdr]');
     hdr?.classList.remove('is-hidden');
 
-    // Mobile menu
+    // Mobile menu: Escape closes, focus returns, and Tab stays inside the dialog and its button.
     const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
-    const toggle = () => (document.documentElement.classList.contains('menu-open') ? closeMenu() : openMenu());
+    const toggle = () => (document.documentElement.classList.contains('menu-open') ? closeMenu(true) : openMenu());
     btn?.addEventListener('click', toggle);
-    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') closeMenu(true); };
-    addEventListener('keydown', esc);
-    off.push(() => { btn?.removeEventListener('click', toggle); removeEventListener('keydown', esc); closeMenu(); });
+    const onMenuKey = (e: KeyboardEvent) => {
+      if (!document.documentElement.classList.contains('menu-open')) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeMenu(true); return; }
+      if (e.key !== 'Tab') return;
+      const menu = document.querySelector<HTMLElement>('[data-menu]');
+      const button = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
+      if (!menu || !button) return;
+      const items = [button, ...menu.querySelectorAll<HTMLElement>('a[href]')];
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+    };
+    addEventListener('keydown', onMenuKey);
+    off.push(() => { btn?.removeEventListener('click', toggle); removeEventListener('keydown', onMenuKey); closeMenu(); });
+    syncExplore();
 
     // Header marks the section in view on the home page.
     document.querySelectorAll<HTMLElement>('[data-section]').forEach((sec) => {
@@ -66,8 +82,14 @@ export function initInteractions() {
       ScrollTrigger.create({
         trigger: sec, start: 'top 45%', end: 'bottom 45%',
         onToggle: (self) => {
-          document.querySelectorAll(`.hdr__nav [data-verb="${id}"]`).forEach((a) => a.classList.toggle('is-here', self.isActive));
+          document.querySelectorAll<HTMLElement>(`[data-verb="${id}"]`).forEach((a) => {
+            a.classList.toggle('is-here', self.isActive);
+            if (a.getAttribute('aria-current') === 'page') return;
+            if (self.isActive) a.setAttribute('aria-current', 'location');
+            else a.removeAttribute('aria-current');
+          });
           if (id === 'gather') hdr?.classList.toggle('is-on-ink', self.isActive);
+          syncExplore();
         },
       });
     });
@@ -88,7 +110,7 @@ export function initInteractions() {
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver((entries) => {
         for (const e of entries) if (e.isIntersecting) { io.unobserve(e.target); (e.target as HTMLImageElement).decode?.().catch(() => {}); }
-      }, { rootMargin: '1200px 0px' });
+      }, { rootMargin: matchMedia('(max-width: 767px)').matches ? '200px 0px' : '600px 0px' });
       document.querySelectorAll<HTMLImageElement>('main img').forEach((img) => io.observe(img));
       off.push(() => io.disconnect());
     }
@@ -114,6 +136,22 @@ function setBehind(on: boolean) {
   document.querySelectorAll<HTMLElement>('.skip-link, .hdr__home, .hdr__nav, #main, .ftr').forEach((el) => { el.inert = on; });
 }
 
+// Chapter bar: real anchors, shown once the hero has left and the header is not already labelling them.
+function syncExplore() {
+  const bar = document.querySelector<HTMLElement>('[data-explore]');
+  if (!bar) return;
+  const hero = document.querySelector<HTMLElement>('#hero');
+  const hdr = document.querySelector<HTMLElement>('[data-hdr]');
+  const heroGone = !!hero && hero.getBoundingClientRect().bottom < 8;
+  const headerHidden = !!hdr?.classList.contains('is-hidden');
+  const gather = document.querySelector<HTMLElement>('#gather');
+  const onGather = !!hdr?.classList.contains('is-on-ink') || (!!gather && gather.getBoundingClientRect().top < innerHeight * 0.72);
+  const menu = document.documentElement.classList.contains('menu-open');
+  // It takes the header's place once that header has stepped aside, and it leaves before Gather so it does not cover the footer.
+  const show = heroGone && !onGather && !menu && headerHidden;
+  document.documentElement.classList.toggle('explore-on', show);
+}
+
 function openMenu() {
   const menu = document.querySelector<HTMLElement>('[data-menu]');
   const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
@@ -124,10 +162,12 @@ function openMenu() {
   // The page behind holds still while the menu is open; the menu scrolls on its own (data-lenis-prevent).
   stopScroll();
   btn.setAttribute('aria-expanded', 'true');
-  btn.querySelector('.hdr__menu-label')!.textContent = 'Close';
+  btn.querySelector('.hdr__menu-label')!.textContent = 'Close menu';
+  syncExplore();
   if (!reduced()) {
-    gsap.fromTo(menu, { yPercent: -100 }, { yPercent: 0, duration: 0.75, ease: ease.inOut });
-    gsap.fromTo(menu.querySelectorAll('li'), { y: -30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6, ease: 'set', stagger: 0.04, delay: 0.2 });
+    gsap.fromTo(menu, { yPercent: -100 }, { yPercent: 0, duration: 0.6, ease: ease.inOut });
+    // Opacity only: visibility:hidden would pull items out of the tab order while they arrive.
+    gsap.fromTo(menu.querySelectorAll('li'), { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'set', stagger: 0.03, delay: 0.08 });
   }
   menu.querySelector<HTMLElement>('a')?.focus();
 }
@@ -141,7 +181,9 @@ function closeMenu(refocus = false) {
   startScroll();
   btn.setAttribute('aria-expanded', 'false');
   btn.querySelector('.hdr__menu-label')!.textContent = 'Menu';
-  const done = () => { menu.hidden = true; if (refocus) btn.focus(); };
+  syncExplore();
+  const restore = refocus || menu.contains(document.activeElement);
+  const done = () => { menu.hidden = true; if (restore) btn.focus(); };
   if (reduced()) done();
   else gsap.to(menu, { yPercent: -100, duration: 0.5, ease: ease.inOut, onComplete: done });
 }
@@ -190,15 +232,17 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
   }
 
   if (use3d) {
-    // The real thing: the 3D plaza. A render of the empty plate holds the place until it is ready.
-    box.classList.add('is-3d');
+    // The poster stays up until the scene can draw. Three.js waits until after load so it does not compete with that image.
     const gl = document.createElement('div');
     gl.className = 'cluster__gl';
     box.appendChild(gl);
     let introPlayed = false;
     if (!reduced()) intro.add(() => { introPlayed = true; kit?.drop(); }, 0.05);
-    import('../kit3d/kit3d').then(({ Kit3D }) => {
+    const startKit = () => {
       if (dead) return;
+      import('../kit3d/kit3d').then(({ Kit3D }) => {
+      if (dead) return;
+      box.classList.add('is-3d');
       kit = new Kit3D(gl, { reduced: reduced(), touch: isTouch(), mobile: isMobile(), sunAngle: () => sun.angle, pointerX: () => sun.px });
       kit.onHover = (id) => (id ? activate(id) : clear());
       kit.onPick = (id) => links.find((l) => l.dataset.verb === id)?.click();
@@ -213,15 +257,29 @@ function cluster(intro: gsap.core.Timeline, off: (() => void)[]) {
       }, { once: true });
       requestAnimationFrame(() => box.classList.add('is-3d-ready'));
       if (reduced()) kit.settleAll();
-      else if (introPlayed || document.documentElement.classList.contains('is-loaded') && intro.progress() > 0) kit.drop();
+      else if (introPlayed || document.documentElement.classList.contains('is-loaded')) kit.drop();
       triggers.push(ScrollTrigger.create({ trigger: gl, start: 'top bottom', end: 'bottom top', onToggle: (st) => kit?.setVisible(st.isActive) }));
       if (!reduced() && desktopish) {
         triggers.push(ScrollTrigger.create({ trigger: hero, start: 'top top', end: 'bottom 20%', onUpdate: (st) => kit?.setExplode(st.progress) }));
       }
     }).catch(() => box.classList.remove('is-3d'));
+    };
+    const armKit = () => {
+      if (dead) return;
+      const go = () => {
+        if (dead) return;
+        // Building the plaza mid-scroll is a long frame. Wait until the gesture settles.
+        if (isScrolling()) { setTimeout(go, 200); return; }
+        startKit();
+      };
+      if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 2200 });
+      else setTimeout(go, 700);
+    };
+    if (document.readyState === 'complete') armKit();
+    else window.addEventListener('load', armKit, { once: true });
     const recast = () => kit?.recast();
     recastBtn?.addEventListener('click', recast);
-    off.push(() => { dead = true; recastBtn?.removeEventListener('click', recast); triggers.forEach((t) => t.kill()); kit?.dispose(); kit = null; gl.remove(); });
+    off.push(() => { dead = true; window.removeEventListener('load', armKit); recastBtn?.removeEventListener('click', recast); triggers.forEach((t) => t.kill()); kit?.dispose(); kit = null; gl.remove(); });
     return;
   }
 
@@ -270,7 +328,7 @@ function turners(off: (() => void)[]) {
         off.push(() => st.kill());
       }).catch(() => {});
     }
-  }, { rootMargin: '600px 0px' });
+  }, { rootMargin: matchMedia('(max-width: 767px)').matches ? '120px 0px' : '400px 0px' });
   els.forEach((el) => io.observe(el));
   off.push(() => io.disconnect());
 }
@@ -344,7 +402,7 @@ function kitCluster(off: (() => void)[]) {
       triggers.push(ScrollTrigger.create({ trigger: watch, start: 'top bottom', end: 'bottom top', onToggle: (s) => kit?.setVisible(s.isActive) }));
       kit.setProgress(progress); // arriving mid-page: show the state that scroll position implies
     }).catch(() => {});
-  }, { rootMargin: '800px 0px' });
+  }, { rootMargin: matchMedia('(max-width: 767px)').matches ? '160px 0px' : '480px 0px' });
   io.observe(box);
   off.push(() => { dead = true; io.disconnect(); mm.revert(); triggers.forEach((t) => t.kill()); kit?.dispose(); kit = null; gl.remove(); box.classList.remove('is-3d-ready'); });
 }
@@ -361,16 +419,27 @@ function statement() {
 }
 
 // Product cover loops: fetched only when about to play, shown over the still once frames are running.
+function nearView(el: HTMLElement) {
+  const r = el.getBoundingClientRect();
+  return r.bottom > -40 && r.top < innerHeight + 40;
+}
+// One source only. Offering webm and mp4 together makes the browser start both and cancel one.
+function armVideo(v: HTMLVideoElement) {
+  if (v.dataset.loaded) return;
+  const webmOk = !!v.dataset.webm && v.canPlayType('video/webm') !== '';
+  const src = webmOk ? v.dataset.webm! : v.dataset.mp4;
+  if (!src) return;
+  v.preload = 'none';
+  v.src = src;
+  v.dataset.loaded = '1';
+}
 function playCover(cover: HTMLElement | null | undefined) {
   const v = cover?.querySelector<HTMLVideoElement>('video');
-  if (!cover || !v || reduced()) return;
-  if (!v.dataset.loaded) {
-    v.dataset.loaded = '1';
-    for (const [src, type] of [[v.dataset.mp4!, 'video/mp4'], [v.dataset.webm!, 'video/webm']]) { const s = document.createElement('source'); s.src = src; s.type = type; v.appendChild(s); }
-    v.load();
-  }
-  v.currentTime = 0;
-  v.play().then(() => cover.classList.add('is-playing')).catch(() => {});
+  if (!cover || !v || reduced() || !nearView(cover)) return;
+  armVideo(v);
+  const start = () => { v.play().then(() => cover.classList.add('is-playing')).catch(() => {}); };
+  if (v.readyState >= 2) start();
+  else v.addEventListener('loadeddata', start, { once: true });
 }
 function stopCover(cover: HTMLElement | null | undefined) {
   const v = cover?.querySelector<HTMLVideoElement>('video');
@@ -434,8 +503,14 @@ function caseIndex(off: (() => void)[]) {
   const leave = () => { armed = false; stopCover(imgs[current]?.querySelector<HTMLElement>('[data-cover]')); };
   root.addEventListener('pointerenter', enter);
   root.addEventListener('pointerleave', leave);
-  off.push(() => { root.removeEventListener('pointerenter', enter); root.removeEventListener('pointerleave', leave); imgs.forEach((x) => stopCover(x.querySelector<HTMLElement>('[data-cover]'))); });
-  show(0);
+  // The first preview animation waits until the index is near, so it does not run during the hero.
+  const previewIo = new IntersectionObserver((entries) => {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    previewIo.disconnect();
+    show(0);
+  }, { rootMargin: '160px 0px' });
+  previewIo.observe(root);
+  off.push(() => { previewIo.disconnect(); root.removeEventListener('pointerenter', enter); root.removeEventListener('pointerleave', leave); imgs.forEach((x) => stopCover(x.querySelector<HTMLElement>('[data-cover]'))); });
 }
 
 // Build page: the Kit list is pinned and each module's render is lowered in as you scroll.

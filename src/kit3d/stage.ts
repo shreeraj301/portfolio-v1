@@ -4,7 +4,7 @@ import * as THREE from 'three';
 
 export function makeRenderer(el: HTMLElement, mobile: boolean) {
   const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  r.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 2));
+  r.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1 : 1.75));
   r.outputColorSpace = THREE.SRGBColorSpace;
   r.toneMapping = THREE.NeutralToneMapping;
   r.toneMappingExposure = 1.06;

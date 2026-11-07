@@ -8,6 +8,7 @@
 // the pointer. No dragging: this one is finished.
 import * as THREE from 'three';
 import { gsap } from 'gsap';
+import { isScrolling } from '../engine/scroll';
 import { buildModule, buildPiece, contactTexture, type Verb, type Piece, type Built } from './modules';
 import { makeRenderer, addLights } from './stage';
 
@@ -225,6 +226,7 @@ export class KitCluster {
     this.scene.add(pts); this.dust.push({ pts, vel, t: 0 });
   }
 
+  private lastDraw = 0;
   private tick(time: number, dtMs: number) {
     if (!this.visible || document.hidden) return;
     const dt = Math.min(dtMs / 1000, 1 / 20);
@@ -305,8 +307,14 @@ export class KitCluster {
     }
 
     if (moving) {
-      this.renderer.shadowMap.needsUpdate = true;
-      this.renderer.render(this.scene, this.camera);
+      // While a phone is scrolling, draw at a lower rate and skip the shadow pass. The assembly still updates.
+      const sparse = this.o.mobile && isScrolling();
+      const now = performance.now();
+      if (!sparse || now - this.lastDraw > 80) {
+        if (!sparse) this.renderer.shadowMap.needsUpdate = true;
+        this.renderer.render(this.scene, this.camera);
+        this.lastDraw = now;
+      }
     }
     this.dirty = false;
   }

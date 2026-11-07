@@ -147,7 +147,7 @@ const num = () => n(++sec);
     <nav class="nextcase" aria-label="Next product">
       <a href={`/work/${next.slug}/`} class="nextcase__link" data-label={next.name} data-code={next.code}>
         <span class="code">Next product, {next.code}</span>
-        <span class="nextcase__name">{next.name}</span>
+        <span class="nextcase__name">{next.name} <span class="nextcase__go" aria-hidden="true">&#8594;</span></span>
         <span class="nextcase__line">{next.oneLiner}</span>
         <span class="nextcase__img" aria-hidden="true"><Pic src={`covers/${next.cover}.png`} alt="" widths={[800, 1200]} sizes="(max-width: 767px) 92vw, 40vw" /></span>
       </a>

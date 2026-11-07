@@ -9,11 +9,22 @@ gsap.registerPlugin(ScrollTrigger);
 
 let lenis: Lenis | null = null;
 const listeners = new Set<(s: ScrollState) => void>();
+let scrolling = false;
+let scrollTimer = 0;
+function noteScroll() {
+  scrolling = true;
+  window.clearTimeout(scrollTimer);
+  scrollTimer = window.setTimeout(() => { scrolling = false; }, 140);
+}
+/** True while a scroll gesture is in progress. WebGL uses this to skip frames instead of fighting the scroll. */
+export const isScrolling = () => scrolling;
 
 export type ScrollState = { y: number; velocity: number; progress: number };
 const state: ScrollState = { y: 0, velocity: 0, progress: 0 };
 
 export function initScroll() {
+  // Any scroll, including a scripted one, marks the gesture so the plaza can skip frames.
+  addEventListener('scroll', noteScroll, { passive: true });
   if (lenis || prefersReducedMotion()) {
     // Still publish native scroll position for WebGL sync.
     if (!lenis) addEventListener('scroll', nativeTick, { passive: true });
@@ -21,6 +32,7 @@ export function initScroll() {
   }
   lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, touchMultiplier: 1.2, anchors: true }); // project: a touch heavier glide
   lenis.on('scroll', (l: Lenis) => {
+    noteScroll();
     state.y = l.scroll;
     state.velocity = l.velocity;
     state.progress = l.limit > 0 ? l.scroll / l.limit : 0; // Lenis reports 1 on pages that cannot scroll
@@ -32,6 +44,7 @@ export function initScroll() {
 }
 
 function nativeTick() {
+  noteScroll();
   const max = document.documentElement.scrollHeight - innerHeight;
   state.velocity = scrollY - state.y;
   state.y = scrollY;

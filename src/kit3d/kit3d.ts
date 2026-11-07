@@ -8,6 +8,7 @@
 // Runs on the site's one clock (gsap.ticker) and only while the hero is on screen.
 import * as THREE from 'three';
 import { gsap } from 'gsap';
+import { isScrolling } from '../engine/scroll';
 import { buildModule, buildPlate, contactTexture, type Verb, type Built } from './modules';
 import { makeRenderer, addLights } from './stage';
 
@@ -420,6 +421,9 @@ export class Kit3D {
 
   private tick(time: number, dtMs: number) {
     if (!this.running || !this.visible || document.hidden) return;
+    // On a phone the settled plaza keeps its last frame while the page is moving. The drop still plays.
+    const resting = this.mods.every((m) => m.mode === 'rest');
+    if (this.o.mobile && resting && !this.dragging && isScrolling()) return;
     const dt = Math.min(dtMs / 1000, 1 / 20);
     this.adapt(dtMs);
     const reduced = this.o.reduced;

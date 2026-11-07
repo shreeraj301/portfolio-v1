@@ -66,11 +66,12 @@ export async function boot(setup?: () => void) {
   syncFlags();
   initScroll();
   setup?.();
-  stopScroll();
   initPage();
-  await runLoader();
+  // The hero is already on screen. The loader, if it is still in the page, must not hold scroll or the intro.
   startScroll();
   intro?.play();
+  document.documentElement.classList.add('is-loaded');
+  void runLoader();
 }
 
 /** Play the leave animation (resolve when the screen is covered). */

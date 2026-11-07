@@ -7,7 +7,11 @@ import { verbs } from '../data/site';
   <section class="nf">
     <p class="code" data-reveal="fade" data-intro>Error 404 / Module not in the catalogue</p>
     <h1 class="nf__title" data-split="chars" data-intro>Not cast yet</h1>
-    <p class="nf__line" data-split="lines" data-intro data-delay="0.2">This address has no module on it. The site has six; pick one.</p>
+    <p class="nf__line" data-split="lines" data-intro data-delay="0.2">This link has no structural support.</p>
+    <p class="nf__recover">
+      <a class="btn" href="/" data-label="Home" data-code="00"><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">Back to the kit</span></a>
+      <a class="btn" href="/work/" data-label="Products" data-code="RD"><span class="btn__fill" aria-hidden="true"></span><span class="btn__text">See product work</span></a>
+    </p>
     <ul class="nf__list">
       {verbs.map((v, i) => (
         <li data-reveal="up" data-intro data-delay={(0.3 + i * 0.06).toFixed(2)}>

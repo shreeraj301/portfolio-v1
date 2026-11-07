@@ -1,4 +1,6 @@
 @font-face { font-family: 'Archivo'; src: url('/fonts/archivo-var.woff2') format('woff2'); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+/* Metric-matched fallback so the swap does not reflow the huge display lines. */
+@font-face { font-family: 'Archivo Fallback'; src: local('Arial'); ascent-override: 92%; descent-override: 22%; line-gap-override: 0%; size-adjust: 100%; }
 @font-face { font-family: 'Newsreader'; src: url('/fonts/newsreader-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Newsreader'; src: url('/fonts/newsreader-400i.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
 @font-face { font-family: 'Plex Mono'; src: url('/fonts/plex-mono-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
@@ -25,8 +27,8 @@
   --v-gather: #aaa49a;
   --v-green: #6f9a5d;
 
-  --f-display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
-  --f-body: 'Archivo', system-ui, sans-serif;
+  --f-display: 'Archivo', 'Archivo Fallback', 'Arial Narrow', system-ui, sans-serif;
+  --f-body: 'Archivo', 'Archivo Fallback', system-ui, sans-serif;
   --f-serif: 'Newsreader', Georgia, serif;
   --f-mono: 'Plex Mono', ui-monospace, monospace;
 

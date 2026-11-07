@@ -4,6 +4,6 @@
 // hold its place: the empty plaza while the 3D loads, the full plaza where WebGL is not available.
 ---
 <div class="cluster" aria-hidden="true" data-cluster>
-  <img class="cluster__still cluster__still--plate" src="/kit/plaza-plate.webp" width="1400" height="1434" alt="" decoding="async" fetchpriority="high" draggable="false" />
-  <img class="cluster__still cluster__still--full" src="/kit/plaza-full.webp" width="1400" height="1434" alt="" loading="lazy" decoding="async" draggable="false" />
+  <img class="cluster__still cluster__still--full" src="/kit/plaza-full.webp" width="1400" height="1434" alt="" loading="eager" fetchpriority="high" decoding="async" draggable="false" />
+  <img class="cluster__still cluster__still--plate" src="/kit/plaza-plate.webp" width="1400" height="1434" alt="" loading="lazy" fetchpriority="low" decoding="async" draggable="false" />
 </div>
